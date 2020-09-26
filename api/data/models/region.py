@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy_serializer import SerializerMixin
 
-from api.data.db_session import SqlAlchemyBase
+from api.data.db_session import db
 
 
-class Region(SqlAlchemyBase):
+class Region(db.Model, SerializerMixin):
     __tablename__ = "regions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     country_id = Column(Integer, ForeignKey("countries.id"))

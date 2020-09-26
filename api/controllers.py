@@ -1,7 +1,7 @@
 from flask import jsonify, g
 
 from api import app
-from api.auth import basic_auth, token_auth
+from api.services.auth import basic_auth, token_auth
 
 
 @app.route("/api/login", methods=["POST"])

@@ -2,13 +2,14 @@ import datetime
 import secrets
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime
+from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from api.data.db_session import SqlAlchemyBase
+from api.data.db_session import db
 
 
-class User(SqlAlchemyBase):
+class User(db.Model, SerializerMixin):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, nullable=False, unique=True, index=True)
@@ -16,14 +17,17 @@ class User(SqlAlchemyBase):
     last_name = Column(String, nullable=False)
     country_id = Column(Integer, ForeignKey("countries.id"), nullable=False)
     region_id = Column(Integer, ForeignKey("regions.id"), nullable=True)
-    reg_date = Column(DateTime, nullable=False)
+    creation_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     password = Column(String, nullable=False)
+
+    country = orm.relation("Country", foreign_keys=[country_id])
+    region = orm.relation("Region", foreign_keys=[region_id])
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.hashed_password, password)
+        return check_password_hash(self.password, password)
 
     token = sqlalchemy.Column(sqlalchemy.String, unique=True, index=True)
     token_expiration = sqlalchemy.Column(sqlalchemy.DateTime)
@@ -44,3 +48,10 @@ class User(SqlAlchemyBase):
 
     def __eq__(self, other):
         return type(self) == type(other) and self.id == other.id
+
+    def to_dict(self, *args, **kwargs):
+        if "only" in kwargs:
+            return super(User, self).to_dict(*args, **kwargs)
+        return super(User, self).to_dict(*args, **kwargs,
+                                         only=["id", "email", "first_name", "last_name", "country",
+                                               "region", "creation_date"])

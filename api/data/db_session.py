@@ -3,11 +3,11 @@ from typing import Iterator
 from contextlib import contextmanager
 
 import sqlalchemy as sa
-import sqlalchemy.ext.declarative as dec
 import sqlalchemy.orm as orm
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Session
 
-SqlAlchemyBase = dec.declarative_base()
+db = SQLAlchemy()
 
 __factory = None
 
@@ -28,10 +28,10 @@ def global_init():
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)
 
-    from . import __all_models
+    import api.data.models
 
-    SqlAlchemyBase.metadata.create_all(engine)
-    return SqlAlchemyBase
+    db.metadata.create_all(engine)
+    return db
 
 
 @contextmanager
@@ -51,3 +51,8 @@ def create_session() -> Iterator[Session]:
     finally:
         if session:
             session.close()
+
+
+def create_non_closing_session():
+    global __factory
+    return __factory()

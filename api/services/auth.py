@@ -3,8 +3,8 @@ import datetime
 from flask import g, jsonify
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
-from api.data import db_session
-from api.data.user import User
+from api.data.db_session import create_session, create_non_closing_session
+from api.data.models.user import User
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
@@ -14,7 +14,7 @@ token_auth = HTTPTokenAuth()
 # то вернется токен
 @basic_auth.verify_password
 def verify_password(username, password):
-    session = db_session.create_session()
+    session = create_non_closing_session()
     user = session.query(User).filter((User.email == username)).first()
     if user is None:
         return False
@@ -28,7 +28,7 @@ def verify_password(username, password):
 # Авторизация также может происходить по токену
 @token_auth.verify_token
 def verify_token(token):
-    session = db_session.create_session()
+    session = create_non_closing_session()
     user = session.query(User).filter(User.token == token).first()
     if user is None or user.token_expiration < datetime.datetime.now():
         return False

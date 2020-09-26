@@ -4,9 +4,9 @@ from flask_migrate import MigrateCommand
 from flask_script import Manager
 
 from api import app
-from api.data.country import Country
+from api.data.models.country import Country
 from api.data.db_session import create_session
-from api.data.region import Region
+from api.data.models.region import Region
 
 manager = Manager(app)
 manager.add_command("db", MigrateCommand)
