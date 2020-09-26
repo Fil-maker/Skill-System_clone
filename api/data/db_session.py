@@ -1,4 +1,6 @@
 import os
+from typing import Iterator
+from contextlib import contextmanager
 
 import sqlalchemy as sa
 import sqlalchemy.ext.declarative as dec
@@ -29,8 +31,23 @@ def global_init():
     from . import __all_models
 
     SqlAlchemyBase.metadata.create_all(engine)
+    return SqlAlchemyBase
 
 
-def create_session() -> Session:
+@contextmanager
+def create_session() -> Iterator[Session]:
     global __factory
-    return __factory()
+    session = None
+
+    try:
+        session = __factory()
+        yield session
+    except Exception:
+        if session:
+            session.rollback()
+        raise
+    else:
+        session.commit()
+    finally:
+        if session:
+            session.close()
