@@ -1,9 +1,12 @@
-from flask import g
+import os
+
+import jwt
+from flask import g, render_template
+from flask_mail import Message
 from flask_restful import abort
 
 from api.data.db_session import create_session
-from api.data.models import Country, Region
-from api.data.models.user import User
+from api.data.models import Country, Region, User
 
 
 def abort_if_user_not_found(func):
@@ -79,9 +82,31 @@ def create_user(args):
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)
+        session.commit()
+        send_confirmation_token(user)
     return token, expires
 
 
+def send_confirmation_token(user):
+    token = user.get_confirmation_token()
+    msg = Message("Registration confirmation",
+                  sender=os.environ.get("MAIL_USERNAME"),
+                  recipients=[user.email])
+    url = f"http://{os.environ.get('APP_HOST')}:{os.environ.get('APP_PORT')}/confirm/{token}"
+    msg.body = render_template("email/confirmation.txt", user=user, url=url)
+    msg.html = render_template("email/confirmation.html", user=user, url=url)
+    from api import mail
+    mail.send(msg)
+
+
+def confirm_email(token):
+    try:
+        user_id = jwt.decode(token, os.environ.get("API_SECRET"), algorithms=["HS256"])["confirm"]
+    except jwt.exceptions.DecodeError:
+        return False
+    with create_session() as session:
+        session.query(User).get(user_id).confirmed = True
+    return True
 
 
 _COUNTRIES = None

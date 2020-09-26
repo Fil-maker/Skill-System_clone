@@ -11,4 +11,4 @@ if os.path.exists(dotenv_path):
 else:
     raise FileNotFoundError(".env file not found")
 
-from api import controllers
+from app import controllers

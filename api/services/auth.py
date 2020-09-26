@@ -3,8 +3,8 @@ import datetime
 from flask import g, jsonify
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
-from api.data.db_session import create_session, create_non_closing_session
-from api.data.models.user import User
+from api.data.db_session import create_non_closing_session
+from api.data.models import User
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()

@@ -2,6 +2,7 @@ from flask import jsonify, g
 
 from api import app
 from api.services.auth import basic_auth, token_auth
+from api.services.users import confirm_email
 
 
 @app.route("/api/login", methods=["POST"])
@@ -25,3 +26,9 @@ def revoke_token():
     g.current_user = None
     g.db_session = None
     return jsonify({"success": True})
+
+
+@app.route("/api/confirm/<token>", methods=["POST"])
+def confirm(token):
+    success = confirm_email(token)
+    return jsonify({"success": success})

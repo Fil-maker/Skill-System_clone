@@ -1,8 +1,10 @@
 import datetime
+import os
 import secrets
 
+import jwt
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,6 +21,7 @@ class User(db.Model, SerializerMixin):
     region_id = Column(Integer, ForeignKey("regions.id"), nullable=True)
     creation_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     password = Column(String, nullable=False)
+    confirmed = Column(Boolean, nullable=False, default=False)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
@@ -46,6 +49,12 @@ class User(db.Model, SerializerMixin):
         # Отзыв токена (Время истечения изменяется на текущее - 1 секунда)
         self.token_expiration = datetime.datetime.now() - datetime.timedelta(seconds=1)
 
+    def get_confirmation_token(self, expires_in=3600 * 24):
+        return jwt.encode({
+            "confirm": self.id,
+            "exp": datetime.datetime.now() + datetime.timedelta(seconds=expires_in)},
+            os.environ.get("API_SECRET"), algorithm="HS256").decode("utf-8")
+
     def __eq__(self, other):
         return type(self) == type(other) and self.id == other.id
 
@@ -54,4 +63,4 @@ class User(db.Model, SerializerMixin):
             return super(User, self).to_dict(*args, **kwargs)
         return super(User, self).to_dict(*args, **kwargs,
                                          only=["id", "email", "first_name", "last_name", "country",
-                                               "region", "creation_date"])
+                                               "region", "creation_date", "confirmed"])
