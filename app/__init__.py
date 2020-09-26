@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret'
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 if os.path.exists(dotenv_path):

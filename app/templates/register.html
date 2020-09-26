@@ -1,0 +1,122 @@
+{% set title = 'Регистрация' %}
+{% set script_file = url_for('static', filename='js/register.js') %}
+{% set style_file = url_for('static', filename='css/register.css') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container">
+    <h1>Регистрация</h1>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="container">
+            <div class="row">
+
+                <div class="col-sm">
+
+                    <div class="image-item">
+                        {{ form.photo.label }}
+                        <img id="preload" src="/static/img/icons/other/user.svg" class="img-thumbnail">
+                        {{ form.photo() }}
+                        <div class="invalid-feedback">
+                            {% for error in form.photo.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm">
+                    <div class="info">
+                        <div class="form-item">
+                            {{ form.first_name.label }}
+                            {{ form.first_name() }}
+                            <div class="invalid-feedback">
+                                {% for error in form.first_name.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            {{ form.last_name.label }}
+                            {{ form.last_name() }}
+                            <div class="invalid-feedback">
+                                {% for error in form.last_name.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            {{ form.country.label }}
+                            {{ form.country(id="cntry-fld") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.country.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item" id="region-div">
+                            {{ form.region.label }}
+                            {{ form.region(id="region-fld") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.region.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            {{ form.email.label }}
+                            {{ form.email() }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            {{ form.password.label }}
+                            {{ form.password() }}
+                            <p id="passwordHelpBlock" class="form-text text-muted">
+                                Lorem ipsum
+                            </p>
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            {{ form.password_again.label }}
+                            {{ form.password_again() }}
+                            <div class="invalid-feedback">
+                                {% for error in form.password_again.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {% if message %}
+                        <p class="alert alert-danger" role="alert">
+                            {{message}}
+                        </p>
+                        {% endif %}
+
+                        <br>
+
+                        <div class="form-item">
+                            {{ form.submit(type="submit", class="button btn btn-primary") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</main>
+{% endblock %}
