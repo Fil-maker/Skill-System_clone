@@ -129,7 +129,10 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    Photo = FileField()
+    photo = FileField("Выберите изображение", render_kw={
+        "class": "form-control-file",
+        "id": "photoField"
+    })
     label = "OK"
     submit = SubmitField(label, render_kw={
         "class": "",
