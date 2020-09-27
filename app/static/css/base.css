@@ -1,0 +1,17 @@
+.row{
+    margin-bottom: 15px;
+}
+.col{
+    padding: 0px;
+}
+.col-md-8{
+    padding: 0px;
+}
+
+.header{
+    margin-bottom: 50pt;
+}
+
+#submit{
+    text-align: right;
+}

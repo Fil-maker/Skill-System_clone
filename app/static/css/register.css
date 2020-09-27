@@ -1,3 +1,6 @@
 #region-div{
     display: none;
 }
+.confirm-item{
+    display: inline-block;
+}

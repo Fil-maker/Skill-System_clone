@@ -73,7 +73,7 @@ regions = ['Республика Адыгея', 'Башкортостан, Ре�
 
 
 class RegisterForm(FlaskForm):
-    label = "Имя"
+    label = "Name"
     first_name = StringField(label, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -81,7 +81,7 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Фамилия"
+    label = "Surname"
     last_name = StringField(label, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -89,7 +89,7 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Страна"
+    label = "Country"
     country = SelectField(label, choices=countries, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -97,7 +97,7 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Регион"
+    label = "Region"
     region = SelectField(label, choices=regions, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -112,7 +112,7 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Пароль"
+    label = "Password"
     password = PasswordField(label, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -120,7 +120,7 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Повторите пароль"
+    label = "Repeat password"
     password_again = PasswordField(label, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -128,12 +128,11 @@ class RegisterForm(FlaskForm):
         "placeholder": label
     })
 
-    photo = FileField("Выберите изображение", render_kw={
+    photo = FileField("Attach an image", render_kw={
         "class": "form-control-file",
         "id": "photoField"
     })
-    label = "OK"
-    submit = SubmitField(label, render_kw={
-        "class": "",
-        "placeholder": label
+    submit = SubmitField("OK", render_kw={
+        "class": "button btn btn-primary",
+        "type": "submit"
     })
