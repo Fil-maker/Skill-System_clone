@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.input-str{
+    display: inline-block;
+}
+#submit{
+    text-align: right;
+}

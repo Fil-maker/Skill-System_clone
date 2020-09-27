@@ -1,0 +1,43 @@
+{% set title = 'Вход' %}
+{% set style_file = url_for('static', filename='css/login.css') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<main class="container">
+    <form>
+        {{ form.hidden_tag() }}
+
+
+            <div class="form-item">
+                {{ form.email.label(class="label input-str") }}
+                {{ form.email() }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-item">
+                {{ form.password.label(class="label input-str") }}
+                {{ form.password() }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <br>
+
+            <div class="form-item" id="submit">
+                {{ form.submit() }}
+            </div>
+
+    </form>
+</main>
+
+{% endblock %}
