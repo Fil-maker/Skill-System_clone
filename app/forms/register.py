@@ -101,7 +101,6 @@ class RegisterForm(FlaskForm):
     region = SelectField(label, choices=regions, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
-        "display": None,
         "placeholder": label
     })
 
