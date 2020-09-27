@@ -12,7 +12,7 @@ class LoginForm(FlaskForm):
         "placeholder": label
     })
 
-    label = "Пароль"
+    label = "Password"
     password = PasswordField(label, validators=[DataRequired()], render_kw={
         "class": "input-str form-control",
         "required": True,
@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
         "placeholder": label
     })
 
-    submit = SubmitField("Войти", render_kw={
+    submit = SubmitField("Enter", render_kw={
         "class": "button btn btn-primary",
         "type": "submit"
     })

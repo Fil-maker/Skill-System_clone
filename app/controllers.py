@@ -5,6 +5,8 @@ import requests
 
 from app import app
 from app.forms.login import LoginForm
+from app.forms.password import PasswordForm
+from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 
 api_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api"
@@ -26,3 +28,15 @@ def register():
 def login():
     form = LoginForm()
     return render_template('login.html', form=form)
+
+
+@app.route("/pin", methods=['GET', 'POST'])
+def pin():
+    form = PinForm()
+    return render_template('pin.html', form=form)
+
+
+@app.route("/password", methods=['GET', 'POST'])
+def password():
+    form = PasswordForm()
+    return render_template('password.html', form=form)
