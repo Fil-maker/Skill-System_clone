@@ -120,7 +120,7 @@ def get_countries_list():
     global _COUNTRIES, _COUNTRIES_COUNT
     if _COUNTRIES is None:
         with create_session() as session:
-            _COUNTRIES = session.query(Country).all()
+            _COUNTRIES = [item.to_dict() for item in session.query(Country).all()]
             _COUNTRIES_COUNT = len(_COUNTRIES)
     return _COUNTRIES
 
@@ -136,7 +136,7 @@ def get_regions_list():
     global _REGIONS, _REGIONS_COUNT
     if _REGIONS is None:
         with create_session() as session:
-            _REGIONS = session.query(Region).all()
+            _REGIONS = [item.to_dict() for item in session.query(Region).all()]
             _REGIONS_COUNT = len(_REGIONS)
     return _REGIONS
 
