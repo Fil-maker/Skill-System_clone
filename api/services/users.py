@@ -2,11 +2,11 @@ import os
 
 import jwt
 from flask import g, render_template
-from flask_mail import Message
 from flask_restful import abort
 
 from api.data.db_session import create_session
 from api.data.models import Country, Region, User
+from api.services.email import send_email
 
 
 def abort_if_user_not_found(func):
@@ -89,14 +89,12 @@ def create_user(args):
 
 def send_confirmation_token(user):
     token = user.get_confirmation_token()
-    msg = Message("Registration confirmation",
-                  sender=os.environ.get("MAIL_USERNAME"),
-                  recipients=[user.email])
     url = f"http://{os.environ.get('APP_HOST')}:{os.environ.get('APP_PORT')}/confirm/{token}"
-    msg.body = render_template("email/confirmation.txt", user=user, url=url)
-    msg.html = render_template("email/confirmation.html", user=user, url=url)
-    from api import mail
-    mail.send(msg)
+    send_email("Registration confirmation",
+               sender=os.environ.get("MAIL_USERNAME"),
+               recipients=[user.email],
+               text_body=render_template("email/confirmation.txt", user=user, url=url),
+               html_body=render_template("email/confirmation.html", user=user, url=url))
 
 
 def confirm_email(token):
