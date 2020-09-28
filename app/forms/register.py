@@ -8,7 +8,7 @@ from app.services.users import get_countries_list, get_regions_list, get_ru_id
 class RegisterForm(FlaskForm):
     label = "Name"
     first_name = StringField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "name",
         "placeholder": label
@@ -16,7 +16,7 @@ class RegisterForm(FlaskForm):
 
     label = "Surname"
     last_name = StringField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "surname",
         "placeholder": label
@@ -27,7 +27,7 @@ class RegisterForm(FlaskForm):
                           choices=[(item["id"], item["name"]) for item in get_countries_list()],
                           validators=[DataRequired()],
                           render_kw={
-                              "class": "input-str form-control",
+                              "class": "form-control",
                               "required": True,
                               "id": "cntry-fld",
                               "placeholder": label,
@@ -39,14 +39,14 @@ class RegisterForm(FlaskForm):
                          choices=[(item["id"], item["name"]) for item in get_regions_list()],
                          validators=[DataRequired()],
                          render_kw={
-                             "class": "input-str form-control",
+                             "class": "form-control",
                              "required": True,
                              "placeholder": label
                          })
 
     label = "Email"
     email = StringField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "email",
         "placeholder": label
@@ -54,7 +54,7 @@ class RegisterForm(FlaskForm):
 
     label = "Password"
     password = PasswordField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "password",
         "placeholder": label
@@ -62,7 +62,7 @@ class RegisterForm(FlaskForm):
 
     label = "Repeat password"
     password_again = PasswordField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "password",
         "placeholder": label
@@ -76,3 +76,15 @@ class RegisterForm(FlaskForm):
         "class": "button btn btn-primary",
         "type": "submit"
     })
+    
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+        default = "form-control"
+        self.email.render_kw["class"] = default
+        self.first_name.render_kw["class"] = default
+        self.last_name.render_kw["class"] = default
+        self.country.render_kw["class"] = default
+        self.region.render_kw["class"] = default
+        self.photo.render_kw["class"] = default
+        self.password.render_kw["class"] = default
+        self.password_again.render_kw["class"] = default

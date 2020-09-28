@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired
 class LoginForm(FlaskForm):
     label = "Email"
     email = StringField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "email",
         "placeholder": label
@@ -14,7 +14,7 @@ class LoginForm(FlaskForm):
 
     label = "Password"
     password = PasswordField(label, validators=[DataRequired()], render_kw={
-        "class": "input-str form-control",
+        "class": "form-control",
         "required": True,
         "type": "password",
         "placeholder": label
@@ -24,3 +24,9 @@ class LoginForm(FlaskForm):
         "class": "button btn btn-primary",
         "type": "submit"
     })
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        default = "form-control"
+        self.email.render_kw["class"] = default
+        self.password.render_kw["class"] = default
