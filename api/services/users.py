@@ -14,7 +14,7 @@ def abort_if_user_not_found(func):
         with create_session() as session:
             user = session.query(User).get(user_id)
             if not user:
-                abort(404, success=False, message=f"User {user_id} not found")
+                abort(404, message=f"User {user_id} not found")
             return func(self, user_id)
 
     return new_func
@@ -23,7 +23,7 @@ def abort_if_user_not_found(func):
 def only_for_current_user(func):
     def new_func(self, user_id):
         if user_id != g.current_user.id:
-            abort(403, success=False)
+            abort(403)
         return func(self, user_id)
 
     return new_func
@@ -42,7 +42,6 @@ def delete_user(user_id):
 
 
 def update_user(user_id, args):
-    print(args)
     with create_session() as session:
         user = session.query(User).get(user_id)
         if args["country"]:
@@ -58,12 +57,13 @@ def update_user(user_id, args):
             user.first_name = args["first_name"]
         if args["last_name"]:
             user.last_name = args["last_name"]
+        return user.to_dict()
 
 
 def create_user(args):
     with create_session() as session:
         if session.query(User).filter(User.email == args["email"]).first() is not None:
-            abort(400, success=False, message=f"User with email {args['email']} already exists")
+            abort(400, message=f"User with email {args['email']} already exists")
         user = User(
             email=args["email"],
             first_name=args["first_name"],
@@ -84,7 +84,7 @@ def create_user(args):
         session.add(user)
         session.commit()
         send_confirmation_token(user)
-    return token, expires
+        return user.to_dict(), token, expires
 
 
 def send_confirmation_token(user):
@@ -105,6 +105,20 @@ def confirm_email(token):
     with create_session() as session:
         session.query(User).get(user_id).confirmed = True
     return True
+
+
+def change_password(user_id, old_password, new_password):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if not user.check_password(old_password):
+            abort(400, message="Invalid old password")
+        if user.check_password(new_password):
+            abort(400, message="New password must be different from the old")
+        user.set_password(new_password)
+        user.revoke_token()
+        token = user.get_token()
+        expires = user.token_expiration
+    return token, expires
 
 
 _COUNTRIES = None

@@ -32,10 +32,11 @@ class UserResource(Resource):
         args = parser.parse_args(strict=True)  # Вызовет ошибку, если запрос
         # будет содержать поля, которых нет в парсере
         try:
-            update_user(user_id, args)
+            user = update_user(user_id, args)
         except KeyError as e:
             abort(400, success=False, message=str(e))
-        return jsonify({'success': True})
+        else:
+            return jsonify({"success": True, "user": user})
 
 
 class UserListResource(Resource):
@@ -46,7 +47,8 @@ class UserListResource(Resource):
         parser = RequestParser()
         parser.add_argument("first_name", required=True)
         parser.add_argument("last_name", required=True)
-        parser.add_argument("country", required=True, type=int, choices=range(1, get_countries_count() + 1))
+        parser.add_argument("country", required=True, type=int,
+                            choices=range(1, get_countries_count() + 1))
         parser.add_argument("region", type=int, choices=range(1, get_regions_count() + 1))
         parser.add_argument("email", required=True)
         parser.add_argument("password", required=True)
@@ -54,9 +56,10 @@ class UserListResource(Resource):
 
         args = parser.parse_args(strict=True)
         try:
-            token, expires = create_user(args)
+            user, token, expires = create_user(args)
         except KeyError as e:
             abort(400, success=False, message=str(e))
         else:
-            return jsonify({"success": True, "authToken": {"token": token,
-                                                           "expires": expires}})
+            return jsonify({"success": True, "user": user,
+                            "authToken": {"token": token,
+                                          "expires": expires}})

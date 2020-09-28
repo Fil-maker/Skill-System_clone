@@ -73,7 +73,7 @@ class RegisterForm(FlaskForm):
         "id": "photoField"
     })
     submit = SubmitField("OK", render_kw={
-        "class": "button btn btn-primary",
+        "class": "btn btn-primary",
         "type": "submit"
     })
     

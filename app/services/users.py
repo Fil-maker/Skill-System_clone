@@ -1,7 +1,7 @@
 import os
 
 import requests
-from flask import session
+from flask import session, g
 from flask_wtf import FlaskForm
 from requests.auth import AuthBase
 from werkzeug.utils import redirect
@@ -32,6 +32,7 @@ def redirect_if_authorized(func):
         if token:
             return redirect("/")
         return func(*args, **kwargs)
+
     new_func.__name__ = func.__name__
     return new_func
 
@@ -55,12 +56,12 @@ def confirm_token(token) -> bool:
 def register_from_form(form: FlaskForm) -> bool:
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            form.password.render_kw["class"] = "input-str form-control is-invalid"
-            form.password_again.render_kw["class"] = "input-str form-control is-invalid"
+            form.password.render_kw["class"] = "form-control is-invalid"
+            form.password_again.render_kw["class"] = "form-control is-invalid"
             form.password_again.errors.append("Passwords don't match")
             return False
         if not is_password_secure(form.password.data):
-            form.password.render_kw["class"] = "input-str form-control is-invalid"
+            form.password.render_kw["class"] = "form-control is-invalid"
             form.password.errors.append("Insecure password")
             return False
 
@@ -70,7 +71,7 @@ def register_from_form(form: FlaskForm) -> bool:
         if data["success"]:
             return True
         if f"email {form.email.data} " in data.get("message", ""):
-            form.email.render_kw["class"] = "input-str form-control is-invalid"
+            form.email.render_kw["class"] = "form-control is-invalid"
             form.email.errors.append(data["message"])
     return False
 
@@ -89,17 +90,17 @@ def register_user(email, first_name, last_name, country, region, password, photo
     data = response.json()
     if data["success"]:
         session["token"] = data["authToken"]["token"]
+        g.current_user = data["user"]
     return data
 
 
 def login_from_form(form: FlaskForm) -> bool:
     if form.validate_on_submit():
-
         data = login_user(form.email.data, form.password.data)
         if data["success"]:
             return True
-        form.email.render_kw["class"] = "input-str form-control is-invalid"
-        form.password.render_kw["class"] = "input-str form-control is-invalid"
+        form.email.render_kw["class"] = "form-control is-invalid"
+        form.password.render_kw["class"] = "form-control is-invalid"
         form.password.errors.append("Invalid email or password")
     return False
 
@@ -109,15 +110,62 @@ def login_user(email, password):
     data = response.json()
     if data["success"]:
         session["token"] = data["authToken"]["token"]
+        g.current_user = data["user"]
     return data
 
 
-def user_logout():
+def logout():
     response = requests.post(f"{api_url}/logout", auth=HTTPTokenAuth())
     if response.json()["success"]:
         session.pop("token", None)
+        g.current_user = None
         return True
     return False
+
+
+def change_password_from_form(form: FlaskForm):
+    if form.validate_on_submit():
+        if form.new_password.data != form.password_again.data:
+            form.new_password.render_kw["class"] = "form-control is-invalid"
+            form.password_again.render_kw["class"] = "form-control is-invalid"
+            form.password_again.errors.append("Passwords don't match")
+            return False
+        if not is_password_secure(form.new_password.data):
+            form.new_password.render_kw["class"] = "form-control is-invalid"
+            form.new_password.errors.append("Insecure password")
+            return False
+        data = change_password(form.cur_password.data, form.new_password.data)
+        if data["success"]:
+            return True
+        if "Invalid" in data.get("message", ""):
+            form.cur_password.render_kw["class"] = "form-control is-invalid"
+            form.cur_password.errors.append("Invalid password")
+        elif "different" in data.get("message", ""):
+            form.new_password.render_kw["class"] = "form-control is-invalid"
+            form.new_password.errors.append(data.get("message", ""))
+    return False
+
+
+def change_password(old_password, new_password):
+    response = requests.post(f"{api_url}/{g.current_user['id']}/change-password",
+                             auth=HTTPTokenAuth(),
+                             data={
+                                 "old_password": old_password,
+                                 "new_password": new_password
+                             })
+    data = response.json()
+    if data["success"]:
+        session["token"] = data["authToken"]["token"]
+    print(data)
+    return data
+
+
+def get_myself():
+    response = requests.get(f"{api_url}/get-myself", auth=HTTPTokenAuth())
+    data = response.json()
+    if data["success"]:
+        return data["user"]
+    return None
 
 
 def is_password_secure(password: str) -> bool:
