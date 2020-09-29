@@ -6,7 +6,8 @@ from werkzeug.exceptions import HTTPException
 
 from api import app
 from api.services.auth import basic_auth, token_auth
-from api.services.users import confirm_email, get_countries_list, get_regions_list, change_password
+from api.services.users import confirm_email, get_countries_list, get_regions_list, change_password, \
+    set_pin, reset_pin
 
 
 @app.errorhandler(HTTPException)
@@ -70,6 +71,8 @@ def get_regions():
 @app.route("/api/users/<int:user_id>/change-password", methods=["POST"])
 @token_auth.login_required
 def change_password_(user_id):
+    if g.current_user.id != user_id:
+        abort(403)
     if "old_password" not in request.form:
         abort(400, message="You must enter your old password")
     if "new_password" not in request.form:
@@ -84,3 +87,17 @@ def change_password_(user_id):
 @token_auth.login_required
 def get_myself():
     return jsonify({"success": True, "user": g.current_user.to_dict()})
+
+
+@app.route("/api/users/<int:user_id>/set-pin", methods=["POST"])
+@token_auth.login_required
+def set_pin_(user_id):
+    if "pin" not in request.form:
+        abort(400, "You must enter pin")
+    return jsonify({"success": set_pin(user_id, request.form["pin"])})
+
+
+@app.route("/api/users/<int:user_id>/reset-pin", methods=["POST"])
+@token_auth.login_required
+def reset_pin_(user_id):
+    return jsonify({"success": reset_pin(user_id)})

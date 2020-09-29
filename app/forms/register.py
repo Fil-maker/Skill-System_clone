@@ -85,6 +85,6 @@ class RegisterForm(FlaskForm):
         self.last_name.render_kw["class"] = default
         self.country.render_kw["class"] = default
         self.region.render_kw["class"] = default
-        self.photo.render_kw["class"] = default
+        self.photo.render_kw["class"] = "form-control-file"
         self.password.render_kw["class"] = default
         self.password_again.render_kw["class"] = default

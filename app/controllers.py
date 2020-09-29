@@ -7,18 +7,18 @@ from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
-    login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself
+    login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
+    set_pin_from_form
 
 
 @app.before_request
 def before_request():
-    if session.get("token"):
+    if session.get("token", None):
         current_user = get_myself()
         if current_user is None:
             session.pop("token", None)
             return redirect("/")
         g.current_user = current_user
-
 
 
 @app.route("/confirm/<token>")
@@ -55,6 +55,8 @@ def logout_():
 @redirect_if_unauthorized
 def pin():
     form = PinForm()
+    if set_pin_from_form(form):
+        return redirect("/")
     return render_template("pin.html", form=form)
 
 

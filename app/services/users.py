@@ -156,7 +156,35 @@ def change_password(old_password, new_password):
     data = response.json()
     if data["success"]:
         session["token"] = data["authToken"]["token"]
-    print(data)
+    return data
+
+
+def set_pin_from_form(form: FlaskForm):
+    if form.validate_on_submit():
+        pin = form.pin.data
+        if not (pin.isdigit() and len(pin) == 4):
+            form.pin.render_kw["class"] = "form-control is-invalid"
+            form.pin.errors.append("PIN must be 4 digits")
+            return False
+        data = set_pin(pin)
+        if data["success"]:
+            return True
+        form.pin.render_kw["class"] = "form-control is-invalid"
+        form.pin.errors.append(data.get("message", ""))
+    return False
+
+
+def set_pin(pin):
+    response = requests.post(f"{api_url}/{g.current_user['id']}/set-pin",
+                             auth=HTTPTokenAuth(),
+                             data={"pin": pin})
+    data = response.json()
+    return data
+
+
+def reset_pin():
+    response = requests.post(f"{api_url}/{g.current_user['id']}/reset-pin", auth=HTTPTokenAuth())
+    data = response.json()
     return data
 
 

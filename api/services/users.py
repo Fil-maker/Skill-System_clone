@@ -121,6 +121,26 @@ def change_password(user_id, old_password, new_password):
     return token, expires
 
 
+def set_pin(user_id, pin):
+    if not (pin.isdigit() and len(pin) == 4):
+        abort(400, "PIN must be 4 digits")
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if user.pin is not None:
+            abort(400, message="PIN is already set")
+        user.set_pin(pin)
+    return True
+
+
+def reset_pin(user_id):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if user.pin is None:
+            abort(400, message="PIN is not set")
+        user.pin = None
+    return True
+
+
 _COUNTRIES = None
 _REGIONS = None
 _COUNTRIES_COUNT = None
