@@ -5,7 +5,8 @@ from werkzeug.datastructures import FileStorage
 
 from api.services.auth import token_auth
 from api.services.users import abort_if_user_not_found, only_for_current_user, get_user, delete_user, \
-    update_user, get_countries_count, get_regions_count, create_user
+    update_user, get_countries_count, get_regions_count, create_user, change_password, set_pin, \
+    reset_pin
 
 
 class UserResource(Resource):
@@ -32,10 +33,23 @@ class UserResource(Resource):
         args = parser.parse_args(strict=True)  # Вызовет ошибку, если запрос
         # будет содержать поля, которых нет в парсере
         try:
-            update_user(user_id, args)
+            user = update_user(user_id, **args)
         except KeyError as e:
             abort(400, success=False, message=str(e))
-        return jsonify({'success': True})
+        else:
+            return jsonify({"success": True, "user": user})
+
+    @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_current_user
+    def patch(self, user_id):  # Password change
+        parser = RequestParser()
+        parser.add_argument("old_password", required=True)
+        parser.add_argument("new_password", required=True)
+        args = parser.parse_args(strict=True)
+        token, expires = change_password(user_id, **args)
+        return jsonify({"success": True, "authToken": {"token": token,
+                                                       "expires": expires}})
 
 
 class UserListResource(Resource):
@@ -44,19 +58,38 @@ class UserListResource(Resource):
 
     def post(self):
         parser = RequestParser()
+        parser.add_argument("email", required=True)
         parser.add_argument("first_name", required=True)
         parser.add_argument("last_name", required=True)
-        parser.add_argument("country", required=True, type=int, choices=range(1, get_countries_count() + 1))
+        parser.add_argument("country", required=True, type=int,
+                            choices=range(1, get_countries_count() + 1))
         parser.add_argument("region", type=int, choices=range(1, get_regions_count() + 1))
-        parser.add_argument("email", required=True)
         parser.add_argument("password", required=True)
-        parser.add_argument("photo", type=FileStorage, location="files")
+        parser.add_argument("photo", type=FileStorage)
 
         args = parser.parse_args(strict=True)
         try:
-            token, expires = create_user(args)
+            user, token, expires = create_user(**args)
         except KeyError as e:
             abort(400, success=False, message=str(e))
         else:
-            return jsonify({"success": True, "authToken": {"token": token,
-                                                           "expires": expires}})
+            return jsonify({"success": True, "user": user,
+                            "authToken": {"token": token,
+                                          "expires": expires}})
+
+
+class UserPinResource(Resource):
+    @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_current_user
+    def post(self, user_id):
+        parser = RequestParser()
+        parser.add_argument("pin", required=True)
+        args = parser.parse_args(strict=True)
+        return jsonify({"success": set_pin(user_id, **args)})
+
+    @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_current_user
+    def delete(self, user_id):
+        return jsonify({"success": reset_pin(user_id)})

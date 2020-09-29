@@ -1,6 +1,6 @@
 $(function(){
     $('#cntry-fld').change(function(){
-        if($('#cntry-fld').val() == "Russian Federation (the)"){
+        if($('#cntry-fld').val() == $('#cntry-fld').attr('data-ru_id')){
             $('#region-div').show();
         }
         else{

@@ -9,12 +9,12 @@
         {{ form.hidden_tag() }}
         <div class="row">
             <div class="col">
-                {{ form.password.label(class="label input-str") }}
+                {{ form.pin.label(class="label input-str") }}
             </div>
             <div class="col">
-                {{ form.password() }}
+                {{ form.pin() }}
                 <div class="invalid-feedback">
-                    {% for error in form.password.errors %}
+                    {% for error in form.pin.errors %}
                     <p>{{ error }}</p>
                     {% endfor %}
                 </div>

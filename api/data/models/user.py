@@ -26,11 +26,19 @@ class User(db.Model, SerializerMixin):
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
 
+    pin = Column(String, nullable=True)
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def set_pin(self, pin):
+        self.pin = generate_password_hash(pin)
+
+    def check_pin(self, pin):
+        return check_password_hash(self.pin, pin)
 
     token = sqlalchemy.Column(sqlalchemy.String, unique=True, index=True)
     token_expiration = sqlalchemy.Column(sqlalchemy.DateTime)

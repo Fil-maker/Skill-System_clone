@@ -2,11 +2,11 @@ import os
 
 import jwt
 from flask import g, render_template
-from flask_mail import Message
 from flask_restful import abort
 
 from api.data.db_session import create_session
 from api.data.models import Country, Region, User
+from api.services.email import send_email
 
 
 def abort_if_user_not_found(func):
@@ -41,62 +41,60 @@ def delete_user(user_id):
         session.delete(session.query(User).get(user_id))
 
 
-def update_user(user_id, args):
-    print(args)
+def update_user(user_id, country=None, region=None, first_name=None, last_name=None):
     with create_session() as session:
         user = session.query(User).get(user_id)
-        if args["country"]:
-            if args["country"] == get_ru_id() and user.country_id != get_ru_id():
-                if args["region"]:
-                    user.country_id = args["country"]
-                    user.region_id = args["region"]
+        if country:
+            if country == get_ru_id() and user.country_id != get_ru_id():
+                if region:
+                    user.country_id = country
+                    user.region_id = region
                 else:
                     raise KeyError("You must specify the region for this country")
             else:
-                user.country_id = args["country"]
-        if args["first_name"]:
-            user.first_name = args["first_name"]
-        if args["last_name"]:
-            user.last_name = args["last_name"]
+                user.country_id = country
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+        return user.to_dict()
 
 
-def create_user(args):
+def create_user(email, first_name, last_name, country, password, photo, region=None):
     with create_session() as session:
-        if session.query(User).filter(User.email == args["email"]).first() is not None:
-            abort(400, success=False, message=f"User with email {args['email']} already exists")
+        if session.query(User).filter(User.email == email).first() is not None:
+            abort(400, success=False, message=f"User with email {email} already exists")
         user = User(
-            email=args["email"],
-            first_name=args["first_name"],
-            last_name=args["last_name"],
-            country_id=args["country"],
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            country_id=country,
         )
-        if args["country"] == get_ru_id():
-            if args["region"]:
-                user.region_id = args["region"]
+        if country == get_ru_id():
+            if region:
+                user.region_id = region
             else:
                 raise KeyError("You must specify the region for this country")
         else:
-            user.country_id = args["country"]
-        user.set_password(args["password"])
+            user.country_id = country
+        user.set_password(password)
         # TODO: Сохранение фотографий в Amazon S3
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)
         session.commit()
         send_confirmation_token(user)
-    return token, expires
+        return user.to_dict(), token, expires
 
 
 def send_confirmation_token(user):
     token = user.get_confirmation_token()
-    msg = Message("Registration confirmation",
-                  sender=os.environ.get("MAIL_USERNAME"),
-                  recipients=[user.email])
     url = f"http://{os.environ.get('APP_HOST')}:{os.environ.get('APP_PORT')}/confirm/{token}"
-    msg.body = render_template("email/confirmation.txt", user=user, url=url)
-    msg.html = render_template("email/confirmation.html", user=user, url=url)
-    from api import mail
-    mail.send(msg)
+    send_email("Registration confirmation",
+               sender=os.environ.get("MAIL_USERNAME"),
+               recipients=[user.email],
+               text_body=render_template("email/confirmation.txt", user=user, url=url),
+               html_body=render_template("email/confirmation.html", user=user, url=url))
 
 
 def confirm_email(token):
@@ -106,6 +104,40 @@ def confirm_email(token):
         return False
     with create_session() as session:
         session.query(User).get(user_id).confirmed = True
+    return True
+
+
+def change_password(user_id, old_password, new_password):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if not user.check_password(old_password):
+            abort(400, success=False, message="Invalid old password")
+        if user.check_password(new_password):
+            abort(400, success=False, message="New password must be different from the old")
+        user.set_password(new_password)
+        user.revoke_token()
+        token = user.get_token()
+        expires = user.token_expiration
+    return token, expires
+
+
+def set_pin(user_id, pin):
+    if not (pin.isdigit() and len(pin) == 4):
+        abort(400, success=False, message="PIN must be 4 digits")
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if user.pin is not None:
+            abort(400, success=False, message="PIN is already set")
+        user.set_pin(pin)
+    return True
+
+
+def reset_pin(user_id):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if user.pin is None:
+            abort(400, success=False, message="PIN is not set")
+        user.pin = None
     return True
 
 
@@ -120,7 +152,7 @@ def get_countries_list():
     global _COUNTRIES, _COUNTRIES_COUNT
     if _COUNTRIES is None:
         with create_session() as session:
-            _COUNTRIES = session.query(Country).all()
+            _COUNTRIES = [item.to_dict() for item in session.query(Country).all()]
             _COUNTRIES_COUNT = len(_COUNTRIES)
     return _COUNTRIES
 
@@ -136,7 +168,7 @@ def get_regions_list():
     global _REGIONS, _REGIONS_COUNT
     if _REGIONS is None:
         with create_session() as session:
-            _REGIONS = session.query(Region).all()
+            _REGIONS = [item.to_dict() for item in session.query(Region).all()]
             _REGIONS_COUNT = len(_REGIONS)
     return _REGIONS
 
