@@ -147,12 +147,12 @@ def change_password_from_form(form: FlaskForm):
 
 
 def change_password(old_password, new_password):
-    response = requests.post(f"{api_url}/{g.current_user['id']}/change-password",
-                             auth=HTTPTokenAuth(),
-                             data={
-                                 "old_password": old_password,
-                                 "new_password": new_password
-                             })
+    response = requests.patch(f"{api_url}/{g.current_user['id']}",
+                              auth=HTTPTokenAuth(),
+                              data={
+                                  "old_password": old_password,
+                                  "new_password": new_password
+                              })
     data = response.json()
     if data["success"]:
         session["token"] = data["authToken"]["token"]
@@ -175,7 +175,7 @@ def set_pin_from_form(form: FlaskForm):
 
 
 def set_pin(pin):
-    response = requests.post(f"{api_url}/{g.current_user['id']}/set-pin",
+    response = requests.post(f"{api_url}/{g.current_user['id']}/pin",
                              auth=HTTPTokenAuth(),
                              data={"pin": pin})
     data = response.json()
@@ -183,7 +183,7 @@ def set_pin(pin):
 
 
 def reset_pin():
-    response = requests.post(f"{api_url}/{g.current_user['id']}/reset-pin", auth=HTTPTokenAuth())
+    response = requests.delete(f"{api_url}/{g.current_user['id']}/pin", auth=HTTPTokenAuth())
     data = response.json()
     return data
 
