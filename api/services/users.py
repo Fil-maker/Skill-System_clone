@@ -79,6 +79,7 @@ def create_user(email, first_name, last_name, country, password, photo, region=N
             user.country_id = country
         user.set_password(password)
         # TODO: Сохранение фотографий в Amazon S3
+        # img = Image.open(BytesIO(base64.b64decode(photo.split(",")[1])))
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)

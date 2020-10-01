@@ -65,7 +65,7 @@ class UserListResource(Resource):
                             choices=range(1, get_countries_count() + 1))
         parser.add_argument("region", type=int, choices=range(1, get_regions_count() + 1))
         parser.add_argument("password", required=True)
-        parser.add_argument("photo", type=FileStorage)
+        parser.add_argument("photo")
 
         args = parser.parse_args(strict=True)
         try:
