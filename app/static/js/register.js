@@ -27,12 +27,16 @@ $(function(){
       readURL(this);
     });
 
+    if ($("#photo_base64").val() != "") {
+      $("#preload").attr("src", $("#photo_base64").val());
+      $("#croppie-toggler").attr("disabled", false);
+    }
 });
 
 var thumbnail = $(".thumbnail").croppie({
   viewport: {
-    width: 300,
-    height: 300,
+    width: 400,
+    height: 400,
     type: "square"
   },
   boundary: {
@@ -58,6 +62,8 @@ $("#save-button").on("click", function() {
     format = "jpeg";
   thumbnail.croppie("result", {
     type: "base64",
+    size: "original",
+    size: "original",
     format: format
   }).then(function(base64) {
     $("#preload").attr("src", base64);
