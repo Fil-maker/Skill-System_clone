@@ -22,6 +22,7 @@ class User(db.Model, SerializerMixin):
     creation_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     password = Column(String, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
+    photo_url = Column(String, nullable=True)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])

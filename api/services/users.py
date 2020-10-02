@@ -7,6 +7,7 @@ from flask_restful import abort
 from api.data.db_session import create_session
 from api.data.models import Country, Region, User
 from api.services.email import send_email
+from api.services.images import generate_photo_filename, save_photo
 
 
 def abort_if_user_not_found(func):
@@ -79,12 +80,12 @@ def create_user(email, first_name, last_name, country, password, photo, region=N
             user.country_id = country
         user.set_password(password)
         # TODO: Сохранение фотографий в Amazon S3
-        # img = Image.open(BytesIO(base64.b64decode(photo.split(",")[1])))
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)
         session.commit()
         send_confirmation_token(user)
+        set_profile_photo(user.id, photo)
         return user.to_dict(), token, expires
 
 
@@ -106,6 +107,14 @@ def confirm_email(token):
     with create_session() as session:
         session.query(User).get(user_id).confirmed = True
     return True
+
+
+def set_profile_photo(user_id, photo):
+    filename = generate_photo_filename(user_id)
+    if save_photo(photo, os.path.join("users", filename)):
+        with create_session() as session:
+            user = session.query(User).get(user_id)
+            user.photo_url = filename
 
 
 def change_password(user_id, old_password, new_password):

@@ -1,7 +1,6 @@
 import os
 
 import requests
-from PIL import Image
 from flask import session, g
 from flask_wtf import FlaskForm
 from requests.auth import AuthBase
