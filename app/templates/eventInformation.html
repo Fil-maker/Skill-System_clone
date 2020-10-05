@@ -1,4 +1,4 @@
-{% set title = "PIN"%}
+{% set title = "Event Information"%}
 {% set style_file = url_for('static', filename='css/pin.css')%}
 {% extends 'base.html' %}
 
@@ -10,12 +10,12 @@
         {{ form.hidden_tag() }}
         <div class="row">
             <div class="col">
-                {{ form.pin.label(class="label input-str") }}
+                {{ form.title.label(class="label input-str") }}
             </div>
             <div class="col">
-                {{ form.pin() }}
+                {{ form.title() }}
                 <div class="invalid-feedback">
-                    {% for error in form.pin.errors %}
+                    {% for error in form.title.errors %}
                     <p>{{ error }}</p>
                     {% endfor %}
                 </div>

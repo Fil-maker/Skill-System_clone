@@ -3,6 +3,7 @@ from werkzeug.utils import redirect
 
 from app import app
 from app.forms.editProfile import EditProfileForm
+from app.forms.eventInformation import EditEventForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
 from app.forms.password import PasswordForm
@@ -89,3 +90,10 @@ def profile():
 def event_create():
     form = EventRegisterForm()
     return render_template("eventRegister.html", form=form)
+
+
+@app.route("/edit-event", methods=["GET", "POST"])
+@redirect_if_unauthorized
+def edit_event():
+    form = EditEventForm()
+    return render_template("eventInformation.html", form=form)
