@@ -1,12 +1,12 @@
-{% set title = 'Register' %}
+{% set title = 'Edit profile' %}
 {% set script_file = url_for('static', filename='js/register.js') %}
-{% set style_file = url_for('static', filename='css/register.css') %}
+{% set style_file = url_for('static', filename='css/editProfile.css') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
 <main class="container">
-    <h1>Register</h1>
+    <h1>Edit Profile</h1>
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div class="row">
@@ -49,7 +49,7 @@
 
                     <div class="form-item">
                         {{ form.country.label }}
-                        {{ form.country() }}
+                        {{ form.country(id="cntry-fld") }}
                         <div class="invalid-feedback">
                             {% for error in form.country.errors %}
                             <p>{{ error }}</p>
@@ -68,33 +68,10 @@
                     </div>
 
                     <div class="form-item">
-                        {{ form.email.label }}
-                        {{ form.email() }}
+                        {{ form.about.label }}
+                        {{ form.about() }}
                         <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.password.label }}
-                        {{ form.password() }}
-                        <p id="passwordHelpBlock" class="form-text text-muted">
-                            Password must be!
-                        </p>
-                        <div class="invalid-feedback">
-                            {% for error in form.password.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.password_again.label }}
-                        {{ form.password_again() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.password_again.errors %}
+                            {% for error in form.about.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>

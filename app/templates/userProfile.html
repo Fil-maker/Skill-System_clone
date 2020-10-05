@@ -1,0 +1,70 @@
+{% set title = 'Profile' %}
+{% set script_file = url_for('static', filename='js/register.js') %}
+{% set style_file = url_for('static', filename='css/profile.css') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container">
+    <h1>{{ title }} of {{ current_user.get("first_name") }} {{current_user.get("last_name")}}</h1>
+    <div class="row">
+
+        <div class="col-sm">
+            <form method="post" enctype="multipart/form-data">
+                <div class="image-item">
+                    <img id="preload" src="{{ current_user.get('photo', '/static/img/icons/other/user.svg')}}"
+                         class="img-thumbnail">
+                </div>
+            </form>
+        </div>
+
+
+        <div class="col-sm">
+
+            <div class="card">
+                <nav class="navbar navbar-light" style="background-color: #89d6f7;">
+                    <a class="navbar-brand" href="/change-password">
+                        <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                        Login information
+                    </a>
+                </nav>
+                <div class="card-body">
+                    <p>E-mail: {{ current_user.get('email') }}</p>
+                    <p>Password: ******</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <nav class="navbar navbar-light" style="background-color: #89d6f7;">
+                    <a class="navbar-brand" href="/edit-profile">
+                        <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                        Profile information
+                    </a>
+                </nav>
+                <div class="card-body">
+                    <p>First Name: {{ current_user['first_name'] }}</p>
+                    <p>Last Name: {{ current_user['last_name'] }}</p>
+                    <p>Country: {{ current_user['country']['name'] }}</p>
+                    {% if current_user['country']['numeric_code'] == '643' %}
+                    <p>Region: {{ current_user['region']['name'] }}</p>
+                    {% endif %}
+                    <p>About: {{ current_user['about'] }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <nav class="navbar navbar-light" style="background-color: #89d6f7;">
+                    <a class="navbar-brand" href="/pin">
+                        <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                        Personal Identification Number
+                    </a>
+                </nav>
+                <div class="card-body">
+                    <p>PIN: ****</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+{% endblock %}

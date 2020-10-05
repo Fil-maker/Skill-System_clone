@@ -2,6 +2,7 @@ from flask import render_template, g, session
 from werkzeug.utils import redirect
 
 from app import app
+from app.forms.editProfile import EditProfileForm
 from app.forms.login import LoginForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
@@ -67,3 +68,16 @@ def change_password_():
     if change_password_from_form(form):
         return redirect("/")
     return render_template("password.html", form=form)
+
+
+@app.route("/edit-profile", methods=['GET', 'POST'])
+@redirect_if_unauthorized
+def edit_profile():
+    form = EditProfileForm()
+    return render_template("editProfile.html", form=form)
+
+
+@app.route("/profile", methods=["GET", "POST"])
+@redirect_if_unauthorized
+def profile():
+    return render_template("userProfile.html")
