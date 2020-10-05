@@ -9,10 +9,9 @@ class PinForm(FlaskForm):
         "class": "form-control",
         "required": True,
         "type": "password",
+        "maxlength": 4,
         "placeholder": label
     })
-
-    # TODO: состоит из 4 (!) цифр (!)
 
     submit = SubmitField("Change", render_kw={
         "class": "btn btn-primary",
