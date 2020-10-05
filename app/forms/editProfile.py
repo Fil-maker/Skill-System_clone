@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, FileField, SubmitField, TextAreaField
+from wtforms import StringField, SelectField, FileField, SubmitField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired
 
 from api.services.users import get_countries_list, get_regions_list, get_ru_id
@@ -55,11 +55,13 @@ class EditProfileForm(FlaskForm):
                               "placeholder": label
                           })
 
-    photo = FileField("Attach an image",
-                      render_kw={
-                          "class": "form-control-file",
-                          "id": "photoField"
-                      })
+    photo = FileField("Attach an image", render_kw={
+        "class": "form-control-file btn btn-primary",
+        "id": "photoField"
+    })
+
+    photo_base64 = HiddenField()
+
     submit = SubmitField("OK",
                          render_kw={
                              "class": "btn btn-primary"
