@@ -7,6 +7,7 @@ from flask_restful import abort
 from api.data.db_session import create_session
 from api.data.models import Country, Region, User
 from api.services.email import send_email
+from api.services.images import generate_photo_filename, save_photo, delete_photo
 
 
 def abort_if_user_not_found(func):
@@ -38,10 +39,12 @@ def get_user(user_id=None):
 
 def delete_user(user_id):
     with create_session() as session:
-        session.delete(session.query(User).get(user_id))
+        user = session.query(User).get(user_id)
+        delete_photo("users", user.photo_url)
+        session.delete(user)
 
 
-def update_user(user_id, country=None, region=None, first_name=None, last_name=None):
+def update_user(user_id, country=None, region=None, first_name=None, last_name=None, photo=None):
     with create_session() as session:
         user = session.query(User).get(user_id)
         if country:
@@ -57,6 +60,8 @@ def update_user(user_id, country=None, region=None, first_name=None, last_name=N
             user.first_name = first_name
         if last_name:
             user.last_name = last_name
+        if photo:
+            set_profile_photo(user_id, photo)
         return user.to_dict()
 
 
@@ -78,12 +83,12 @@ def create_user(email, first_name, last_name, country, password, photo, region=N
         else:
             user.country_id = country
         user.set_password(password)
-        # TODO: Сохранение фотографий в Amazon S3
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)
         session.commit()
         send_confirmation_token(user)
+        set_profile_photo(user.id, photo)
         return user.to_dict(), token, expires
 
 
@@ -105,6 +110,16 @@ def confirm_email(token):
     with create_session() as session:
         session.query(User).get(user_id).confirmed = True
     return True
+
+
+def set_profile_photo(user_id, photo):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        if user.photo_url is not None:
+            delete_photo("users", user.photo_url)
+        filename = generate_photo_filename(user_id)
+        save_photo(photo, "users", filename)
+        user.photo_url = filename
 
 
 def change_password(user_id, old_password, new_password):

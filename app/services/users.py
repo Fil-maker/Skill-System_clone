@@ -67,7 +67,7 @@ def register_from_form(form: FlaskForm) -> bool:
 
         data = register_user(form.email.data, form.first_name.data, form.last_name.data,
                              form.country.data, form.region.data, form.password.data,
-                             form.photo.data)
+                             form.photo_base64.data)
         if data["success"]:
             return True
         if f"email {form.email.data} " in data.get("message", ""):

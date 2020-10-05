@@ -33,7 +33,7 @@ def fill_countries():
 def fill_regions():
     regions = get_regions()
     with create_session() as session:
-        ru_id = session.get(Country).filter(Country.name.like("%Russian Federation%")).id
+        ru_id = session.query(Country).filter(Country.name.like("%Russian Federation%")).first().id
         for region in regions:
             session.add(Region(name=region["name"],
                                code=region["code"],

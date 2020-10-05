@@ -22,6 +22,7 @@ class User(db.Model, SerializerMixin):
     creation_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     password = Column(String, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
+    photo_url = Column(String, nullable=True)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
@@ -69,6 +70,15 @@ class User(db.Model, SerializerMixin):
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
             return super(User, self).to_dict(*args, **kwargs)
-        return super(User, self).to_dict(*args, **kwargs,
-                                         only=["id", "email", "first_name", "last_name", "country",
-                                               "region", "creation_date", "confirmed"])
+        ans = super(User, self).to_dict(*args, **kwargs,
+                                        only=["id", "email", "first_name", "last_name", "country",
+                                              "region", "creation_date", "confirmed"])
+        photos = {
+            "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
+            "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
+            "256": f"{os.environ.get('S3_BUCKET_URL')}/users/256/{self.photo_url}",
+            "512": f"{os.environ.get('S3_BUCKET_URL')}/users/512/{self.photo_url}",
+        }
+        ans["photos"] = photos
+        ans["is_pin_set"] = self.pin is not None
+        return ans

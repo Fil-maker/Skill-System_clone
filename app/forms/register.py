@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, FileField, SubmitField
+from wtforms import StringField, SelectField, PasswordField, FileField, SubmitField, HiddenField
 from wtforms.validators import DataRequired
 
 from app.services.users import get_countries_list, get_regions_list, get_ru_id
@@ -69,9 +69,12 @@ class RegisterForm(FlaskForm):
     })
 
     photo = FileField("Attach an image", render_kw={
-        "class": "form-control-file",
+        "class": "form-control-file btn btn-primary",
         "id": "photoField"
     })
+
+    photo_base64 = HiddenField()
+
     submit = SubmitField("OK", render_kw={
         "class": "btn btn-primary",
         "type": "submit"

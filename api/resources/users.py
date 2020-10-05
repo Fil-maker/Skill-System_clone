@@ -30,11 +30,12 @@ class UserResource(Resource):
         parser.add_argument("last_name")
         parser.add_argument("country", type=int)
         parser.add_argument("region", type=int)
+        parser.add_argument("photo")
         args = parser.parse_args(strict=True)  # Вызовет ошибку, если запрос
         # будет содержать поля, которых нет в парсере
         try:
             user = update_user(user_id, **args)
-        except KeyError as e:
+        except (KeyError, ValueError) as e:
             abort(400, success=False, message=str(e))
         else:
             return jsonify({"success": True, "user": user})
@@ -65,7 +66,7 @@ class UserListResource(Resource):
                             choices=range(1, get_countries_count() + 1))
         parser.add_argument("region", type=int, choices=range(1, get_regions_count() + 1))
         parser.add_argument("password", required=True)
-        parser.add_argument("photo", type=FileStorage)
+        parser.add_argument("photo")
 
         args = parser.parse_args(strict=True)
         try:
