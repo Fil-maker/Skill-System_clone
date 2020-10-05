@@ -1,4 +1,4 @@
-{% set title = 'Register' %}
+{% set title = 'Register Event' %}
 {% set script_file = url_for('static', filename='js/register.js') %}
 {% set style_file = url_for('static', filename='css/register.css') %}
 
@@ -10,7 +10,7 @@
 
 {% block content %}
 <main class="container">
-    <h1>Register</h1>
+    <h1>{{ title }}</h1>
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div class="row">
@@ -19,7 +19,7 @@
 
                 <div class="image-item">
                     {{ form.photo.label }}
-                    <img id="preload" src="/static/img/icons/other/user.svg" class="img-thumbnail">
+                    <img id="preload" src="/static/img/icons/other/calendar.svg" class="img-thumbnail">
                     {{ form.photo() }}
                     <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal" data-target="#croppie-modal" disabled>Create thumbnail</button>
                     <div class="invalid-feedback">
@@ -33,73 +33,50 @@
             <div class="col-sm">
                 <div class="info">
                     <div class="form-item">
-                        {{ form.first_name.label }}
-                        {{ form.first_name() }}
+                        {{ form.title.label }}
+                        {{ form.title() }}
                         <div class="invalid-feedback">
-                            {% for error in form.first_name.errors %}
+                            {% for error in form.title.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.last_name.label }}
-                        {{ form.last_name() }}
+                        {{ form.start_date.label }}
+                        {{ form.start_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.last_name.errors %}
+                            {% for error in form.start_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.country.label }}
-                        {{ form.country() }}
+                        {{ form.c_date.label }}
+                        {{ form.c_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.country.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item" id="region-div">
-                        {{ form.region.label }}
-                        {{ form.region() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.region.errors %}
+                            {% for error in form.c_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.email.label }}
-                        {{ form.email() }}
+                        {{ form.c1_date.label }}
+                        {{ form.c1_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
+                            {% for error in form.c1_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.password.label }}
-                        {{ form.password() }}
-                        <p id="passwordHelpBlock" class="form-text text-muted">
-                            Password must be!
-                        </p>
+                        {{ form.finish_date.label }}
+                        {{ form.finish_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.password.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.password_again.label }}
-                        {{ form.password_again() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.password_again.errors %}
+                            {% for error in form.finish_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
@@ -107,7 +84,7 @@
 
                     {% if message %}
                     <p class="alert alert-danger" role="alert">
-                        {{ message }}
+                        {{message}}
                     </p>
                     {% endif %}
 
