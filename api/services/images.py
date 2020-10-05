@@ -4,7 +4,9 @@ import datetime
 import hashlib
 import os
 from io import BytesIO
+from threading import Thread
 
+import boto3
 from PIL import Image
 
 
@@ -14,7 +16,11 @@ def generate_photo_filename(unique_id):
     return hashlib.sha1(user_id_hash + datetime_hash).hexdigest() + ".jpeg"
 
 
-def save_photo(photo_base64, filename):
+def save_photo(photo_base64, directory, filename):
+    return Thread(target=_save_async_photo, args=(photo_base64, directory, filename)).start()
+
+
+def _save_async_photo(photo_base64, directory, filename):
     try:
         img = Image.open(BytesIO(base64.b64decode(photo_base64.split(",")[1])))
     except (IndexError, binascii.Error):
@@ -23,7 +29,20 @@ def save_photo(photo_base64, filename):
         except binascii.Error:
             raise ValueError("Invalid base64 data")
     img = crop_image(img)
-    img.save(os.path.join(os.path.dirname(__file__), "..", "..", "user-images", filename))
+    create_and_upload_thumbnail(img, 128, directory, filename)
+    create_and_upload_thumbnail(img, 256, directory, filename)
+    create_and_upload_thumbnail(img, 512, directory, filename)
+    upload_to_s3(img, directory + "/init", filename)
+    return True
+
+
+def upload_to_s3(img: Image.Image, directory, obj_name):
+    bytes_io = BytesIO()
+    img.save(bytes_io, "JPEG")
+    bytes_io.seek(0)
+
+    s3 = boto3.client("s3")
+    s3.upload_fileobj(bytes_io, os.environ.get("S3_BUCKET_NAME"), directory + "/" + obj_name)
     return True
 
 
@@ -36,3 +55,14 @@ def crop_image(img: Image.Image):
     else:
         return img
     return img.crop(area)
+
+
+def create_thumbnail(img: Image.Image, size):
+    img = img.copy()
+    img.thumbnail((size, size))
+    return img
+
+
+def create_and_upload_thumbnail(img: Image.Image, size, directory, obj_name):
+    img = create_thumbnail(img, size)
+    upload_to_s3(img, directory + "/" + str(size), obj_name)

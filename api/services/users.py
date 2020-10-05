@@ -79,7 +79,6 @@ def create_user(email, first_name, last_name, country, password, photo, region=N
         else:
             user.country_id = country
         user.set_password(password)
-        # TODO: Сохранение фотографий в Amazon S3
         token = user.get_token()
         expires = user.token_expiration
         session.add(user)
@@ -111,10 +110,10 @@ def confirm_email(token):
 
 def set_profile_photo(user_id, photo):
     filename = generate_photo_filename(user_id)
-    if save_photo(photo, os.path.join("users", filename)):
-        with create_session() as session:
-            user = session.query(User).get(user_id)
-            user.photo_url = filename
+    save_photo(photo, "users", filename)
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        user.photo_url = filename
 
 
 def change_password(user_id, old_password, new_password):
