@@ -22,6 +22,7 @@ pg_host = os.environ.get("PG_HOST")
 db_name = os.environ.get("DB_NAME")
 app.config["SECRET_KEY"] = os.environ.get("API_SECRET")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"postgres://{pg_user}:{pg_pass}@{pg_host}/{db_name}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
 app.config["MAIL_PORT"] = os.environ.get("MAIL_PORT")
 app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS")
