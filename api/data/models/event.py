@@ -1,0 +1,44 @@
+import os
+
+from sqlalchemy import Column, Integer, Date, String, orm, Table, ForeignKey
+from sqlalchemy_serializer import SerializerMixin
+
+from api.data.db_session import db
+
+association_table = Table("user_to_event", db.metadata,
+                          Column("user", Integer, ForeignKey("users.id")),
+                          Column("event", Integer, ForeignKey("events.id"))
+                          )
+
+
+class Event(db.Model, SerializerMixin):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, nullable=False)
+
+    start_date = Column(Date, nullable=False)
+    main_stage_date = Column(Date, nullable=False)
+    final_stage_date = Column(Date, nullable=False)
+    finish_date = Column(Date, nullable=False)
+
+    photo_url = Column(String, nullable=True)
+
+    participants = orm.relation("User", secondary="user_to_event")
+
+    def to_dict(self, *args, **kwargs):
+        if "only" in kwargs:
+            return super(Event, self).to_dict(*args, **kwargs)
+        ans = super(Event, self).to_dict(*args, **kwargs,
+                                         only=["id", "title", "start_date", "main_stage_date",
+                                               "final_stage_date", "finish_date"])
+        photos = {
+            "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
+            "128": f"{os.environ.get('S3_BUCKET_URL')}/events/128/{self.photo_url}",
+            "256": f"{os.environ.get('S3_BUCKET_URL')}/events/256/{self.photo_url}",
+            "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
+        }
+        participants = [user.id for user in self.participants]
+        ans["photos"] = photos
+        ans["participants"] = participants
+        return ans

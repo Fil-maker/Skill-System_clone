@@ -1,12 +1,11 @@
 from flask import jsonify
 from flask_restful import Resource, abort
 from flask_restful.reqparse import RequestParser
-from werkzeug.datastructures import FileStorage
 
 from api.services.auth import token_auth
 from api.services.users import abort_if_user_not_found, only_for_current_user, get_user, delete_user, \
     update_user, get_countries_count, get_regions_count, create_user, change_password, set_pin, \
-    reset_pin
+    reset_pin, get_events
 
 
 class UserResource(Resource):
@@ -94,3 +93,9 @@ class UserPinResource(Resource):
     @only_for_current_user
     def delete(self, user_id):
         return jsonify({"success": reset_pin(user_id)})
+
+
+class UsersEventListResource(Resource):
+    @abort_if_user_not_found
+    def get(self, user_id):
+        return jsonify({"success": True, "events": get_events(user_id)})
