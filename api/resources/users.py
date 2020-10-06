@@ -1,7 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource, abort
 from flask_restful.reqparse import RequestParser
-from werkzeug.datastructures import FileStorage
 
 from api.services.auth import token_auth
 from api.services.users import abort_if_user_not_found, only_for_current_user, get_user, delete_user, \

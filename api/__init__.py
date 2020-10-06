@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from api.data import db_session
+from api.resources.events import EventResource, EventListResource, EventParticipantResource
 from api.resources.users import UserResource, UserListResource, UserPinResource
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
@@ -38,5 +39,9 @@ api = Api(app)
 api.add_resource(UserResource, "/api/users/<int:user_id>")
 api.add_resource(UserListResource, "/api/users")
 api.add_resource(UserPinResource, "/api/users/<int:user_id>/pin")
+
+api.add_resource(EventResource, "/api/events/<int:event_id>")
+api.add_resource(EventListResource, "/api/events")
+api.add_resource(EventParticipantResource, "/api/events/<int:event_id>/participants")
 
 from api import controllers

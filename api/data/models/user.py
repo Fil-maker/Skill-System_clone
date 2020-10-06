@@ -93,3 +93,6 @@ class User(db.Model, SerializerMixin):
         ans["photos"] = photos
         ans["is_pin_set"] = self.pin is not None
         return ans
+
+    def __hash__(self):
+        return hash(self.id)

@@ -6,6 +6,7 @@ from flask_restful import abort
 
 from api.data.db_session import create_session
 from api.data.models import Country, Region, User
+from api.data.models.user import Roles
 from api.services.email import send_email
 from api.services.images import generate_photo_filename, save_photo, delete_photo
 
@@ -26,6 +27,15 @@ def only_for_current_user(func):
         if user_id != g.current_user.id:
             abort(403, success=False)
         return func(self, user_id)
+
+    return new_func
+
+
+def only_for_admin(func):
+    def new_func(self, *args, **kwargs):
+        if Roles(g.current_user.role) != Roles.ADMIN:
+            abort(403, success=False)
+        return func(self, *args, **kwargs)
 
     return new_func
 
@@ -65,7 +75,7 @@ def update_user(user_id, country=None, region=None, first_name=None, last_name=N
         return user.to_dict()
 
 
-def create_user(email, first_name, last_name, country, password, photo, region=None):
+def create_user(email, first_name, last_name, country, password, photo=None, region=None):
     with create_session() as session:
         if session.query(User).filter(User.email == email).first() is not None:
             abort(400, success=False, message=f"User with email {email} already exists")
@@ -88,7 +98,8 @@ def create_user(email, first_name, last_name, country, password, photo, region=N
         session.add(user)
         session.commit()
         send_confirmation_token(user)
-        set_profile_photo(user.id, photo)
+        if photo:
+            set_profile_photo(user.id, photo)
         return user.to_dict(), token, expires
 
 
