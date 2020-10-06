@@ -1,14 +1,22 @@
 import datetime
 import os
 import secrets
+from enum import Enum
 
 import jwt
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean, SmallInteger
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from api.data.db_session import db
+
+
+class Roles(Enum):
+    NO_ROLE = 0
+    COMPETITOR = 1
+    EXPERT = 2
+    ADMIN = 3
 
 
 class User(db.Model, SerializerMixin):
@@ -24,10 +32,13 @@ class User(db.Model, SerializerMixin):
     confirmed = Column(Boolean, nullable=False, default=False)
     photo_url = Column(String, nullable=True)
 
+    role = Column(SmallInteger, nullable=False, default=0)
+    pin = Column(String, nullable=True)
+
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
 
-    pin = Column(String, nullable=True)
+    events = orm.relation("Event", secondary="user_to_event")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -82,3 +93,6 @@ class User(db.Model, SerializerMixin):
         ans["photos"] = photos
         ans["is_pin_set"] = self.pin is not None
         return ans
+
+    def __hash__(self):
+        return hash(self.id)
