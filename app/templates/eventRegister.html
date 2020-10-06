@@ -1,18 +1,16 @@
-{% set title = 'Edit profile' %}
+{% set title = 'Register Event' %}
 {% set script_file = url_for('static', filename='js/register.js') %}
 {% set style_file = url_for('static', filename='css/register.css') %}
 
 {% extends 'base.html' %}
 
 {% block style %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
 {% endblock %}
-
 
 {% block content %}
 <main class="container">
-    <h1>Edit Profile</h1>
-
+    <h1>{{ title }}</h1>
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div class="row">
@@ -21,7 +19,7 @@
 
                 <div class="image-item">
                     {{ form.photo.label }}
-                    <img id="preload" src="/static/img/icons/other/user.svg" class="img-thumbnail">
+                    <img id="preload" src="/static/img/icons/other/calendar.svg" class="img-thumbnail">
                     {{ form.photo() }}
                     <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal" data-target="#croppie-modal" disabled>Create thumbnail</button>
                     <div class="invalid-feedback">
@@ -35,50 +33,50 @@
             <div class="col-sm">
                 <div class="info">
                     <div class="form-item">
-                        {{ form.first_name.label }}
-                        {{ form.first_name() }}
+                        {{ form.title.label }}
+                        {{ form.title() }}
                         <div class="invalid-feedback">
-                            {% for error in form.first_name.errors %}
+                            {% for error in form.title.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.last_name.label }}
-                        {{ form.last_name() }}
+                        {{ form.start_date.label }}
+                        {{ form.start_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.last_name.errors %}
+                            {% for error in form.start_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.country.label }}
-                        {{ form.country(id="cntry-fld") }}
+                        {{ form.c_date.label }}
+                        {{ form.c_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.country.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item" id="region-div">
-                        {{ form.region.label }}
-                        {{ form.region() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.region.errors %}
+                            {% for error in form.c_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.about.label }}
-                        {{ form.about() }}
+                        {{ form.c1_date.label }}
+                        {{ form.c1_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.about.errors %}
+                            {% for error in form.c1_date.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-item">
+                        {{ form.finish_date.label }}
+                        {{ form.finish_date() }}
+                        <div class="invalid-feedback">
+                            {% for error in form.finish_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
@@ -94,7 +92,7 @@
 
                     <div class="form-item confirm-item" id="submit">
                         {{ form.submit() }}
-                        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+                        <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
                     </div>
                 </div>
             </div>
@@ -107,7 +105,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="croppie-modal-label">Create thumbnail</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -126,5 +124,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 {% endblock %}
