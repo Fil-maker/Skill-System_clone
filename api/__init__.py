@@ -8,7 +8,8 @@ from flask_restful import Api
 
 from api.data import db_session
 from api.resources.events import EventResource, EventListResource, EventParticipantResource
-from api.resources.users import UserResource, UserListResource, UserPinResource
+from api.resources.users import UserResource, UserListResource, UserPinResource, \
+    UsersEventListResource
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 if os.path.exists(dotenv_path):
@@ -39,6 +40,7 @@ api = Api(app)
 api.add_resource(UserResource, "/api/users/<int:user_id>")
 api.add_resource(UserListResource, "/api/users")
 api.add_resource(UserPinResource, "/api/users/<int:user_id>/pin")
+api.add_resource(UsersEventListResource, "/api/users/<int:user_id>/events")
 
 api.add_resource(EventResource, "/api/events/<int:event_id>")
 api.add_resource(EventListResource, "/api/events")
