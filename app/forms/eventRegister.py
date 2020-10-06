@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FileField, SubmitField, HiddenField
-from wtforms.fields.html5 import DateTimeLocalField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired
 
 
@@ -16,43 +16,43 @@ class EventRegisterForm(FlaskForm):
                         })
 
     label = "Start Date"
-    start_date = DateTimeLocalField(label,
-                                    format='%Y-%m-%dT%H:%M',
-                                    validators=[DataRequired()],
-                                    render_kw={
-                                        "class": "form-control",
-                                        "required": True,
-                                        "placeholder": label
-                                    })
+    start_date = DateField(label,
+                           format='%Y-%m-%d',
+                           validators=[DataRequired()],
+                           render_kw={
+                               "class": "form-control",
+                               "required": True,
+                               "placeholder": label
+                           })
 
     label = "C1 Date"
-    c_date = DateTimeLocalField(label,
-                                format='%Y-%m-%dT%H:%M',
-                                validators=[DataRequired()],
-                                render_kw={
-                                    "class": "form-control",
-                                    "required": True,
-                                    "placeholder": label
-                                })
+    c_date = DateField(label,
+                       format='%Y-%m-%d',
+                       validators=[DataRequired()],
+                       render_kw={
+                           "class": "form-control",
+                           "required": True,
+                           "placeholder": label
+                       })
 
     label = "C+1 Date"
-    c1_date = DateTimeLocalField(label,
-                                 format='%Y-%m-%dT%H:%M',
-                                 validators=[DataRequired()],
-                                 render_kw={
-                                     "class": "form-control",
-                                     "required": True,
-                                     "placeholder": label
-                                 })
+    c1_date = DateField(label,
+                        format='%Y-%m-%d',
+                        validators=[DataRequired()],
+                        render_kw={
+                            "class": "form-control",
+                            "required": True,
+                            "placeholder": label
+                        })
     label = "Finish Date"
-    finish_date = DateTimeLocalField(label,
-                                     format='%Y-%m-%dT%H:%M',
-                                     validators=[DataRequired()],
-                                     render_kw={
-                                         "class": "form-control",
-                                         "required": True,
-                                         "placeholder": label
-                                     })
+    finish_date = DateField(label,
+                            format='%Y-%m-%d',
+                            validators=[DataRequired()],
+                            render_kw={
+                                "class": "form-control",
+                                "required": True,
+                                "placeholder": label
+                            })
 
     photo = FileField("Attach an image", render_kw={
         "class": "form-control-file btn btn-primary",
