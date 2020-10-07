@@ -1,3 +1,5 @@
+import datetime
+
 from flask_restful import abort
 
 from api.data.db_session import create_session
@@ -34,6 +36,8 @@ def create_event(title, start_date, main_stage_date, final_stage_date, finish_da
     with create_session() as session:
         if not (start_date < main_stage_date < final_stage_date < finish_date):
             raise ValueError("Dates are inconsistent")
+        if finish_date <= datetime.date.today():
+            raise ValueError("Event is already finished")
 
         event = Event(
             title=title,
@@ -63,6 +67,8 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
 
             if not(start_date < main_stage_date < final_stage_date < finish_date):
                 raise ValueError("Dates are inconsistent")
+            if finish_date <= datetime.date.today():
+                raise ValueError("Event is already finished")
 
             event.start_date = start_date
             event.main_stage_date = main_stage_date

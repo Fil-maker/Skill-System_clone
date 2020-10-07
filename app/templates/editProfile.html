@@ -21,7 +21,7 @@
 
                 <div class="image-item">
                     {{ form.photo.label }}
-                    <img id="preload" src="/static/img/icons/other/user.svg" class="img-thumbnail">
+                    <img id="preload" src="{{ current_user['photos']['initial'] }}" class="img-fluid img-thumbnail">
                     {{ form.photo() }}
                     <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal" data-target="#croppie-modal" disabled>Create thumbnail</button>
                     <div class="invalid-feedback">

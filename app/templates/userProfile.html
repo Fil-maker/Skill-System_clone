@@ -1,5 +1,4 @@
 {% set title = 'Profile' %}
-{% set script_file = url_for('static', filename='js/register.js') %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
 
 {% extends 'base.html' %}
@@ -10,12 +9,9 @@
     <div class="row">
 
         <div class="col-sm">
-            <form method="post" enctype="multipart/form-data">
-                <div class="image-item">
-                    <img id="preload" src="{{ current_user.get('photo', '/static/img/icons/other/user.svg')}}"
-                         class="img-thumbnail">
-                </div>
-            </form>
+            <div class="image-item">
+                <img id="preload" src="{{ current_user['photos']['initial'] }}" class="img-fluid img-thumbnail">
+            </div>
         </div>
 
 

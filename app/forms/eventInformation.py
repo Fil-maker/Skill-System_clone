@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, SubmitField
+from wtforms import SubmitField, StringField
 from wtforms.validators import DataRequired
 
 
-class EditEventForm(FlaskForm):
+class EditEventInformationForm(FlaskForm):
     label = "Event Title"
-    title = PasswordField(label, validators=[DataRequired()], render_kw={
+    title = StringField(label, validators=[DataRequired()], render_kw={
         "class": "form-control",
         "required": True,
         "type": "name",
@@ -18,6 +18,6 @@ class EditEventForm(FlaskForm):
     })
 
     def __init__(self, *args, **kwargs):
-        super(EditEventForm, self).__init__(*args, **kwargs)
+        super(EditEventInformationForm, self).__init__(*args, **kwargs)
         default = "form-control"
         self.title.render_kw["class"] = default

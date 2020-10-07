@@ -1,9 +1,11 @@
 import os
+from enum import Enum
 
 import requests
 from flask import session, g
 from flask_wtf import FlaskForm
 from requests.auth import AuthBase
+from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 api_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api/users"
@@ -26,6 +28,13 @@ class HTTPTokenAuth(AuthBase):
         return r
 
 
+class Roles(Enum):
+    NO_ROLE = 0
+    COMPETITOR = 1
+    EXPERT = 2
+    ADMIN = 3
+
+
 def redirect_if_authorized(func):
     def new_func(*args, **kwargs):
         token = session.get("token", None)
@@ -43,6 +52,16 @@ def redirect_if_unauthorized(func):
         if token:
             return func(*args, **kwargs)
         return redirect("/login")
+
+    new_func.__name__ = func.__name__
+    return new_func
+
+
+def only_for_admin(func):
+    def new_func(*args, **kwargs):
+        if Roles(g.current_user["role"]) != Roles.ADMIN:
+            abort(404)
+        return func(*args, **kwargs)
 
     new_func.__name__ = func.__name__
     return new_func
@@ -91,6 +110,35 @@ def register_user(email, first_name, last_name, country, region, password, photo
     if data["success"]:
         session["token"] = data["authToken"]["token"]
         g.current_user = data["user"]
+    return data
+
+
+def edit_profile_from_form(form: FlaskForm) -> bool:
+    if form.validate_on_submit():
+        data = update_user(g.current_user["id"],
+                           form.first_name.data, form.last_name.data, form.country.data,
+                           form.region.data, form.photo_base64.data, form.about.data)
+        return data["success"]
+    return False
+
+
+def update_user(user_id, first_name=None, last_name=None, country=None, region=None, photo=None, about=None):
+    params = {}
+    if first_name:
+        params["first_name"] = first_name
+    if last_name:
+        params["last_name"] = last_name
+    if country:
+        params["country"] = country
+    if region:
+        params["region"] = region
+    if photo:
+        params["photo"] = photo
+    if about:
+        params["about"] = about
+
+    response = requests.put(f"{api_url}/{user_id}", params, auth=HTTPTokenAuth())
+    data = response.json()
     return data
 
 

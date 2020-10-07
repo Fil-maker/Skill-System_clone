@@ -3,15 +3,18 @@ from werkzeug.utils import redirect
 
 from app import app
 from app.forms.editProfile import EditProfileForm
-from app.forms.eventInformation import EditEventForm
+from app.forms.eventDates import EditEventDatesForm
+from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
+from app.services.events import create_event_from_form, edit_event_information_from_form, \
+    load_event_to_g_or_abort
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form
+    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin
 
 
 @app.before_request
@@ -34,7 +37,7 @@ def confirm(token):
 def register():
     form = RegisterForm()
     if register_from_form(form):
-        return redirect("/")
+        return redirect("/profile")
     return render_template("register.html", form=form)
 
 
@@ -43,7 +46,7 @@ def register():
 def login():
     form = LoginForm()
     if login_from_form(form):
-        return redirect("/")
+        return redirect("/profile")
     return render_template("login.html", form=form)
 
 
@@ -57,9 +60,11 @@ def logout_():
 @app.route("/pin", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def pin():
+    if g.current_user["is_pin_set"]:
+        reset_pin()
     form = PinForm()
     if set_pin_from_form(form):
-        return redirect("/")
+        return redirect("/profile")
     return render_template("pin.html", form=form)
 
 
@@ -68,32 +73,60 @@ def pin():
 def change_password_():
     form = PasswordForm()
     if change_password_from_form(form):
-        return redirect("/")
+        return redirect("/profile")
     return render_template("password.html", form=form)
 
 
-@app.route("/edit-profile", methods=['GET', 'POST'])
+@app.route("/edit-profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
-def edit_profile():
-    form = EditProfileForm()
-    return render_template("editProfile.html", form=form)
+def edit_profile_():
+    form = EditProfileForm(first_name=g.current_user["first_name"],
+                           last_name=g.current_user["last_name"],
+                           country=g.current_user["country"]["id"],
+                           region=g.current_user["region"]["id"],
+                           about=g.current_user["about"])
+    if edit_profile_from_form(form):
+        return redirect("/profile")
+    return render_template("editProfile.html", form=form, current_user=g.current_user)
 
 
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("userProfile.html")
+    return render_template("userProfile.html", current_user=g.current_user)
 
 
 @app.route("/create-event", methods=["GET", "POST"])
 @redirect_if_unauthorized
-def event_create():
+@only_for_admin
+def create_event_():
     form = EventRegisterForm()
+    if create_event_from_form(form):
+        return redirect("/events")
     return render_template("eventRegister.html", form=form)
 
 
-@app.route("/edit-event", methods=["GET", "POST"])
+@app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
+@load_event_to_g_or_abort
 @redirect_if_unauthorized
-def edit_event():
-    form = EditEventForm()
+@only_for_admin
+def edit_event_information_(event_id):
+    form = EditEventInformationForm(title=g.current_event["title"])
+    if edit_event_information_from_form(event_id, form):
+        return redirect(f"/event/{event_id}/information")
     return render_template("eventInformation.html", form=form)
+
+
+# @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
+# @load_event_to_g_or_abort
+# @redirect_if_unauthorized
+# @only_for_admin
+# def edit_event_dates_(event_id):
+#     form = EditEventDatesForm(start_date=g.current_event["start_date"],
+#                               main_stage_date=g.current_event["main_stage_date"],
+#                               final_stage_date=g.current_event["final_stage_date"],
+#                               finish_date=g.current_event["finish_date"])
+#     if edit_event_information_from_form(event_id, form):
+#         return redirect(f"/event/{event_id}/dates")
+#     return render_template("eventDates.html", form=form)
+# # TODO: создать шаблон eventDates.html и просто раскомментировать этот кусок

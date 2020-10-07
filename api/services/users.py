@@ -54,7 +54,7 @@ def delete_user(user_id):
         session.delete(user)
 
 
-def update_user(user_id, country=None, region=None, first_name=None, last_name=None, photo=None):
+def update_user(user_id, country=None, region=None, first_name=None, last_name=None, photo=None, about=None):
     with create_session() as session:
         user = session.query(User).get(user_id)
         if country:
@@ -72,6 +72,8 @@ def update_user(user_id, country=None, region=None, first_name=None, last_name=N
             user.last_name = last_name
         if photo:
             set_profile_photo(user_id, photo)
+        if about:
+            user.about = about
         return user.to_dict()
 
 

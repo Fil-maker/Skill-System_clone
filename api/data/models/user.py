@@ -5,7 +5,8 @@ from enum import Enum
 
 import jwt
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean, SmallInteger
+from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean, SmallInteger, \
+    Text
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -31,6 +32,7 @@ class User(db.Model, SerializerMixin):
     password = Column(String, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
     photo_url = Column(String, nullable=True)
+    about = Column(Text, nullable=True, default="")
 
     role = Column(SmallInteger, nullable=False, default=0)
     pin = Column(String, nullable=True)
@@ -83,7 +85,7 @@ class User(db.Model, SerializerMixin):
             return super(User, self).to_dict(*args, **kwargs)
         ans = super(User, self).to_dict(*args, **kwargs,
                                         only=["id", "email", "first_name", "last_name", "country",
-                                              "region", "creation_date", "confirmed"])
+                                              "region", "creation_date", "confirmed", "about", "role"])
         photos = {
             "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
             "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
