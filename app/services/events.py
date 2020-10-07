@@ -34,13 +34,16 @@ def get_event(event_id):
 def create_event_from_form(form: FlaskForm) -> bool:
     if form.validate_on_submit():
         data = create_event(form.title.data, form.start_date.data, form.main_stage_date.data,
-                            form.final_stage_date.data, form.finish_date.data, form.photo.data)
+                            form.final_stage_date.data, form.finish_date.data, form.photo_base64.data)
         if data["success"]:
             return True
         if "Dates are inconsistent" == data.get("message", ""):
             form.start_date.render_kw["class"] = "form-control is-invalid"
             form.main_stage_date.render_kw["class"] = "form-control is-invalid"
             form.final_stage_date.render_kw["class"] = "form-control is-invalid"
+            form.finish_date.render_kw["class"] = "form-control is-invalid"
+            form.finish_date.errors.append(data["message"])
+        elif "already finished" in data.get("message", ""):
             form.finish_date.render_kw["class"] = "form-control is-invalid"
             form.finish_date.errors.append(data["message"])
     return False
@@ -79,6 +82,9 @@ def edit_event_dates_from_form(event_id, form: FlaskForm) -> bool:
             form.start_date.render_kw["class"] = "form-control is-invalid"
             form.main_stage_date.render_kw["class"] = "form-control is-invalid"
             form.final_stage_date.render_kw["class"] = "form-control is-invalid"
+            form.finish_date.render_kw["class"] = "form-control is-invalid"
+            form.finish_date.errors.append(data["message"])
+        elif "already finished" in data.get("message", ""):
             form.finish_date.render_kw["class"] = "form-control is-invalid"
             form.finish_date.errors.append(data["message"])
     return False
