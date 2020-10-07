@@ -30,6 +30,7 @@ class UserResource(Resource):
         parser.add_argument("country", type=int)
         parser.add_argument("region", type=int)
         parser.add_argument("photo")
+        parser.add_argument("about")
         args = parser.parse_args(strict=True)  # Вызовет ошибку, если запрос
         # будет содержать поля, которых нет в парсере
         try:

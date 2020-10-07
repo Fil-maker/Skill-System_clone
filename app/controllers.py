@@ -11,7 +11,7 @@ from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form
+    set_pin_from_form, edit_profile_from_form
 
 
 @app.before_request
@@ -72,17 +72,23 @@ def change_password_():
     return render_template("password.html", form=form)
 
 
-@app.route("/edit-profile", methods=['GET', 'POST'])
+@app.route("/edit-profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
-def edit_profile():
-    form = EditProfileForm()
-    return render_template("editProfile.html", form=form)
+def edit_profile_():
+    form = EditProfileForm(first_name=g.current_user["first_name"],
+                           last_name=g.current_user["last_name"],
+                           country=g.current_user["country"]["id"],
+                           region=g.current_user["region"]["id"],
+                           about=g.current_user["about"])
+    if edit_profile_from_form(form):
+        return redirect("/profile")
+    return render_template("editProfile.html", form=form, current_user=g.current_user)
 
 
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("userProfile.html")
+    return render_template("userProfile.html", current_user=g.current_user)
 
 
 @app.route("/create-event", methods=["GET", "POST"])

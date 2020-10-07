@@ -94,6 +94,35 @@ def register_user(email, first_name, last_name, country, region, password, photo
     return data
 
 
+def edit_profile_from_form(form: FlaskForm) -> bool:
+    if form.validate_on_submit():
+        data = update_user(g.current_user["id"],
+                           form.first_name.data, form.last_name.data, form.country.data,
+                           form.region.data, form.photo_base64.data, form.about.data)
+        return data["success"]
+    return False
+
+
+def update_user(user_id, first_name=None, last_name=None, country=None, region=None, photo=None, about=None):
+    params = {}
+    if first_name:
+        params["first_name"] = first_name
+    if last_name:
+        params["last_name"] = last_name
+    if country:
+        params["country"] = country
+    if region:
+        params["region"] = region
+    if photo:
+        params["photo"] = photo
+    if about:
+        params["about"] = about
+
+    response = requests.put(f"{api_url}/{user_id}", params, auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
 def login_from_form(form: FlaskForm) -> bool:
     if form.validate_on_submit():
         data = login_user(form.email.data, form.password.data)
