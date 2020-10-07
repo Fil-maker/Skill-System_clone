@@ -85,7 +85,7 @@ class User(db.Model, SerializerMixin):
             return super(User, self).to_dict(*args, **kwargs)
         ans = super(User, self).to_dict(*args, **kwargs,
                                         only=["id", "email", "first_name", "last_name", "country",
-                                              "region", "creation_date", "confirmed", "about"])
+                                              "region", "creation_date", "confirmed", "about", "role"])
         photos = {
             "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
             "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",

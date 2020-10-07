@@ -1,9 +1,11 @@
 import os
+from enum import Enum
 
 import requests
 from flask import session, g
 from flask_wtf import FlaskForm
 from requests.auth import AuthBase
+from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 api_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api/users"
@@ -26,6 +28,13 @@ class HTTPTokenAuth(AuthBase):
         return r
 
 
+class Roles(Enum):
+    NO_ROLE = 0
+    COMPETITOR = 1
+    EXPERT = 2
+    ADMIN = 3
+
+
 def redirect_if_authorized(func):
     def new_func(*args, **kwargs):
         token = session.get("token", None)
@@ -43,6 +52,16 @@ def redirect_if_unauthorized(func):
         if token:
             return func(*args, **kwargs)
         return redirect("/login")
+
+    new_func.__name__ = func.__name__
+    return new_func
+
+
+def only_for_admin(func):
+    def new_func(*args, **kwargs):
+        if Roles(g.current_user["role"]) != Roles.ADMIN:
+            abort(404)
+        return func(*args, **kwargs)
 
     new_func.__name__ = func.__name__
     return new_func

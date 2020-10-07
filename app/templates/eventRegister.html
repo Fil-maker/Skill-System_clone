@@ -53,20 +53,20 @@
                     </div>
 
                     <div class="form-item">
-                        {{ form.c_date.label }}
-                        {{ form.c_date() }}
+                        {{ form.main_stage_date.label }}
+                        {{ form.main_stage_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.c_date.errors %}
+                            {% for error in form.main_stage_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div class="form-item">
-                        {{ form.c1_date.label }}
-                        {{ form.c1_date() }}
+                        {{ form.final_stage_date.label }}
+                        {{ form.final_stage_date() }}
                         <div class="invalid-feedback">
-                            {% for error in form.c1_date.errors %}
+                            {% for error in form.final_stage_date.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
