@@ -172,7 +172,7 @@ def reset_pin(user_id):
 def get_events(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
-        return [event.to_dict() for event in user.events]
+        return [event.to_dict_event() for event in user.events]
 
 
 _COUNTRIES = None

@@ -15,9 +15,7 @@ from api.data.db_session import db
 
 class Roles(Enum):
     NO_ROLE = 0
-    COMPETITOR = 1
-    EXPERT = 2
-    ADMIN = 3
+    ADMIN = 1
 
 
 class User(db.Model, SerializerMixin):
@@ -34,13 +32,13 @@ class User(db.Model, SerializerMixin):
     photo_url = Column(String, nullable=True)
     about = Column(Text, nullable=True, default="")
 
-    role = Column(SmallInteger, nullable=False, default=0)
+    role = Column(SmallInteger, nullable=False, default=Roles.NO_ROLE.value)
     pin = Column(String, nullable=True)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
 
-    events = orm.relation("Event", secondary="user_to_event")
+    events = orm.relation("UserToEventAssociation", back_populates="participant")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

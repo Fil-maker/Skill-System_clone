@@ -5,11 +5,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 from api.data.db_session import db
 
-association_table = Table("user_to_event", db.metadata,
-                          Column("user", Integer, ForeignKey("users.id")),
-                          Column("event", Integer, ForeignKey("events.id"))
-                          )
-
 
 class Event(db.Model, SerializerMixin):
     __tablename__ = "events"
@@ -24,7 +19,7 @@ class Event(db.Model, SerializerMixin):
 
     photo_url = Column(String, nullable=True)
 
-    participants = orm.relation("User", secondary="user_to_event")
+    participants = orm.relation("UserToEventAssociation", back_populates="event")
 
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
@@ -38,7 +33,7 @@ class Event(db.Model, SerializerMixin):
             "256": f"{os.environ.get('S3_BUCKET_URL')}/events/256/{self.photo_url}",
             "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
         }
-        participants = [user.id for user in self.participants]
+        participants = [participant.participant.id for participant in self.participants]
         ans["photos"] = photos
         ans["participants"] = participants
         return ans

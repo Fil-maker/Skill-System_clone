@@ -77,11 +77,11 @@ class EventParticipantResource(Resource):
     @only_for_admin
     def post(self, event_id):
         parser = RequestParser()
-        parser.add_argument("users", required=True, type=int, action="append")
+        parser.add_argument("users", required=True, type=dict, action="append", location="json")
         args = parser.parse_args()
         try:
             add_users_to_event(event_id, **args)
-        except KeyError as e:
+        except (KeyError, ValueError) as e:
             abort(400, success=False, message=str(e))
         else:
             return jsonify({"success": True})

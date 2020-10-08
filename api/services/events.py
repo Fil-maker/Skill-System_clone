@@ -3,7 +3,8 @@ import datetime
 from flask_restful import abort
 
 from api.data.db_session import create_session
-from api.data.models import Event, User
+from api.data.models import Event, User, UserToEventAssociation
+from api.data.models.user_to_event_association import EventRoles
 from api.services.images import delete_photo, generate_photo_filename, save_photo
 
 
@@ -93,18 +94,29 @@ def set_photo(event_id, photo):
 def get_event_participants(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        return [user.to_dict() for user in event.participants]
+        return [participant.to_dict_participant() for participant in event.participants]
 
 
 def add_users_to_event(event_id, users):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        for user_id in users:
-            user = session.query(User).get(int(user_id))
+        for user_json in users:
+            try:
+                user = session.query(User).get(int(user_json["id"]))
+            except KeyError:
+                raise KeyError("You must specify user id")
             if not user:
-                raise KeyError(f"User {user_id} not found")
-            if user not in event.participants:
-                event.participants.append(user)
+                raise KeyError(f"User {user_json['id']} not found")
+            if user not in map(lambda x: x.participant, event.participants):
+                try:
+                    association = UserToEventAssociation(user_id=user.id,
+                                                         role=EventRoles(user_json.get("role",
+                                                                                       EventRoles.COMPETITOR.value)).value)
+                except ValueError:
+                    raise ValueError(f"Role can be {EventRoles.COMPETITOR.value} (competitor), "
+                                     f"{EventRoles.EXPERT.value} (expert) or "
+                                     f"{EventRoles.CHIEF_EXPERT.value} (chief expert)")
+                event.participants.append(association)
 
 
 def exclude_users_from_event(event_id, users):
