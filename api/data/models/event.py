@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import Column, Integer, Date, String, orm, Table, ForeignKey
+from sqlalchemy import Column, Integer, Date, String, orm
 from sqlalchemy_serializer import SerializerMixin
 
 from api.data.db_session import db
@@ -19,7 +19,7 @@ class Event(db.Model, SerializerMixin):
 
     photo_url = Column(String, nullable=True)
 
-    participants = orm.relation("UserToEventAssociation", back_populates="event")
+    participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
 
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:

@@ -1,6 +1,7 @@
 import datetime
 
 from flask_restful import abort
+from sqlalchemy import desc
 
 from api.data.db_session import create_session
 from api.data.models import Event, User, UserToEventAssociation
@@ -23,7 +24,11 @@ def get_event(event_id=None):
     with create_session() as session:
         if event_id is not None:
             return session.query(Event).get(event_id).to_dict()
-        return [item.to_dict() for item in session.query(Event).all()]
+        today = datetime.date.today()
+        ongoing_events = session.query(Event).filter(Event.start_date <= today, today <= Event.finish_date).all()
+        future_events = session.query(Event).filter(Event.start_date > today).order_by(Event.start_date).all()
+        past_events = session.query(Event).filter(Event.finish_date < today).order_by(desc(Event.finish_date)).all()
+        return [item.to_dict() for item in ongoing_events + future_events + past_events]
 
 
 def delete_event(event_id):

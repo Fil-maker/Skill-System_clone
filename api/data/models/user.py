@@ -38,7 +38,7 @@ class User(db.Model, SerializerMixin):
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
 
-    events = orm.relation("UserToEventAssociation", back_populates="participant")
+    events = orm.relation("UserToEventAssociation", back_populates="participant", lazy="dynamic")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
