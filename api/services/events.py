@@ -1,10 +1,12 @@
 import datetime
 
+from flask import g
 from flask_restful import abort
 from sqlalchemy import desc
 
 from api.data.db_session import create_session
 from api.data.models import Event, User, UserToEventAssociation
+from api.data.models.user import Roles
 from api.data.models.user_to_event_association import EventRoles
 from api.services.images import delete_photo, generate_photo_filename, save_photo
 
@@ -15,6 +17,23 @@ def abort_if_event_not_found(func):
             event = session.query(Event).get(event_id)
             if not event:
                 abort(404, success=False, message=f"Event {event_id} not found")
+            return func(self, event_id)
+
+    return new_func
+
+
+def only_for_admin_and_chief_expert(func):
+    def new_func(self, event_id):
+        with create_session() as session:
+            association = session.query(UserToEventAssociation).filter(
+                UserToEventAssociation.user_id == g.current_user.id,
+                UserToEventAssociation.event_id == event_id).first()
+            if Roles(g.current_user.role) == Roles.ADMIN:
+                pass
+            elif association is not None and EventRoles(association.role) == EventRoles.CHIEF_EXPERT:
+                pass
+            else:
+                abort(403, success=False)
             return func(self, event_id)
 
     return new_func
