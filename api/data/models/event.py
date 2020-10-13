@@ -27,13 +27,14 @@ class Event(db.Model, SerializerMixin):
         ans = super(Event, self).to_dict(*args, **kwargs,
                                          only=["id", "title", "start_date", "main_stage_date",
                                                "final_stage_date", "finish_date"])
-        photos = {
-            "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
-            "128": f"{os.environ.get('S3_BUCKET_URL')}/events/128/{self.photo_url}",
-            "256": f"{os.environ.get('S3_BUCKET_URL')}/events/256/{self.photo_url}",
-            "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
-        }
+        if self.photo_url is not None:
+            photos = {
+                "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
+                "128": f"{os.environ.get('S3_BUCKET_URL')}/events/128/{self.photo_url}",
+                "256": f"{os.environ.get('S3_BUCKET_URL')}/events/256/{self.photo_url}",
+                "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
+            }
+            ans["photos"] = photos
         participants = [participant.participant.id for participant in self.participants]
-        ans["photos"] = photos
         ans["participants"] = participants
         return ans

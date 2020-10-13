@@ -84,13 +84,14 @@ class User(db.Model, SerializerMixin):
         ans = super(User, self).to_dict(*args, **kwargs,
                                         only=["id", "email", "first_name", "last_name", "country",
                                               "region", "creation_date", "confirmed", "about", "role"])
-        photos = {
-            "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
-            "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
-            "256": f"{os.environ.get('S3_BUCKET_URL')}/users/256/{self.photo_url}",
-            "512": f"{os.environ.get('S3_BUCKET_URL')}/users/512/{self.photo_url}",
-        }
-        ans["photos"] = photos
+        if self.photo_url is not None:
+            photos = {
+                "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
+                "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
+                "256": f"{os.environ.get('S3_BUCKET_URL')}/users/256/{self.photo_url}",
+                "512": f"{os.environ.get('S3_BUCKET_URL')}/users/512/{self.photo_url}",
+            }
+            ans["photos"] = photos
         ans["is_pin_set"] = self.pin is not None
         return ans
 
