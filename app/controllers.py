@@ -1,6 +1,7 @@
+import requests
 from flask import render_template, g, session
 from werkzeug.utils import redirect
-
+import os
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
@@ -15,6 +16,8 @@ from app.services.events import create_event_from_form, edit_event_information_f
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
     set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin
+
+api_user_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api/users"
 
 
 @app.before_request
@@ -93,7 +96,15 @@ def edit_profile_():
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("userProfile.html", current_user=g.current_user)
+    return render_template("selfProfile.html", current_user=g.current_user)
+
+
+@app.route("/user/<int:user_id>")
+@redirect_if_unauthorized
+def user_profile(user_id):
+    response = requests.get(f'{api_user_url}/{user_id}')
+    data = response.json()
+    return render_template('userProfile.html', user=data['user'])
 
 
 @app.route("/create-event", methods=["GET", "POST"])
@@ -115,7 +126,6 @@ def edit_event_information_(event_id):
     if edit_event_information_from_form(event_id, form):
         return redirect(f"/event/{event_id}/information")
     return render_template("eventInformation.html", form=form)
-
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
 # @load_event_to_g_or_abort
