@@ -1,11 +1,13 @@
+import datetime
 import os
 
 import jwt
 from flask import g, render_template
 from flask_restful import abort
+from sqlalchemy import desc
 
 from api.data.db_session import create_session
-from api.data.models import Country, Region, User
+from api.data.models import Country, Region, User, UserToEventAssociation, Event
 from api.data.models.user import Roles
 from api.services.email import send_email
 from api.services.images import generate_photo_filename, save_photo, delete_photo
@@ -172,7 +174,11 @@ def reset_pin(user_id):
 def get_events(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
-        return [event.to_dict() for event in user.events]
+        today = datetime.date.today()
+        ongoing_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date <= today, today <= Event.finish_date).all()
+        future_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date > today).order_by(Event.start_date).all()
+        past_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.finish_date < today).order_by(desc(Event.finish_date)).all()
+        return [event.to_dict_event() for event in ongoing_events + future_events + past_events]
 
 
 _COUNTRIES = None

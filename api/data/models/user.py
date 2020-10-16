@@ -15,9 +15,7 @@ from api.data.db_session import db
 
 class Roles(Enum):
     NO_ROLE = 0
-    COMPETITOR = 1
-    EXPERT = 2
-    ADMIN = 3
+    ADMIN = 1
 
 
 class User(db.Model, SerializerMixin):
@@ -34,13 +32,13 @@ class User(db.Model, SerializerMixin):
     photo_url = Column(String, nullable=True)
     about = Column(Text, nullable=True, default="")
 
-    role = Column(SmallInteger, nullable=False, default=0)
+    role = Column(SmallInteger, nullable=False, default=Roles.NO_ROLE.value)
     pin = Column(String, nullable=True)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])
 
-    events = orm.relation("Event", secondary="user_to_event")
+    events = orm.relation("UserToEventAssociation", back_populates="participant", lazy="dynamic")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -86,13 +84,14 @@ class User(db.Model, SerializerMixin):
         ans = super(User, self).to_dict(*args, **kwargs,
                                         only=["id", "email", "first_name", "last_name", "country",
                                               "region", "creation_date", "confirmed", "about", "role"])
-        photos = {
-            "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
-            "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
-            "256": f"{os.environ.get('S3_BUCKET_URL')}/users/256/{self.photo_url}",
-            "512": f"{os.environ.get('S3_BUCKET_URL')}/users/512/{self.photo_url}",
-        }
-        ans["photos"] = photos
+        if self.photo_url is not None:
+            photos = {
+                "initial": f"{os.environ.get('S3_BUCKET_URL')}/users/init/{self.photo_url}",
+                "128": f"{os.environ.get('S3_BUCKET_URL')}/users/128/{self.photo_url}",
+                "256": f"{os.environ.get('S3_BUCKET_URL')}/users/256/{self.photo_url}",
+                "512": f"{os.environ.get('S3_BUCKET_URL')}/users/512/{self.photo_url}",
+            }
+            ans["photos"] = photos
         ans["is_pin_set"] = self.pin is not None
         return ans
 

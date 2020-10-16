@@ -6,8 +6,8 @@ from flask_restful.reqparse import RequestParser
 
 from api.services.auth import token_auth
 from api.services.events import abort_if_event_not_found, get_event, delete_event, update_event, \
-    create_event, get_event_participants, add_users_to_event, exclude_users_from_event
-from api.services.users import only_for_admin
+    create_event, get_event_participants, add_users_to_event, exclude_users_from_event, \
+    only_for_admin_and_chief_expert
 
 
 class EventResource(Resource):
@@ -17,14 +17,14 @@ class EventResource(Resource):
 
     @abort_if_event_not_found
     @token_auth.login_required
-    @only_for_admin
+    @only_for_admin_and_chief_expert
     def delete(self, event_id):
         delete_event(event_id)
         return jsonify({"success": True})
 
     @abort_if_event_not_found
     @token_auth.login_required
-    @only_for_admin
+    @only_for_admin_and_chief_expert
     def put(self, event_id):
         parser = RequestParser()
         parser.add_argument("title")
@@ -48,7 +48,7 @@ class EventListResource(Resource):
         return jsonify({"success": True, "events": get_event()})
 
     @token_auth.login_required
-    @only_for_admin
+    @only_for_admin_and_chief_expert
     def post(self):
         parser = RequestParser()
         parser.add_argument("title", required=True)
@@ -74,21 +74,21 @@ class EventParticipantResource(Resource):
 
     @abort_if_event_not_found
     @token_auth.login_required
-    @only_for_admin
+    @only_for_admin_and_chief_expert
     def post(self, event_id):
         parser = RequestParser()
-        parser.add_argument("users", required=True, type=int, action="append")
+        parser.add_argument("users", required=True, type=dict, action="append", location="json")
         args = parser.parse_args()
         try:
             add_users_to_event(event_id, **args)
-        except KeyError as e:
+        except (KeyError, ValueError) as e:
             abort(400, success=False, message=str(e))
         else:
             return jsonify({"success": True})
 
     @abort_if_event_not_found
     @token_auth.login_required
-    @only_for_admin
+    @only_for_admin_and_chief_expert
     def delete(self, event_id):
         parser = RequestParser()
         parser.add_argument("users", required=True, type=int, action="append")

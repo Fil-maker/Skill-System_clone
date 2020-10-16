@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, FileField, SubmitField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired
 
-from api.services.users import get_countries_list, get_regions_list, get_ru_id
+from app.services.users import get_countries_list, get_regions_list, get_ru_id
 
 
 class EditProfileForm(FlaskForm):

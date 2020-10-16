@@ -30,9 +30,7 @@ class HTTPTokenAuth(AuthBase):
 
 class Roles(Enum):
     NO_ROLE = 0
-    COMPETITOR = 1
-    EXPERT = 2
-    ADMIN = 3
+    ADMIN = 1
 
 
 def redirect_if_authorized(func):
