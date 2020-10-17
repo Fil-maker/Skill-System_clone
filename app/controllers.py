@@ -83,8 +83,9 @@ def edit_profile_():
     form = EditProfileForm(first_name=g.current_user["first_name"],
                            last_name=g.current_user["last_name"],
                            country=g.current_user["country"]["id"],
-                           region=g.current_user["region"]["id"],
                            about=g.current_user["about"])
+    if g.current_user["region"] is not None:
+        form.region.process_data(g.current_user["region"]["id"])
     if edit_profile_from_form(form):
         return redirect("/profile")
     return render_template("editProfile.html", form=form, current_user=g.current_user)
