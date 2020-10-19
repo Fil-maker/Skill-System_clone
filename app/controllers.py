@@ -8,6 +8,7 @@ from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
+from app.forms.participant import ParticipantForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
@@ -17,7 +18,7 @@ from app.services.users import confirm_token, register_from_form, redirect_if_au
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
     set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin
 
-api_user_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api/users"
+api_url = f"http://{os.environ.get('API_HOST')}:{os.environ.get('API_PORT')}/api"
 
 
 @app.before_request
@@ -102,9 +103,10 @@ def profile():
 @app.route("/user/<int:user_id>")
 @redirect_if_unauthorized
 def user_profile(user_id):
-    response = requests.get(f'{api_user_url}/{user_id}')
+    response = requests.get(f'{api_url}/users/{user_id}')
     data = response.json()
-    return render_template('userProfile.html', user=data['user'])
+    user = data['user']
+    return render_template('userProfile.html', user=user)
 
 
 @app.route("/create-event", methods=["GET", "POST"])
@@ -117,6 +119,25 @@ def create_event_():
     return render_template("eventRegister.html", form=form)
 
 
+@app.route("/event/<int:event_id>")
+@redirect_if_unauthorized
+def event_profile(event_id):
+    response = requests.get(f'{api_url}/events/{event_id}')
+    data = response.json()
+    event = data['event']
+    return render_template('eventProfile.html', event=event)
+
+
+@app.route("/event-list")
+@redirect_if_unauthorized
+@only_for_admin
+def event_list():
+    response = requests.get(f'{api_url}/events')
+    data = response.json()
+    events = data['events']
+    return render_template('eventList.html', events=events)
+
+
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
@@ -126,6 +147,25 @@ def edit_event_information_(event_id):
     if edit_event_information_from_form(event_id, form):
         return redirect(f"/event/{event_id}/information")
     return render_template("eventInformation.html", form=form)
+
+
+@app.route("/event/<int:event_id>/participants")
+@redirect_if_unauthorized
+@only_for_admin
+def participants_manage(event_id):
+    form = ParticipantForm()
+    response = requests.get(f'{api_url}/events/{event_id}')
+    data = response.json()
+    event = data['event']
+    participants = event['participants']
+    users = []
+    for participant_id in participants:
+        response = requests.get(f'{api_url}/users/{participant_id}')
+        data = response.json()
+        user = data['user']
+        users.append(user)
+        print(user)
+    return render_template('participantsManage.html', form=form, users=users)
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
 # @load_event_to_g_or_abort

@@ -3,32 +3,30 @@
 
 {% block content %}
 
-<main class="container">
-    <h1>{{ title }}</h1>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        <div class="row">
-            <div class="col">
-                {{ form.pin.label(class="label input-str") }}
-            </div>
-            <div class="col">
-                {{ form.pin() }}
-                <div class="invalid-feedback">
-                    {% for error in form.pin.errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
+<h1>{{ title }}</h1>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="row">
+        <div class="col">
+            {{ form.pin.label(class="label input-str") }}
+        </div>
+        <div class="col">
+            {{ form.pin() }}
+            <div class="invalid-feedback">
+                {% for error in form.pin.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
             </div>
         </div>
+    </div>
 
-        <br>
+    <br>
 
-        <div class="confirm-item" id="submit">
-            {{ form.submit() }}
-            <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
-        </div>
+    <div class="confirm-item" id="submit">
+        {{ form.submit() }}
+        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+    </div>
 
-    </form>
-</main>
+</form>
 
 {% endblock %}

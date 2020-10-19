@@ -4,40 +4,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<main class="container">
-    <h1>{{ title }} of {{ user.get("first_name") }} {{ user.get("last_name") }}</h1>
-    <div class="row">
+<h1>{{ title }} of {{ user.get("first_name") }} {{ user.get("last_name") }}</h1>
+<div class="row">
 
-        <div class="col-sm">
-            <div class="image-item">
-                {% if user.get('photos', False) %}
-                <img class="img-fluid img-thumbnail" src="{{ user.get('photos').get('initial') }}">
-                {% else %}
-                <img class="img-fluid img-thumbnail" src="/static/img/icons/other/user.svg">
-                {% endif %}
-            </div>
-        </div>
-
-
-        <div class="col-sm">
-            <div class="card">
-                <p style="background-color: #89d6f7;">
-                    Profile information
-                </p>
-                <div class="card-body">
-                    <p>First Name: {{ user['first_name'] }}</p>
-                    <p>Last Name: {{ user['last_name'] }}</p>
-                    <p>Country: {{ user['country']['name'] }}</p>
-                    {% if user['country']['numeric_code'] == '643' %}
-                    <p>Region: {{ user['region']['name'] }}</p>
-                    {% endif %}
-                    {% if user.get('about',False)%}
-                    <p>About: {{ user['about'] }}</p>
-                    {% endif %}
-                </div>
-            </div>
+    <div class="col-sm">
+        <div class="image-item">
+            {% if user.get('photos', False) %}
+            <img class="img-fluid img-thumbnail" src="{{ user.get('photos').get('initial') }}">
+            {% else %}
+            <img class="img-fluid img-thumbnail" src="/static/img/icons/other/user.svg">
+            {% endif %}
         </div>
     </div>
 
-</main>
+
+    <div class="col-sm">
+        <div class="card">
+            <p style="background-color: #89d6f7;">
+                Profile information
+            </p>
+            <div class="card-body">
+                <p>First Name: {{ user['first_name'] }}</p>
+                <p>Last Name: {{ user['last_name'] }}</p>
+                <p>Country: {{ user['country']['name'] }}</p>
+                {% if user['country']['numeric_code'] == '643' %}
+                <p>Region: {{ user['region']['name'] }}</p>
+                {% endif %}
+                {% if user.get('about',False)%}
+                <p>About: {{ user['about'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

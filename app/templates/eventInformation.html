@@ -1,35 +1,31 @@
 {% set title = "Event Information"%}
-{% set style_file = url_for('static', filename='css/pin.css')%}
 {% extends 'base.html' %}
 
 {% block content %}
 
-<main class="container">
-    <h1>{{ title }}</h1>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        <div class="row">
-            <div class="col">
-                {{ form.title.label(class="label input-str") }}
-            </div>
-            <div class="col">
-                {{ form.title() }}
-                <div class="invalid-feedback">
-                    {% for error in form.title.errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="row">
+        <div class="col">
+            {{ form.title.label() }}
+        </div>
+        <div class="col">
+            {{ form.title() }}
+            <div class="invalid-feedback">
+                {% for error in form.title.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
             </div>
         </div>
+    </div>
 
-        <br>
+    <br>
 
-        <div class="confirm-item" id="submit">
-            {{ form.submit() }}
-            <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
-        </div>
+    <div class="confirm-item" id="submit">
+        {{ form.submit() }}
+        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+    </div>
 
-    </form>
-</main>
+</form>
 
 {% endblock %}

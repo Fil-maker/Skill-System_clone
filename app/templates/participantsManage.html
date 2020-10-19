@@ -1,0 +1,67 @@
+{% set title = 'Participant Manage' %}
+{% set style_file = url_for('static', filename='css/list.css') %}
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="row">
+        <div class="col">
+            {{ form.email.label() }}
+        </div>
+        <div class="col">
+            {{ form.email() }}
+            <div class="invalid-feedback">
+                {% for error in form.email.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="confirm-item" id="submit">
+        {{ form.submit() }}
+        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+    </div>
+</form>
+<br>
+
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>name</th>
+        <th>country</th>
+        <th>about</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+    <tr onclick="window.location.assign('/user/{{ user['id'] }}');"
+        {% if loop.index % 2== 0 %}
+        class="table-info"
+        {% endif %}>
+        <th scope="row">
+            {% if user.get('photos', False) %}
+            <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
+            {% else %}
+            <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+            {% endif %}
+            {{ user['first_name'] }} {{ user['last_name'] }}</th>
+        <td>{{ user['country']['name'] }}
+            {% if user.get('region',False) %}
+            | {{ user['region']['name'] }}
+            {% endif %}
+        </td>
+        {% if user['about'] %}
+            <td>{{ user['about'] }}</td>
+        {% else %}
+            <td>Empty</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
