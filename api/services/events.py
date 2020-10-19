@@ -6,6 +6,7 @@ from sqlalchemy import desc
 
 from api.data.db_session import create_session
 from api.data.models import Event, User, UserToEventAssociation
+from api.data.models.form import Form
 from api.data.models.user import Roles
 from api.data.models.user_to_event_association import EventRoles
 from api.services.images import delete_photo, generate_photo_filename, save_photo
@@ -22,21 +23,29 @@ def abort_if_event_not_found(func):
     return new_func
 
 
-def only_for_admin_and_chief_expert(func):
-    def new_func(self, event_id):
-        with create_session() as session:
-            association = session.query(UserToEventAssociation).filter(
-                UserToEventAssociation.user_id == g.current_user.id,
-                UserToEventAssociation.event_id == event_id).first()
-            if Roles(g.current_user.role) == Roles.ADMIN:
-                pass
-            elif association is not None and EventRoles(association.role) == EventRoles.CHIEF_EXPERT:
-                pass
-            else:
-                abort(403, success=False)
-            return func(self, event_id)
+def only_for_admin_and_chief_expert(resource="event"):
+    def decorator(func):
+        def new_func(self, id_):
+            with create_session() as session:
+                if resource == "event":
+                    event_id = id_
+                elif resource == "form":
+                    event_id = session.query(Form).get(id_).event_id
+                else:
+                    raise TypeError
+                association = session.query(UserToEventAssociation).filter(
+                    UserToEventAssociation.user_id == g.current_user.id,
+                    UserToEventAssociation.event_id == event_id).first()
+                if Roles(g.current_user.role) == Roles.ADMIN:
+                    pass
+                elif association is not None and EventRoles(association.role) == EventRoles.CHIEF_EXPERT:
+                    pass
+                else:
+                    abort(403, success=False)
+                return func(self, id_)
 
-    return new_func
+        return new_func
+    return decorator
 
 
 def get_event(event_id=None):

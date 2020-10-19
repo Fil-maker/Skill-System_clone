@@ -11,6 +11,7 @@ from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from api.data.db_session import db
+from api.data.models.form import forms_signatures
 
 
 class Roles(Enum):
@@ -39,6 +40,7 @@ class User(db.Model, SerializerMixin):
     region = orm.relation("Region", foreign_keys=[region_id])
 
     events = orm.relation("UserToEventAssociation", back_populates="participant", lazy="dynamic")
+    signed_forms = orm.relation("Form", secondary=forms_signatures, back_populates="signatory")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

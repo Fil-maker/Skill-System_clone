@@ -20,6 +20,7 @@ class Event(db.Model, SerializerMixin):
     photo_url = Column(String, nullable=True)
 
     participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
+    forms = orm.relation("Form", back_populates="event")
 
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
@@ -35,6 +36,6 @@ class Event(db.Model, SerializerMixin):
                 "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
             }
             ans["photos"] = photos
-        participants = [participant.participant.id for participant in self.participants]
-        ans["participants"] = participants
+        ans["participants"] = [participant.participant.id for participant in self.participants]
+        ans["forms"] = [form.id for form in self.forms]
         return ans
