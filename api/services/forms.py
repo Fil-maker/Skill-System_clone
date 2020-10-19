@@ -1,8 +1,10 @@
+from flask import g
 from flask_restful import abort
 
 from api.data.db_session import create_session
-from api.data.models import Event
+from api.data.models import Event, UserToEventAssociation
 from api.data.models.form import Form
+from api.data.models.user_to_event_association import EventRoles
 
 
 def abort_if_form_not_found(func):
@@ -55,3 +57,29 @@ def update_form(form_id, title=None, content=None, date=None):
         if date:
             form.date = date  # TODO 1
         return form.to_dict()
+
+
+def get_form_signatory(form_id):
+    with create_session() as session:
+        form = session.query(Form).get(form_id)
+        return [user.to_dict() for user in form.signatory]
+
+
+def sign_form(form_id, pin):
+    with create_session() as session:
+        form = session.query(Form).get(form_id)
+        cur_user = session.query(UserToEventAssociation).filter(
+            UserToEventAssociation.user_id == g.current_user.id,
+            UserToEventAssociation.event_id == form.event_id).first()
+        if cur_user in form.event.participants and (
+                cur_user.role == form.role or
+                EventRoles(cur_user.role) == EventRoles.CHIEF_EXPERT):
+            if g.current_user.pin is None:
+                raise ValueError("Pin is not set")
+            elif not g.current_user.check_pin(str(pin)):
+                raise ValueError("Incorrect pin")
+            else:
+                form.signatory.append(cur_user.participant)
+                return True
+        else:
+            raise KeyError
