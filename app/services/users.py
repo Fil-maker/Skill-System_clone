@@ -65,6 +65,20 @@ def only_for_admin(func):
     return new_func
 
 
+def get_user(user_id=None):
+    if user_id is not None:
+        response = requests.get(f"{api_url}/{user_id}")
+        data = response.json()
+        if data["success"]:
+            return data["user"]
+    else:
+        response = requests.get(api_url)
+        data = response.json()
+        if data["success"]:
+            return data["users"]
+    return None
+
+
 def confirm_token(token) -> bool:
     r = requests.post(f"{api_url}/confirm/{token}")
     return r.json()["success"]
