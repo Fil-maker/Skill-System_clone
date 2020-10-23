@@ -122,9 +122,7 @@ def create_event_():
 @app.route("/event/<int:event_id>")
 @redirect_if_unauthorized
 def event_profile(event_id):
-    response = requests.get(f'{api_url}/events/{event_id}')
-    data = response.json()
-    event = data['event']
+    event = []
     return render_template('eventProfile.html', event=event)
 
 
@@ -132,9 +130,7 @@ def event_profile(event_id):
 @redirect_if_unauthorized
 @only_for_admin
 def event_list():
-    response = requests.get(f'{api_url}/events')
-    data = response.json()
-    events = data['events']
+    events = []
     return render_template('eventList.html', events=events)
 
 
@@ -154,17 +150,7 @@ def edit_event_information_(event_id):
 @only_for_admin
 def participants_manage(event_id):
     form = ParticipantForm()
-    response = requests.get(f'{api_url}/events/{event_id}')
-    data = response.json()
-    event = data['event']
-    participants = event['participants']
     users = []
-    for participant_id in participants:
-        response = requests.get(f'{api_url}/users/{participant_id}')
-        data = response.json()
-        user = data['user']
-        users.append(user)
-        print(user)
     return render_template('participantsManage.html', form=form, users=users)
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
