@@ -10,119 +10,119 @@
 
 
 {% block content %}
-<main class="container">
-    <h1>Edit Profile</h1>
+<h1>Edit Profile</h1>
 
-    <form method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <div class="row">
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row">
 
-            <div class="col-sm">
+        <div class="col-sm">
 
-                <div class="image-item">
-                    {{ form.photo.label }}
-                    <img id="preload" src="{{ current_user['photos']['initial'] }}" class="img-fluid img-thumbnail">
-                    {{ form.photo() }}
-                    <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal" data-target="#croppie-modal" disabled>Create thumbnail</button>
-                    <div class="invalid-feedback">
-                        {% for error in form.photo.errors %}
-                        <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm">
-                <div class="info">
-                    <div class="form-item">
-                        {{ form.first_name.label }}
-                        {{ form.first_name() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.first_name.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.last_name.label }}
-                        {{ form.last_name() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.last_name.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.country.label }}
-                        {{ form.country(id="cntry-fld") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.country.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item" id="region-div">
-                        {{ form.region.label }}
-                        {{ form.region() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.region.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-item">
-                        {{ form.about.label }}
-                        {{ form.about() }}
-                        <div class="invalid-feedback">
-                            {% for error in form.about.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {% if message %}
-                    <p class="alert alert-danger" role="alert">
-                        {{message}}
-                    </p>
-                    {% endif %}
-
-                    <br>
-
-                    <div class="form-item confirm-item" id="submit">
-                        {{ form.submit() }}
-                        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
-                    </div>
+            <div class="image-item">
+                {{ form.photo.label }}
+                <img id="preload" src="{{ current_user['photos']['initial'] }}" class="img-fluid img-thumbnail">
+                {{ form.photo() }}
+                <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
+                        data-target="#croppie-modal" disabled>Create thumbnail
+                </button>
+                <div class="invalid-feedback">
+                    {% for error in form.photo.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
 
-    </form>
+        <div class="col-sm">
+            <div class="info">
+                <div class="form-item">
+                    {{ form.first_name.label }}
+                    {{ form.first_name() }}
+                    <div class="invalid-feedback">
+                        {% for error in form.first_name.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
 
-    <div class="modal" id="croppie-modal" tabindex="-1" aria-labelledby="croppie-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="croppie-modal-label">Create thumbnail</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="form-item">
+                    {{ form.last_name.label }}
+                    {{ form.last_name() }}
+                    <div class="invalid-feedback">
+                        {% for error in form.last_name.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div class="thumbnail" style="width: 100%; height: 500px; margin-bottom: 32px;"></div>
+
+                <div class="form-item">
+                    {{ form.country.label }}
+                    {{ form.country(id="cntry-fld") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.country.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="save-button">Save changes</button>
+
+                <div class="form-item" id="region-div">
+                    {{ form.region.label }}
+                    {{ form.region() }}
+                    <div class="invalid-feedback">
+                        {% for error in form.region.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-item">
+                    {{ form.about.label }}
+                    {{ form.about() }}
+                    <div class="invalid-feedback">
+                        {% for error in form.about.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if message %}
+                <p class="alert alert-danger" role="alert">
+                    {{message}}
+                </p>
+                {% endif %}
+
+                <br>
+
+                <div class="form-item confirm-item" id="submit">
+                    {{ form.submit() }}
+                    <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
                 </div>
             </div>
         </div>
     </div>
 
-</main>
+</form>
+
+<div class="modal" id="croppie-modal" tabindex="-1" aria-labelledby="croppie-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="croppie-modal-label">Create thumbnail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="thumbnail" style="width: 100%; height: 500px; margin-bottom: 32px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-button">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block script %}

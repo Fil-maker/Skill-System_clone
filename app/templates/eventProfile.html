@@ -1,0 +1,60 @@
+{% set title = 'Profile' %}
+{% set style_file = url_for('static', filename='css/Profile.css') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ title }} of {{ event.get("title") }}</h1>
+<div class="row">
+
+    <div class="col-sm">
+        <div class="image-item">
+            {% if event.get('photos', False) %}
+            <img class="img-fluid img-thumbnail" src="{{ event['photos']['512'] }}">
+            {% else %}
+            <img class="img-fluid img-thumbnail" src="/static/img/icons/other/calendar.svg">
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div class="col-sm">
+
+        <div class="card">
+            <a href="/event/{{ event['id']}}/information" style="background-color: #89d6f7;">
+                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                Event information
+            </a>
+            <div class="card-body">
+                <p>Event title: {{ event['title'] }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <a href="/event/{{ event['id']}}/dates" style="background-color: #89d6f7;">
+                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                Dates information
+            </a>
+            <div class="card-body">
+                <p>Start date: {{ event['start_date'] }}</p>
+                <p>C1 date: {{ event['start_date'] }}</p>
+                <p>C+1 date: {{ event['start_date'] }}</p>
+                <p>Finish date: {{ event['start_date'] }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <a href="/event/{{ event['id']}}/participants" style="background-color: #89d6f7;">
+                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                Participants
+            </a>
+            <div class="card-body">
+                <p class="left-item">Participants: {{ event['participants'] | length }}</p>
+                <div class="right-item">
+                    <a class="btn btn-warning " href="/event/{{ event['id']}}/participants">Manage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

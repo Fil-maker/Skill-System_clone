@@ -1,0 +1,34 @@
+{% set title = 'Event List' %}
+{% extends 'base.html '%}
+{% set style_file = url_for('static', filename='css/list.css') %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>title</th>
+        <th>duration</th>
+        <th>participants</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+    <tr onclick="window.location.assign('/event/{{ event['id'] }}');"
+        {% if loop.index % 2== 0 %}
+        class="table-info"
+        {% endif %}>
+        <th scope="row">
+            {% if event.get('photos', False) %}
+            <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
+            {% else %}
+            <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
+            {% endif %}
+            {{ event['title'] }}</th>
+        <td>{{ event['start_date'] }} - {{ event['finish_date'] }}</td>
+        <td>{{ event['participants'] | length }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

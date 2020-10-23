@@ -1,12 +1,12 @@
 from flask import render_template, g, session
 from werkzeug.utils import redirect
-
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
+from app.forms.participant import ParticipantForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
@@ -94,7 +94,15 @@ def edit_profile_():
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("userProfile.html", current_user=g.current_user)
+    return render_template("selfProfile.html", current_user=g.current_user)
+
+
+# TODO: Получить данные
+@app.route("/user/<int:user_id>")
+@redirect_if_unauthorized
+def user_profile(user_id):
+    user = []
+    return render_template('userProfile.html', user=user)
 
 
 @app.route("/create-event", methods=["GET", "POST"])
@@ -107,6 +115,23 @@ def create_event_():
     return render_template("eventRegister.html", form=form)
 
 
+# TODO: Получить данные
+@app.route("/event/<int:event_id>")
+@redirect_if_unauthorized
+def event_profile(event_id):
+    event = []
+    return render_template('eventProfile.html', event=event)
+
+
+# TODO: Получить данные
+@app.route("/event-list")
+@redirect_if_unauthorized
+@only_for_admin
+def event_list():
+    events = []
+    return render_template('eventList.html', events=events)
+
+
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
@@ -117,6 +142,15 @@ def edit_event_information_(event_id):
         return redirect(f"/event/{event_id}/information")
     return render_template("eventInformation.html", form=form)
 
+
+# TODO: Получить данные
+@app.route("/event/<int:event_id>/participants")
+@redirect_if_unauthorized
+@only_for_admin
+def participants_manage(event_id):
+    form = ParticipantForm()
+    users = []
+    return render_template('participantsManage.html', form=form, users=users)
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
 # @load_event_to_g_or_abort
