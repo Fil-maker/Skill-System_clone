@@ -1,4 +1,5 @@
 from flask import render_template, g, session
+from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 from app import app
 from app.forms.editProfile import EditProfileForm
@@ -11,10 +12,10 @@ from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 from app.services.events import create_event_from_form, edit_event_information_from_form, \
-    load_event_to_g_or_abort
+    load_event_to_g_or_abort, get_event, get_event_participants
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin
+    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user
 
 
 @app.before_request
@@ -97,12 +98,13 @@ def profile():
     return render_template("selfProfile.html", current_user=g.current_user)
 
 
-# TODO: Получить данные
 @app.route("/user/<int:user_id>")
 @redirect_if_unauthorized
 def user_profile(user_id):
-    user = []
-    return render_template('userProfile.html', user=user)
+    user = get_user(user_id)
+    if user is None:
+        abort(404)
+    return render_template("userProfile.html", user=user)
 
 
 @app.route("/create-event", methods=["GET", "POST"])
@@ -115,21 +117,21 @@ def create_event_():
     return render_template("eventRegister.html", form=form)
 
 
-# TODO: Получить данные
 @app.route("/event/<int:event_id>")
 @redirect_if_unauthorized
 def event_profile(event_id):
-    event = []
-    return render_template('eventProfile.html', event=event)
+    event = get_event(event_id)
+    if event is None:
+        abort(404)
+    return render_template("eventProfile.html", event=event)
 
 
-# TODO: Получить данные
 @app.route("/event-list")
 @redirect_if_unauthorized
 @only_for_admin
 def event_list():
-    events = []
-    return render_template('eventList.html', events=events)
+    events = get_event()
+    return render_template("eventList.html", events=events)
 
 
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
@@ -143,14 +145,22 @@ def edit_event_information_(event_id):
     return render_template("eventInformation.html", form=form)
 
 
-# TODO: Получить данные
 @app.route("/event/<int:event_id>/participants")
 @redirect_if_unauthorized
 @only_for_admin
 def participants_manage(event_id):
     form = ParticipantForm()
-    users = []
-    return render_template('participantsManage.html', form=form, users=users)
+    participants = get_event_participants(event_id)
+    # TODO: переделать шаблон под participants (раньше user), т.к. participants имеет следующую структуру:
+    # [
+    #     {
+    #         "role": role,
+    #         "user": {
+    #             user_info...
+    #         }
+    #     }
+    # ]
+    return render_template("participantsManage.html", form=form, participants=participants)
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
 # @load_event_to_g_or_abort

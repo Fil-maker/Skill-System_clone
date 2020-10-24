@@ -44,9 +44,12 @@ def get_event(event_id=None):
         if event_id is not None:
             return session.query(Event).get(event_id).to_dict()
         today = datetime.date.today()
-        ongoing_events = session.query(Event).filter(Event.start_date <= today, today <= Event.finish_date).all()
-        future_events = session.query(Event).filter(Event.start_date > today).order_by(Event.start_date).all()
-        past_events = session.query(Event).filter(Event.finish_date < today).order_by(desc(Event.finish_date)).all()
+        ongoing_events = session.query(Event).filter(Event.start_date <= today,
+                                                     today <= Event.finish_date).all()
+        future_events = session.query(Event).filter(Event.start_date > today).order_by(
+            Event.start_date).all()
+        past_events = session.query(Event).filter(Event.finish_date < today).order_by(
+            desc(Event.finish_date)).all()
         return [item.to_dict() for item in ongoing_events + future_events + past_events]
 
 
@@ -90,7 +93,7 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
             final_stage_date = event.final_stage_date if final_stage_date is None else final_stage_date
             finish_date = event.finish_date if finish_date is None else finish_date
 
-            if not(start_date < main_stage_date < final_stage_date < finish_date):
+            if not (start_date < main_stage_date < final_stage_date < finish_date):
                 raise ValueError("Dates are inconsistent")
             if finish_date <= datetime.date.today():
                 raise ValueError("Event is already finished")
@@ -152,3 +155,27 @@ def exclude_users_from_event(event_id, users):
                 raise KeyError(f"User {user_id} not found")
             if user in event.participants:
                 event.participants.remove(user)
+
+
+def get_dates_from_c_format(start_date: datetime.date, main_stage_date: datetime.date,
+                            final_stage_date: datetime.date, finish_date: datetime.date):
+    """
+    :return: A dictionary where the key is a c-format date and the value is a regular date
+    """
+    dates = {}
+    for i in range((main_stage_date - start_date).days, 0, -1):
+        dates[f"C-{i}"] = main_stage_date - datetime.timedelta(days=i)
+    for i in range((final_stage_date - main_stage_date).days):
+        dates[f"C{i + 1}"] = main_stage_date + datetime.timedelta(days=i)
+    for i in range((finish_date - final_stage_date).days + 1):
+        dates[f"C+{i + 1}"] = final_stage_date + datetime.timedelta(days=i)
+    return dates
+
+
+def get_c_format_from_dates(start_date: datetime.date, main_stage_date: datetime.date,
+                            final_stage_date: datetime.date, finish_date: datetime.date):
+    """
+    :return: A dictionary where the key is a regular date and the value is a c-format date
+    """
+    dates = get_dates_from_c_format(start_date, main_stage_date, final_stage_date, finish_date)
+    return {value: key for key, value in dates.items()}
