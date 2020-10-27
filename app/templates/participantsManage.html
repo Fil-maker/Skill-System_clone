@@ -33,11 +33,13 @@
     <tr>
         <th>name</th>
         <th>country</th>
+        <th>role</th>
         <th>about</th>
     </tr>
     </thead>
     <tbody>
-    {% for user in users %}
+    {% for participant in participants %}
+    {% set user = participant['user'] %}
     <tr onclick="window.location.assign('/user/{{ user['id'] }}');"
         {% if loop.index % 2== 0 %}
         class="table-info"
@@ -52,6 +54,14 @@
         <td>{{ user['country']['name'] }}
             {% if user.get('region',False) %}
             | {{ user['region']['name'] }}
+            {% endif %}
+        </td>
+        <td>{% if participant['role'] == 0 %}
+                Contributor
+            {% elif participant['role'] == 1 %}
+                Expert
+            {% elif participant['role'] == 1 %}
+                Chief expert
             {% endif %}
         </td>
         {% if user['about'] %}
