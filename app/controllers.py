@@ -151,15 +151,6 @@ def edit_event_information_(event_id):
 def participants_manage(event_id):
     form = ParticipantForm()
     participants = get_event_participants(event_id)
-    # TODO: переделать шаблон под participants (раньше user), т.к. participants имеет следующую структуру:
-    # [
-    #     {
-    #         "role": role,
-    #         "user": {
-    #             user_info...
-    #         }
-    #     }
-    # ]
     return render_template("participantsManage.html", form=form, participants=participants)
 
 # @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])

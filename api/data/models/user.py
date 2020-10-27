@@ -7,10 +7,10 @@ import jwt
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boolean, SmallInteger, \
     Text
-from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from api.data.db_session import db
+from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
 
 
 class Roles(Enum):
@@ -18,7 +18,7 @@ class Roles(Enum):
     ADMIN = 1
 
 
-class User(db.Model, SerializerMixin):
+class User(db.Model, ISO8601SerializerMixin):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, nullable=False, unique=True, index=True)
