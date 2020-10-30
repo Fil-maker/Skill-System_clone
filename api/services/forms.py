@@ -5,6 +5,7 @@ from api.data.db_session import create_session
 from api.data.models import Event, UserToEventAssociation
 from api.data.models.form import Form
 from api.data.models.user_to_event_association import EventRoles
+from api.services.events import get_dates_from_c_format
 
 
 def abort_if_form_not_found(func):
@@ -32,30 +33,46 @@ def delete_form(form_id):
         session.delete(user)
 
 
-def create_form(title, content, date, role, event_id):
+def create_form(title, content, day, role, event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
         if Event is None:
             raise KeyError(f"Event {event_id} not found")
-        # TODO 1
         form = Form(title=title,
                     content=content,
-                    date=date,
                     role=role)
+        if not (len(day) > 1 and day[0] == "C" and
+                (day[1:].isdigit() or (len(day) > 2 and day[1] in "-+" and day[2:].isdigit()))):
+            raise ValueError(f"Day {day} format is incorrect")
+        date = get_dates_from_c_format(event.start_date, event.main_stage_date,
+                                       event.final_stage_date, event.finish_date).get(day, None)
+        if date is not None:
+            form.date = date
+        else:
+            raise KeyError(f"Event doesn't have day {day}")
         event.forms.append(form)
         session.commit()
         return form.to_dict()
 
 
-def update_form(form_id, title=None, content=None, date=None):
+def update_form(form_id, title=None, content=None, day=None):
     with create_session() as session:
         form = session.query(Form).get(form_id)
         if title:
             form.title = title
         if content:
             form.content = content
-        if date:
-            form.date = date  # TODO 1
+        if day:
+            if not (len(day) > 1 and day[0] == "C" and
+                    (day[1:].isdigit() or (len(day) > 2 and day[1] in "-+" and day[2:].isdigit()))):
+                raise ValueError(f"Day {day} format is incorrect")
+            event = form.event
+            date = get_dates_from_c_format(event.start_date, event.main_stage_date,
+                                           event.final_stage_date, event.finish_date).get(day, None)
+            if date is not None:
+               form.date = date
+            else:
+                raise KeyError(f"Event doesn't have day {day}")
         return form.to_dict()
 
 

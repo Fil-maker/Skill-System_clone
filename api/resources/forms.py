@@ -28,12 +28,14 @@ class FormsResource(Resource):
         parser = RequestParser()
         parser.add_argument("title")
         parser.add_argument("content")
-        parser.add_argument(
-            "date")  # TODO 1: проебразование даты из обычного формата в  /С[-+]?[1-9]+/
+        parser.add_argument("day")
         args = parser.parse_args(strict=True)
-
-        event = update_form(form_id, **args)
-        return jsonify({"success": True, "event": event})
+        try:
+            event = update_form(form_id, **args)
+        except (KeyError, ValueError) as e:
+            abort(400, success=False, message=str(e))
+        else:
+            return jsonify({"success": True, "event": event})
 
 
 class FormListResource(Resource):
@@ -48,12 +50,14 @@ class FormListResource(Resource):
         parser = RequestParser()
         parser.add_argument("title", required=True)
         parser.add_argument("content", required=True)
-        parser.add_argument("date", required=True)  # TODO 1
+        parser.add_argument("day", required=True)
         parser.add_argument("role", required=True, type=int, choices=[EventRoles.COMPETITOR.value,
                                                                       EventRoles.EXPERT.value])
         args = parser.parse_args(strict=True)
-
-        form = create_form(**args, event_id=event_id)
+        try:
+            form = create_form(**args, event_id=event_id)
+        except (ValueError, KeyError) as e:
+            abort(400, success=False, message=str(e))
         return jsonify({"success": True, "form": form})
 
 
