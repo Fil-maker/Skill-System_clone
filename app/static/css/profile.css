@@ -1,3 +1,10 @@
 .card{
     margin-bottom: 5pt;
 }
+.left-item, .right-item{
+    float: left;
+    width: 50%;
+}
+.right-item{
+    text-align: right;
+}

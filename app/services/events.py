@@ -23,11 +23,17 @@ def load_event_to_g_or_abort(func):
     return new_func
 
 
-def get_event(event_id):
-    response = requests.get(f"{api_url}/{event_id}")
-    data = response.json()
-    if data["success"]:
-        return data["event"]
+def get_event(event_id=None):
+    if event_id is not None:
+        response = requests.get(f"{api_url}/{event_id}")
+        data = response.json()
+        if data["success"]:
+            return data["event"]
+    else:
+        response = requests.get(api_url)
+        data = response.json()
+        if data["success"]:
+            return data["events"]
     return None
 
 
@@ -109,3 +115,10 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
     response = requests.put(f"{api_url}/{event_id}", params, auth=HTTPTokenAuth())
     data = response.json()
     return data
+
+
+def get_event_participants(event_id):
+    response = requests.get(f"{api_url}/{event_id}/participants")
+    data = response.json()
+    if data["success"]:
+        return data["participants"]

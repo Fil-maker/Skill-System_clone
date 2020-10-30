@@ -25,9 +25,7 @@ class Event(db.Model, SerializerMixin):
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
             return super(Event, self).to_dict(*args, **kwargs)
-        ans = super(Event, self).to_dict(*args, **kwargs,
-                                         only=["id", "title", "start_date", "main_stage_date",
-                                               "final_stage_date", "finish_date"])
+        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title"])
         if self.photo_url is not None:
             photos = {
                 "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
@@ -37,5 +35,23 @@ class Event(db.Model, SerializerMixin):
             }
             ans["photos"] = photos
         ans["participants"] = [participant.participant.id for participant in self.participants]
+
+        from api.services.events import get_dates_from_c_format, get_c_format_from_dates
+        dates = get_dates_from_c_format(self.start_date, self.main_stage_date, self.final_stage_date,
+                                        self.finish_date)
+        c_format = get_c_format_from_dates(self.start_date, self.main_stage_date,
+                                           self.final_stage_date, self.finish_date)
+        c_minus_n = c_format[self.start_date]
+        c_n = c_format[self.final_stage_date - datetime.timedelta(days=1)]
+        c_plus_n = c_format[self.finish_date]
+        ans["dates"] = {
+            c_minus_n: dates[c_minus_n],
+            "C-1": dates["C-1"],
+            "C1": dates["C1"],
+            c_n: dates[c_n],
+            "C+1": dates["C+1"],
+            c_plus_n: dates[c_plus_n]
+        }
+
         ans["forms"] = [form.id for form in self.forms]
         return ans
