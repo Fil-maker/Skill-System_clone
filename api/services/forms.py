@@ -79,7 +79,10 @@ def update_form(form_id, title=None, content=None, day=None):
 def get_form_signatory(form_id):
     with create_session() as session:
         form = session.query(Form).get(form_id)
-        return [user.to_dict() for user in form.signatory]
+        return [session.query(UserToEventAssociation)
+                       .filter(UserToEventAssociation.user_id == user.id,
+                               UserToEventAssociation.event_id == form.event.id)
+                       .first().to_dict_participant() for user in form.signatory]
 
 
 def sign_form(form_id, pin):

@@ -7,6 +7,7 @@ from api.services.auth import token_auth
 from api.services.events import abort_if_event_not_found, only_for_admin_and_chief_expert
 from api.services.forms import abort_if_form_not_found, delete_form, get_form, update_form, \
     create_form, get_form_signatory, sign_form
+from api.services.word import render_form_template
 
 
 class FormsResource(Resource):
@@ -58,7 +59,8 @@ class FormListResource(Resource):
             form = create_form(**args, event_id=event_id)
         except (ValueError, KeyError) as e:
             abort(400, success=False, message=str(e))
-        return jsonify({"success": True, "form": form})
+        else:
+            return jsonify({"success": True, "form": form})
 
 
 class FormSignatoryResource(Resource):
@@ -82,3 +84,12 @@ class FormSignatoryResource(Resource):
             abort(403, success=False, message=str(e))
         else:
             return jsonify({"success": True})
+
+
+class FormDocumentResource(Resource):
+    @abort_if_form_not_found
+    @token_auth.login_required
+    @only_for_admin_and_chief_expert("form")
+    def get(self, form_id):
+        render_form_template(form_id)
+        return jsonify({"success": True})

@@ -8,7 +8,7 @@ from flask_restful import Api
 
 from api.data import db_session
 from api.resources.events import EventResource, EventListResource, EventParticipantResource
-from api.resources.forms import FormsResource, FormListResource, FormSignatoryResource
+from api.resources.forms import FormsResource, FormListResource, FormSignatoryResource, FormDocumentResource
 from api.resources.users import UserResource, UserListResource, UserPinResource, \
     UsersEventListResource
 
@@ -50,5 +50,6 @@ api.add_resource(EventParticipantResource, "/api/events/<int:event_id>/participa
 api.add_resource(FormsResource, "/api/forms/<int:form_id>")
 api.add_resource(FormListResource, "/api/events/<int:event_id>/forms")
 api.add_resource(FormSignatoryResource, "/api/forms/<int:form_id>/signatory")
+api.add_resource(FormDocumentResource, "/api/forms/<int:form_id>/document")
 
 from api import controllers

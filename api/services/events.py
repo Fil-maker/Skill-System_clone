@@ -145,13 +145,17 @@ def add_users_to_event(event_id, users):
                 raise KeyError(f"User {user_json['id']} not found")
             if user not in map(lambda x: x.participant, event.participants):
                 try:
-                    association = UserToEventAssociation(user_id=user.id,
-                                                         role=EventRoles(user_json.get("role",
-                                                                                       EventRoles.COMPETITOR.value)).value)
+                    role = EventRoles(user_json.get("role", EventRoles.COMPETITOR.value))
                 except ValueError:
                     raise ValueError(f"Role can be {EventRoles.COMPETITOR.value} (competitor), "
                                      f"{EventRoles.EXPERT.value} (expert) or "
                                      f"{EventRoles.CHIEF_EXPERT.value} (chief expert)")
+                if role == EventRoles.CHIEF_EXPERT:
+                    if event.chief_expert_id is None:
+                        event.chief_expert_id = user.id
+                    else:
+                        raise ValueError("Chief expert is already assigned")
+                association = UserToEventAssociation(user_id=user.id, role=role.value)
                 event.participants.append(association)
 
 
@@ -163,6 +167,8 @@ def exclude_users_from_event(event_id, users):
             if not user:
                 raise KeyError(f"User {user_id} not found")
             if user in event.participants:
+                if user.id == event.chief_expert_id:
+                    event.chief_expert_id = None
                 event.participants.remove(user)
 
 
