@@ -47,18 +47,18 @@ class Event(db.Model, ISO8601SerializerMixin):
         ans["dates"] = {
             "C-N": {
                 "name": c_minus_n,
-                "date": dates[c_minus_n]
+                "date": self.serialize_date(dates[c_minus_n])
             },
-            "C-1": dates["C-1"],
-            "C1": dates["C1"],
+            "C-1": self.serialize_date(dates["C-1"]),
+            "C1": self.serialize_date(dates["C1"]),
             "CN": {
                 "name": c_n,
-                "date": dates[c_n]
+                "date": self.serialize_date(dates[c_n])
             },
-            "C+1": dates["C+1"],
+            "C+1": self.serialize_date(dates["C+1"]),
             "C+N": {
                 "name": c_plus_n,
-                "date": dates[c_plus_n]
+                "date": self.serialize_date(dates[c_plus_n])
             }
         }
 
