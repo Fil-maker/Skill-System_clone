@@ -1,3 +1,6 @@
+import datetime
+import time
+
 from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
@@ -131,7 +134,9 @@ def event_profile(event_id):
 @only_for_admin
 def event_list():
     events = get_event()
-    return render_template("eventList.html", events=events)
+    dt = datetime.datetime.now().replace(microsecond=0).isoformat()
+    print(dt)
+    return render_template("eventList.html", events=events, test=dt)
 
 
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])

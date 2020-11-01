@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ style_file }}">
 
+    <script src="/static/js/moment.min.js"></script>
     {% block style %}{% endblock %}
 
     <title>
@@ -86,9 +87,8 @@
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
 
-{% block script %} {% endblock %}
 
-<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+{% block script %} {% endblock %}
 
 {% if script_file %}
 <script src="{{ script_file }}"></script>
