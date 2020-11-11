@@ -26,7 +26,7 @@
             <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
             {% endif %}
             {{ event['title'] }}</th>
-        <td>{{ event['dates']['C-N']['date'] }} - {{ event['dates']['C+N']['date'] }} {{ momentjs(test).format('LLLL') }}</td>
+        <td>{{ momentjs(event['dates']['C-N']['date']).format('L') }} ->{{ momentjs(event['dates']['C+N']['date']).format('L') }} </td>
         <td>{{ event['participants'] | length }}</td>
     </tr>
     {% endfor %}

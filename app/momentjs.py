@@ -1,3 +1,4 @@
+import datetime
 from time import strftime
 
 from jinja2 import Markup
@@ -5,11 +6,11 @@ from jinja2 import Markup
 
 class momentjs(object):
     def __init__(self, timestamp):
-        self.timestamp = timestamp
+        self.timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
 
     def render(self, format):
         return Markup("<script>\ndocument.write(moment(\"%s\").%s);\n</script>" % (
-        strftime("%Y-%m-%dT%H:%M:%S"), format))
+            self.timestamp.strftime("%Y-%m-%d"), format))
 
     def format(self, fmt):
         return self.render("format(\"%s\")" % fmt)

@@ -1,0 +1,98 @@
+{% set title = 'Profile' %}
+{% set dates =  event['dates'] %}
+{% set style_file = url_for('static', filename='css/dates.css') %}
+{% extends 'base.html' %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th class="table-warning">{{ dates['C-N']['name'] }}</th>
+        <th class="table-warning">C-1</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th class="table-warning">{{ momentjs(dates['C-N']['date']).format('L') }}</th>
+        <th class="table-warning">{{ momentjs(dates['C-1']).format('L') }}</th>
+    </tr>
+    </tbody>
+</table>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th class="table-success">C1</th>
+        <th class="table-success">{{ dates['CN']['name'] }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th class="table-success">{{ momentjs(dates['C1']).format('L') }}</th>
+        <th class="table-success">{{ momentjs(dates['CN']['date']).format('L') }}</th>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th class="table-primary">C+1</th>
+        <th class="table-primary">{{ dates['C+N']['name'] }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th class="table-primary">{{ momentjs(dates['C+1']).format('L') }}</th>
+        <th class="table-primary">{{ momentjs(dates['C+N']['date']).format('L') }}</th>
+    </tr>
+    </tbody>
+</table>
+
+<form enctype="multipart/form-data" class="form" >
+    {{ form.hidden_tag() }}
+    <div class="form-item">
+        {{ form.start_date.label }}
+        {{ form.start_date() }}
+        <div class="invalid-feedback">
+            {% for error in form.start_date.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-item">
+        {{ form.main_stage_date.label }}
+        {{ form.main_stage_date() }}
+        <div class="invalid-feedback">
+            {% for error in form.main_stage_date.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-item">
+        {{ form.final_stage_date.label }}
+        {{ form.final_stage_date() }}
+        <div class="invalid-feedback">
+            {% for error in form.final_stage_date.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-item">
+        {{ form.finish_date.label }}
+        {{ form.finish_date() }}
+        <div class="invalid-feedback">
+            {% for error in form.finish_date.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+    <div class="form-item confirm-item" id="submit">
+        {{ form.submit() }}
+        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+    </div>
+</form>
+{% endblock %}
