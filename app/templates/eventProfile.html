@@ -1,6 +1,6 @@
 {% set title = 'Profile' %}
 {% set style_file = url_for('static', filename='css/Profile.css') %}
-
+{% set dates =  event['dates'] %}
 {% extends 'base.html' %}
 
 {% block content %}
@@ -36,10 +36,10 @@
                 Dates information
             </a>
             <div class="card-body">
-                <p>Start date: {{ event['start_date'] }}</p>
-                <p>C1 date: {{ event['start_date'] }}</p>
-                <p>C+1 date: {{ event['start_date'] }}</p>
-                <p>Finish date: {{ event['start_date'] }}</p>
+                <p>Start date: {{ momentjs(dates['C-N']['date']).format('L') }}</p>
+                <p>C1 date: {{ momentjs(dates['C1']).format('L') }}</p>
+                <p>C+1 date: {{ momentjs(dates['C+1']).format('L') }}</p>
+                <p>Finish date: {{ momentjs(dates['C+N']['date']).format('L') }}</p>
             </div>
         </div>
 

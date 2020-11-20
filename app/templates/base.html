@@ -17,8 +17,6 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ style_file }}">
-
-    <script src="/static/js/moment.min.js"></script>
     {% block style %}{% endblock %}
 
     <title>
@@ -30,6 +28,10 @@
 
 </head>
 <body>
+<script src="/static/js/moment.min.js"></script>
+
+{{ momentjs.locale(self, 'ru') }}
+
 <header class="header">
 
     <nav class="navbar navbar-light bg-light">
@@ -91,6 +93,7 @@
         crossorigin="anonymous"></script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-jgrowl/1.4.7/jquery.jgrowl.min.js"></script>
+
 
 
 {% block script %} {% endblock %}
