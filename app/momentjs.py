@@ -1,5 +1,4 @@
 import datetime
-from time import strftime
 
 from jinja2 import Markup
 

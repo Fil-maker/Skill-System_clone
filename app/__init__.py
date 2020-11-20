@@ -15,3 +15,4 @@ app.config["SECRET_KEY"] = os.environ.get("APP_SECRET")
 app.jinja_env.globals["momentjs"] = momentjs
 
 from app import controllers
+from app import ajax_controllers

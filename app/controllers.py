@@ -8,7 +8,6 @@ from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
-from app.forms.participant import ParticipantForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
@@ -133,7 +132,6 @@ def event_profile(event_id):
 def event_list():
     events = get_event()
     dt = datetime.datetime.now().replace(microsecond=0).isoformat()
-    print(dt)
     return render_template("eventList.html", events=events, test=dt)
 
 
@@ -149,12 +147,13 @@ def edit_event_information_(event_id):
 
 
 @app.route("/event/<int:event_id>/participants")
+@load_event_to_g_or_abort
 @redirect_if_unauthorized
 @only_for_admin
 def participants_manage(event_id):
-    form = ParticipantForm()
     participants = get_event_participants(event_id)
-    return render_template("participantsManage.html", form=form, participants=participants)
+    # return 'Hello world'
+    return render_template("participantsManage.html", participants=participants, event=g.current_event)
 
 
 @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
@@ -162,7 +161,6 @@ def participants_manage(event_id):
 @redirect_if_unauthorized
 @only_for_admin
 def edit_event_dates_(event_id):
-    event = get_event(event_id)
     st = datetime.datetime.strptime(g.current_event["dates"]["C-N"]["date"], '%Y-%m-%d')
     ms = datetime.datetime.strptime(g.current_event["dates"]["C1"], '%Y-%m-%d')
     fs = datetime.datetime.strptime(g.current_event["dates"]["C+1"], '%Y-%m-%d')
@@ -173,4 +171,4 @@ def edit_event_dates_(event_id):
                               finish_date=fd)
     if edit_event_information_from_form(event_id, form):
         return redirect(f"/event/{event_id}/dates")
-    return render_template("eventDates.html", form=form, event=event)
+    return render_template("eventDates.html", form=form, event=g.current_event)

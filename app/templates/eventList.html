@@ -14,7 +14,6 @@
     </thead>
     <tbody>
     {% for event in events %}
-    {{ event }}
     <tr onclick="window.location.assign('/event/{{ event['id'] }}');"
         {% if loop.index % 2== 0 %}
         class="table-info"
