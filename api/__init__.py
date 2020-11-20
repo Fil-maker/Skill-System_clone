@@ -7,7 +7,8 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from api.data import db_session
-from api.resources.events import EventResource, EventListResource, EventParticipantResource
+from api.resources.events import EventResource, EventListResource, EventParticipantResource, \
+    EventFormListResource
 from api.resources.forms import FormsResource, FormListResource, FormSignatoryResource, FormDocumentResource
 from api.resources.users import UserResource, UserListResource, UserPinResource, \
     UsersEventListResource
@@ -46,10 +47,11 @@ api.add_resource(UsersEventListResource, "/api/users/<int:user_id>/events")
 api.add_resource(EventResource, "/api/events/<int:event_id>")
 api.add_resource(EventListResource, "/api/events")
 api.add_resource(EventParticipantResource, "/api/events/<int:event_id>/participants")
+api.add_resource(EventFormListResource, "/api/events/<int:event_id>/forms")
 
 api.add_resource(FormsResource, "/api/forms/<int:form_id>")
-api.add_resource(FormListResource, "/api/events/<int:event_id>/forms")
-api.add_resource(FormSignatoryResource, "/api/forms/<int:form_id>/signatory")
-api.add_resource(FormDocumentResource, "/api/forms/<int:form_id>/document")
+api.add_resource(FormListResource, "/api/forms")
+api.add_resource(FormSignatoryResource, "/api/events/<int:event_id>/forms/<int:form_id>/signatory")
+api.add_resource(FormDocumentResource, "/api/events/<int:event_id>/forms/<int:form_id>/document")
 
 from api import controllers

@@ -5,7 +5,7 @@ from flask_restful import abort
 from sqlalchemy import desc
 
 from api.data.db_session import create_session
-from api.data.models import Event, User, UserToEventAssociation
+from api.data.models import Event, User, UserToEventAssociation, FormToEventAssociation
 from api.data.models.form import Form
 from api.data.models.user import Roles
 from api.data.models.user_to_event_association import EventRoles
@@ -23,29 +23,21 @@ def abort_if_event_not_found(func):
     return new_func
 
 
-def only_for_admin_and_chief_expert(resource="event"):
-    def decorator(func):
-        def new_func(self, id_):
-            with create_session() as session:
-                if resource == "event":
-                    event_id = id_
-                elif resource == "form":
-                    event_id = session.query(Form).get(id_).event_id
-                else:
-                    raise TypeError
-                association = session.query(UserToEventAssociation).filter(
-                    UserToEventAssociation.user_id == g.current_user.id,
-                    UserToEventAssociation.event_id == event_id).first()
-                if Roles(g.current_user.role) == Roles.ADMIN:
-                    pass
-                elif association is not None and EventRoles(association.role) == EventRoles.CHIEF_EXPERT:
-                    pass
-                else:
-                    abort(403, success=False)
-                return func(self, id_)
+def only_for_admin_and_chief_expert(func):
+    def new_func(self, event_id, *args, **kwargs):
+        with create_session() as session:
+            association = session.query(UserToEventAssociation).filter(
+                UserToEventAssociation.user_id == g.current_user.id,
+                UserToEventAssociation.event_id == event_id).first()
+            if Roles(g.current_user.role) == Roles.ADMIN:
+                pass
+            elif association is not None and EventRoles(association.role) == EventRoles.CHIEF_EXPERT:
+                pass
+            else:
+                abort(403, success=False)
+            return func(self, event_id, *args, **kwargs)
 
-        return new_func
-    return decorator
+    return new_func
 
 
 def get_event(event_id=None):
@@ -106,6 +98,11 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
                 raise ValueError("Dates are inconsistent")
             if finish_date <= datetime.date.today():
                 raise ValueError("Event is already finished")
+
+            new_dates = get_dates_from_c_format(start_date, main_stage_date, final_stage_date, finish_date)
+            for form in event.forms:
+                if form.day not in new_dates:
+                    raise ValueError(f"Dates don't match form {form.id}")
 
             event.start_date = start_date
             event.main_stage_date = main_stage_date
@@ -172,6 +169,41 @@ def exclude_users_from_event(event_id, users):
                 event.participants.remove(user)
 
 
+def get_event_forms(event_id):
+    with create_session() as session:
+        event = session.query(Event).get(event_id)
+        return [form.to_dict() for form in event.forms]
+
+
+def add_form_to_event(event_id, form_id):
+    with create_session() as session:
+        event = session.query(Event).get(event_id)
+        form = session.query(Form).get(form_id)
+        if form is None:
+            raise KeyError(f"Form {form_id} not found")
+        if form_id in map(lambda x: x.form_id, event.forms):
+            raise ValueError(f"Form {form_id} is already added to event {event_id}")
+        if form.day not in get_dates_from_c_format(event.start_date, event.main_stage_date,
+                                                   event.final_stage_date, event.finish_date):
+            raise ValueError(f"Event {event_id} doesn't have day {form.day}")
+        association = FormToEventAssociation(form_id=form_id)
+        event.forms.append(association)
+
+
+def remove_form_from_event(event_id, form_id):
+    with create_session() as session:
+        form = session.query(Form).get(form_id)
+        if form is None:
+            raise KeyError(f"Form {form_id} not found")
+        association = session.query(FormToEventAssociation) \
+                             .filter(FormToEventAssociation.form_id == form_id,
+                                     FormToEventAssociation.event_id == event_id).first()
+
+        if association is None:
+            raise KeyError(f"Form {form_id} is not added to event {event_id}")
+        session.delete(association)
+
+
 def get_dates_from_c_format(start_date: datetime.date, main_stage_date: datetime.date,
                             final_stage_date: datetime.date, finish_date: datetime.date):
     """
@@ -194,3 +226,9 @@ def get_c_format_from_dates(start_date: datetime.date, main_stage_date: datetime
     """
     dates = get_dates_from_c_format(start_date, main_stage_date, final_stage_date, finish_date)
     return {value: key for key, value in dates.items()}
+
+
+def check_day_format(day: str):
+    return day.startswith("C") and \
+           ((len(day) > 1 and day[1:].isdigit() and int(day[1:]) > 0) or
+            (len(day) > 2 and day[1] in "+-" and day[2:].isdigit() and int(day[2:]) > 0))

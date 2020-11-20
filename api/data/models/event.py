@@ -22,7 +22,7 @@ class Event(db.Model, SerializerMixin):
     photo_url = Column(String, nullable=True)
 
     participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
-    forms = orm.relation("Form", back_populates="event")
+    forms = orm.relation("FormToEventAssociation", back_populates="event", lazy="dynamic")
     chief_expert = orm.relation("User", foreign_keys=[chief_expert_id])
 
     def to_dict(self, *args, **kwargs):
