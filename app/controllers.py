@@ -131,8 +131,7 @@ def event_profile(event_id):
 @only_for_admin
 def event_list():
     events = get_event()
-    dt = datetime.datetime.now().replace(microsecond=0).isoformat()
-    return render_template("eventList.html", events=events, test=dt)
+    return render_template("eventList.html", events=events)
 
 
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
@@ -152,7 +151,6 @@ def edit_event_information_(event_id):
 @only_for_admin
 def participants_manage(event_id):
     participants = get_event_participants(event_id)
-    # return 'Hello world'
     return render_template("participantsManage.html", participants=participants, event=g.current_event)
 
 

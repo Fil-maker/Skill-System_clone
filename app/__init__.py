@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask
-from .momentjs import momentjs
+from app.momentjs import momentjs
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 if os.path.exists(dotenv_path):
@@ -15,4 +15,6 @@ app.config["SECRET_KEY"] = os.environ.get("APP_SECRET")
 app.jinja_env.globals["momentjs"] = momentjs
 
 from app import controllers
-from app import ajax_controllers
+from app.ajax_controllers import ajax
+
+app.register_blueprint(ajax, url_prefix='/ajax')
