@@ -1,3 +1,4 @@
+import datetime
 from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
@@ -7,7 +8,6 @@ from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.login import LoginForm
-from app.forms.participant import ParticipantForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
@@ -146,32 +146,27 @@ def edit_event_information_(event_id):
 
 
 @app.route("/event/<int:event_id>/participants")
+@load_event_to_g_or_abort
 @redirect_if_unauthorized
 @only_for_admin
 def participants_manage(event_id):
-    form = ParticipantForm()
     participants = get_event_participants(event_id)
-    # TODO: переделать шаблон под participants (раньше user), т.к. participants имеет следующую структуру:
-    # [
-    #     {
-    #         "role": role,
-    #         "user": {
-    #             user_info...
-    #         }
-    #     }
-    # ]
-    return render_template("participantsManage.html", form=form, participants=participants)
+    return render_template("participantsManage.html", participants=participants, event=g.current_event)
 
-# @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
-# @load_event_to_g_or_abort
-# @redirect_if_unauthorized
-# @only_for_admin
-# def edit_event_dates_(event_id):
-#     form = EditEventDatesForm(start_date=g.current_event["start_date"],
-#                               main_stage_date=g.current_event["main_stage_date"],
-#                               final_stage_date=g.current_event["final_stage_date"],
-#                               finish_date=g.current_event["finish_date"])
-#     if edit_event_information_from_form(event_id, form):
-#         return redirect(f"/event/{event_id}/dates")
-#     return render_template("eventDates.html", form=form)
-# # TODO: создать шаблон eventDates.html и просто раскомментировать этот кусок
+
+@app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
+@load_event_to_g_or_abort
+@redirect_if_unauthorized
+@only_for_admin
+def edit_event_dates_(event_id):
+    st = datetime.datetime.strptime(g.current_event["dates"]["C-N"]["date"], '%Y-%m-%d')
+    ms = datetime.datetime.strptime(g.current_event["dates"]["C1"], '%Y-%m-%d')
+    fs = datetime.datetime.strptime(g.current_event["dates"]["C+1"], '%Y-%m-%d')
+    fd = datetime.datetime.strptime(g.current_event["dates"]["C+N"]["date"], '%Y-%m-%d')
+    form = EditEventDatesForm(start_date=st,
+                              main_stage_date=ms,
+                              final_stage_date=fs,
+                              finish_date=fd)
+    if edit_event_information_from_form(event_id, form):
+        return redirect(f"/event/{event_id}/dates")
+    return render_template("eventDates.html", form=form, event=g.current_event)

@@ -1,0 +1,26 @@
+@media(max-width:1920px) {
+
+.table{
+        float: left;
+        width: 33%;
+        margin-right: 0;
+}
+.form{
+        margin-left: 30%;
+        margin-right:30%;
+}
+
+}
+@media(max-width:960px) {
+
+.table{
+        display: inline-table;
+        width: 100%;
+        margin-right: 0;
+}
+.form{
+        margin-left: 0%;
+        margin-right:0%;
+}
+
+}
