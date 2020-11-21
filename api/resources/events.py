@@ -8,6 +8,7 @@ from api.services.auth import token_auth
 from api.services.events import abort_if_event_not_found, get_event, delete_event, update_event, \
     create_event, get_event_participants, add_users_to_event, exclude_users_from_event, \
     only_for_admin_and_chief_expert
+from api.services.users import only_for_admin
 
 
 class EventResource(Resource):
@@ -48,7 +49,7 @@ class EventListResource(Resource):
         return jsonify({"success": True, "events": get_event()})
 
     @token_auth.login_required
-    @only_for_admin_and_chief_expert
+    @only_for_admin
     def post(self):
         parser = RequestParser()
         parser.add_argument("title", required=True)

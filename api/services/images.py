@@ -17,10 +17,6 @@ def generate_photo_filename(unique_id):
 
 
 def save_photo(photo_base64, directory, filename):
-    return Thread(target=_save_async_photo, args=(photo_base64, directory, filename)).start()
-
-
-def _save_async_photo(photo_base64, directory, filename):
     try:
         img = Image.open(BytesIO(base64.b64decode(photo_base64.split(",")[1])))
     except (IndexError, binascii.Error):
@@ -65,6 +61,10 @@ def create_thumbnail(img: Image.Image, size):
 
 
 def create_and_upload_thumbnail(img: Image.Image, size, directory, obj_name):
+    return Thread(target=_async_create_and_upload_thumbnail, args=(img, size, directory, obj_name)).start()
+
+
+def _async_create_and_upload_thumbnail(img: Image.Image, size, directory, obj_name):
     img = create_thumbnail(img, size)
     upload_to_s3(img, directory + "/" + str(size), obj_name)
 
