@@ -2,12 +2,12 @@ import datetime
 import os
 
 from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey
-from sqlalchemy_serializer import SerializerMixin
 
 from api.data.db_session import db
+from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
 
 
-class Event(db.Model, SerializerMixin):
+class Event(db.Model, ISO8601SerializerMixin):
     __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -48,12 +48,21 @@ class Event(db.Model, SerializerMixin):
         c_n = c_format[self.final_stage_date - datetime.timedelta(days=1)]
         c_plus_n = c_format[self.finish_date]
         ans["dates"] = {
-            c_minus_n: dates[c_minus_n],
-            "C-1": dates["C-1"],
-            "C1": dates["C1"],
-            c_n: dates[c_n],
-            "C+1": dates["C+1"],
-            c_plus_n: dates[c_plus_n]
+            "C-N": {
+                "name": c_minus_n,
+                "date": self.serialize_date(dates[c_minus_n])
+            },
+            "C-1": self.serialize_date(dates["C-1"]),
+            "C1": self.serialize_date(dates["C1"]),
+            "CN": {
+                "name": c_n,
+                "date": self.serialize_date(dates[c_n])
+            },
+            "C+1": self.serialize_date(dates["C+1"]),
+            "C+N": {
+                "name": c_plus_n,
+                "date": self.serialize_date(dates[c_plus_n])
+            }
         }
 
         ans["forms"] = [form.id for form in self.forms]
