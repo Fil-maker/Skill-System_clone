@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from sqlalchemy import Column, Integer, Date, String, orm
+from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey
 
 from api.data.db_session import db
 from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
@@ -17,15 +17,18 @@ class Event(db.Model, ISO8601SerializerMixin):
     main_stage_date = Column(Date, nullable=False)
     final_stage_date = Column(Date, nullable=False)
     finish_date = Column(Date, nullable=False)
+    chief_expert_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     photo_url = Column(String, nullable=True)
 
     participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
+    forms = orm.relation("FormToEventAssociation", back_populates="event", lazy="dynamic")
+    chief_expert = orm.relation("User", foreign_keys=[chief_expert_id])
 
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
             return super(Event, self).to_dict(*args, **kwargs)
-        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title"])
+        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title", "chief_expert"])
         if self.photo_url is not None:
             photos = {
                 "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
@@ -62,4 +65,5 @@ class Event(db.Model, ISO8601SerializerMixin):
             }
         }
 
+        ans["forms"] = [form.id for form in self.forms]
         return ans
