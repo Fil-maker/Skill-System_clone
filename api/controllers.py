@@ -51,3 +51,4 @@ def get_regions():
 @token_auth.login_required
 def get_myself():
     return jsonify({"success": True, "user": g.current_user.to_dict()})
+

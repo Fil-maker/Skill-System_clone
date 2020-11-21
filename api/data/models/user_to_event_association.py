@@ -11,6 +11,14 @@ class EventRoles(Enum):
     EXPERT = 1
     CHIEF_EXPERT = 2
 
+    def __str__(self):
+        if self.value == self.COMPETITOR.value:
+            return "Competitor"
+        elif self == self.EXPERT.value:
+            return "Expert"
+        elif self.value == self.CHIEF_EXPERT.value:
+            return "Chief expert"
+
 
 class UserToEventAssociation(db.Model):
     __tablename__ = "user_to_event_association"
