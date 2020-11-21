@@ -12,7 +12,7 @@ from api.services.events import get_dates_from_c_format
 from api.services.forms import get_form_signatory
 
 
-def render_form_template(event_id, form_id):
+def render_form_template(event_id, form_id) -> BytesIO:
     with create_session() as session:
         association = session.query(FormToEventAssociation) \
             .filter(FormToEventAssociation.form_id == form_id,
@@ -44,4 +44,9 @@ def render_form_template(event_id, form_id):
                           get_form_signatory(event_id, form_id)],
             "image": InlineImage(doc, bytes_io, height=Mm(25))
         })
-        doc.save("C:/Users/sssemion/PycharmProjects/skill-management-system/api/services/doc.docx")
+        bytes_io.close()
+
+        file = BytesIO()
+        doc.save(file)
+        file.seek(0)
+        return file

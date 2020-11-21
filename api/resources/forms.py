@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, send_file
 from flask_restful import Resource, abort
 from flask_restful.reqparse import RequestParser
 
@@ -90,5 +90,5 @@ class FormDocumentResource(Resource):
     @token_auth.login_required
     @only_for_admin_and_chief_expert
     def get(self, event_id, form_id):
-        render_form_template(event_id, form_id)
-        return jsonify({"success": True})
+        file = render_form_template(event_id, form_id)
+        return send_file(file, as_attachment=True, attachment_filename="form.docx")
