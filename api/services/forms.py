@@ -1,3 +1,5 @@
+import datetime
+
 from flask import g
 from flask_restful import abort
 
@@ -6,7 +8,7 @@ from api.data.models import UserToEventAssociation, FormToEventAssociation, Even
 from api.data.models.form import Form
 from api.data.models.form_signatory_association import FormSignatoryAssociation
 from api.data.models.user_to_event_association import EventRoles
-from api.services.events import check_day_format
+from api.services.events import check_day_format, get_dates_from_c_format
 
 
 def abort_if_form_not_found(func):
@@ -104,7 +106,7 @@ def get_form_signatory(event_id, form_id):
         for user_to_event, form_to_event, signatory in data:
             resp.append({
                 "participant": user_to_event.to_dict_participant(),
-                "sign_date": signatory.sign_date
+                "sign_date": signatory.to_dict(only=["sign_date"])
             })
         return resp
 
@@ -120,6 +122,8 @@ def sign_form(event_id, form_id, pin):
         if cur_user in association.event.participants and (
                 cur_user.role == association.form.role or
                 EventRoles(cur_user.role) == EventRoles.CHIEF_EXPERT):
+            if association.date > datetime.date.today():
+                raise ValueError(f"You can't sign the form before {association.date}")
             if g.current_user.pin is None:
                 raise ValueError("Pin is not set")
             elif not g.current_user.check_pin(str(pin)):
