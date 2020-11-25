@@ -77,9 +77,10 @@ class FormSignatoryResource(Resource):
         args = parser.parse_args()
         try:
             sign_form(event_id, form_id, **args)
-        except KeyError:
+        except KeyError as e:
             abort(403, success=False)
         except ValueError as e:
+            print(e)
             abort(403, success=False, message=str(e))
         else:
             return jsonify({"success": True})

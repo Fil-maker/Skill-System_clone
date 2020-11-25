@@ -10,8 +10,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, orm, DateTime, Boole
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from api.data.db_session import db
-from api.data.models.form_to_event_association import forms_signatures
 from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
+
 
 class Roles(Enum):
     NO_ROLE = 0
@@ -39,7 +39,7 @@ class User(db.Model, ISO8601SerializerMixin):
     region = orm.relation("Region", foreign_keys=[region_id])
 
     events = orm.relation("UserToEventAssociation", back_populates="participant", lazy="dynamic")
-    signed_forms = orm.relation("FormToEventAssociation", secondary=forms_signatures, back_populates="signatory")
+    signed_forms = orm.relation("FormSignatoryAssociation", back_populates="user", lazy="dynamic")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

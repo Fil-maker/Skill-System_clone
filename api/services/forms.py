@@ -4,6 +4,7 @@ from flask_restful import abort
 from api.data.db_session import create_session
 from api.data.models import UserToEventAssociation, FormToEventAssociation, Event
 from api.data.models.form import Form
+from api.data.models.form_signatory_association import FormSignatoryAssociation
 from api.data.models.user_to_event_association import EventRoles
 from api.services.events import check_day_format
 
@@ -82,13 +83,22 @@ def update_form(form_id, title=None, content=None, day=None):
 
 def get_form_signatory(event_id, form_id):
     with create_session() as session:
-        form = session.query(FormToEventAssociation) \
-            .filter(FormToEventAssociation.form_id == form_id,
-                    FormToEventAssociation.event_id == event_id).first()
-        return [session.query(UserToEventAssociation)
-                    .filter(UserToEventAssociation.user_id == user.id,
-                            UserToEventAssociation.event_id == form.event.id)
-                    .first().to_dict_participant() for user in form.signatory]
+        data = session.query(UserToEventAssociation, FormToEventAssociation, FormSignatoryAssociation) \
+            .join(FormToEventAssociation, FormToEventAssociation.event_id == UserToEventAssociation.event_id) \
+            .join(FormSignatoryAssociation, FormSignatoryAssociation.form_to_event_id == FormToEventAssociation.id) \
+            .filter(FormToEventAssociation.event_id == event_id,
+                    FormToEventAssociation.form_id == form_id,
+                    UserToEventAssociation.event_id == FormToEventAssociation.event_id,
+                    FormToEventAssociation.id == FormSignatoryAssociation.form_to_event_id,
+                    UserToEventAssociation.user_id == FormSignatoryAssociation.user_id
+                    )
+        resp = []
+        for user_to_event, form_to_event, signatory in data:
+            resp.append({
+                "participant": user_to_event.to_dict_participant(),
+                "sign_date": signatory.sign_date
+            })
+        return resp
 
 
 def sign_form(event_id, form_id, pin):
@@ -107,7 +117,9 @@ def sign_form(event_id, form_id, pin):
             elif not g.current_user.check_pin(str(pin)):
                 raise ValueError("Incorrect pin")
             else:
-                association.signatory.append(cur_user.participant)
+                signatory = FormSignatoryAssociation(form_to_event_id=association.id,
+                                                     user_id=g.current_user.id)
+                session.add(signatory)
                 return True
         else:
             raise KeyError

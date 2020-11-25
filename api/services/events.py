@@ -163,10 +163,13 @@ def exclude_users_from_event(event_id, users):
             user = session.query(User).get(int(user_id))
             if not user:
                 raise KeyError(f"User {user_id} not found")
-            if user in event.participants:
+            association = session.query(UserToEventAssociation) \
+                .filter(UserToEventAssociation.user_id == user_id,
+                        UserToEventAssociation.event_id == event_id).first()
+            if association:
                 if user.id == event.chief_expert_id:
                     event.chief_expert_id = None
-                event.participants.remove(user)
+                session.delete(association)
 
 
 def get_event_forms(event_id):
