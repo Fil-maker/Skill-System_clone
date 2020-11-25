@@ -81,6 +81,14 @@ def update_form(form_id, title=None, content=None, day=None):
         return form.to_dict()
 
 
+def get_event_form(event_id, form_id):
+    with create_session() as session:
+        form_to_event = session.query(FormToEventAssociation) \
+            .filter(FormToEventAssociation.event_id == event_id,
+                    FormToEventAssociation.form_id == form_id).first()
+        return form_to_event.to_dict()
+
+
 def get_form_signatory(event_id, form_id):
     with create_session() as session:
         data = session.query(UserToEventAssociation, FormToEventAssociation, FormSignatoryAssociation) \
