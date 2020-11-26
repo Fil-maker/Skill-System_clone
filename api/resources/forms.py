@@ -6,7 +6,7 @@ from api.data.models.user_to_event_association import EventRoles
 from api.services.auth import token_auth
 from api.services.events import abort_if_event_not_found, only_for_admin_and_chief_expert
 from api.services.forms import abort_if_form_not_found, delete_form, get_form, update_form, \
-    create_form, get_form_signatory, sign_form, abort_if_event_form_not_found
+    create_form, get_form_signatory, sign_form, abort_if_event_form_not_found, get_event_form
 from api.services.users import only_for_admin
 from api.services.word import render_form_template
 
@@ -62,6 +62,12 @@ class FormListResource(Resource):
             return jsonify({"success": True, "form": form})
 
 
+class EventFormResource(Resource):
+    @abort_if_event_form_not_found
+    def get(self, event_id, form_id):
+        return jsonify({"success": True, "eventForm": get_event_form(event_id, form_id)})
+
+
 class FormSignatoryResource(Resource):
     @abort_if_event_form_not_found
     @token_auth.login_required
@@ -77,9 +83,10 @@ class FormSignatoryResource(Resource):
         args = parser.parse_args()
         try:
             sign_form(event_id, form_id, **args)
-        except KeyError:
+        except KeyError as e:
             abort(403, success=False)
         except ValueError as e:
+            print(e)
             abort(403, success=False, message=str(e))
         else:
             return jsonify({"success": True})

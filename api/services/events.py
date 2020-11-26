@@ -5,10 +5,11 @@ from flask_restful import abort
 from sqlalchemy import desc
 
 from api.data.db_session import create_session
-from api.data.models import Event, User, UserToEventAssociation, FormToEventAssociation
+from api.data.models.event import Event
 from api.data.models.form import Form
-from api.data.models.user import Roles
-from api.data.models.user_to_event_association import EventRoles
+from api.data.models.form_to_event_association import FormToEventAssociation
+from api.data.models.user import Roles, User
+from api.data.models.user_to_event_association import EventRoles, UserToEventAssociation
 from api.services.images import delete_photo, generate_photo_filename, save_photo
 
 
@@ -163,10 +164,13 @@ def exclude_users_from_event(event_id, users):
             user = session.query(User).get(int(user_id))
             if not user:
                 raise KeyError(f"User {user_id} not found")
-            if user in event.participants:
+            association = session.query(UserToEventAssociation) \
+                .filter(UserToEventAssociation.user_id == user_id,
+                        UserToEventAssociation.event_id == event_id).first()
+            if association:
                 if user.id == event.chief_expert_id:
                     event.chief_expert_id = None
-                event.participants.remove(user)
+                session.delete(association)
 
 
 def get_event_forms(event_id):
@@ -183,10 +187,11 @@ def add_form_to_event(event_id, form_id):
             raise KeyError(f"Form {form_id} not found")
         if form_id in map(lambda x: x.form_id, event.forms):
             raise ValueError(f"Form {form_id} is already added to event {event_id}")
-        if form.day not in get_dates_from_c_format(event.start_date, event.main_stage_date,
-                                                   event.final_stage_date, event.finish_date):
+        dates = get_dates_from_c_format(event.start_date, event.main_stage_date,
+                                        event.final_stage_date, event.finish_date)
+        if form.day not in dates:
             raise ValueError(f"Event {event_id} doesn't have day {form.day}")
-        association = FormToEventAssociation(form_id=form_id)
+        association = FormToEventAssociation(form_id=form_id, date=dates[form.day])
         event.forms.append(association)
 
 
