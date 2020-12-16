@@ -32,7 +32,7 @@ class FormRegisterForm(FlaskForm):
 
     label = "For"
     role = RadioField(label,
-                      choices=[('expert', 'Experts'), ('competitor', 'Competitors')],
+                      choices=[(0, 'Experts'), (1, 'Competitors')],
                       validators=[DataRequired()],
                       render_kw={
                           "required": True,

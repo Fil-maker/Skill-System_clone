@@ -3,7 +3,7 @@ from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
-from app.services.forms import get_form
+from app.services.forms import get_form, create_form_from_form
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
@@ -186,6 +186,8 @@ def edit_event_dates_(event_id):
 @only_for_admin
 def create_form():
     form = FormRegisterForm()
+    if create_form_from_form(form):
+        return redirect("/forms")  # TODO redirect to forms list
     return render_template("formRegister.html", form=form)
 
 
