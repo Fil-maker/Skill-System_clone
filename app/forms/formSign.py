@@ -13,7 +13,7 @@ class FormSignForm(FlaskForm):
         "placeholder": label
     })
 
-    submit = SubmitField("Change", render_kw={
+    submit = SubmitField("Sign", render_kw={
         "class": "btn btn-primary",
         "type": "submit"
     })

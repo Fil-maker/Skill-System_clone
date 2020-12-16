@@ -1,0 +1,32 @@
+.jumbotron{
+    padding-bottom: 2rem;
+}
+.carousel{
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 40%;
+    float: left;
+}
+
+.carousels{
+    float: left;
+    margin-bottom: 1rem;
+}
+
+.advantage{
+    background-color:#e5eaf8;
+    margin-right: 2rem;
+    margin-left: 2rem;
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-radius: 1rem;
+    width: 70%;
+    float: left;
+}
+.advantage-right{
+    float: right;
+    text-align: end;
+}

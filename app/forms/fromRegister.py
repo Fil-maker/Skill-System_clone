@@ -25,22 +25,24 @@ class FormRegisterForm(FlaskForm):
     content = TextAreaField(label,
                             validators=[DataRequired()],
                             render_kw={
+                                "class": "form-content",
                                 "required": True,
                                 "placeholder": label
                             })
 
     label = "For"
-    example = RadioField(label,
-                         choices=[('expert', 'Experts'), ('competitor', 'Competitors')],
-                         validators=[DataRequired()],
-                         render_kw={
-                             "required": True,
-                         })
+    role = RadioField(label,
+                      choices=[('expert', 'Experts'), ('competitor', 'Competitors')],
+                      validators=[DataRequired()],
+                      render_kw={
+                          "required": True,
+                      })
 
-    submit = SubmitField("OK", render_kw={
-        "class": "btn btn-primary",
-        "type": "submit"
-    })
+    submit = SubmitField("OK",
+                         render_kw={
+                             "class": "btn btn-primary",
+                             "type": "submit"
+                         })
 
     def __init__(self, *args, **kwargs):
         super(FormRegisterForm, self).__init__(*args, **kwargs)
@@ -48,5 +50,5 @@ class FormRegisterForm(FlaskForm):
         radio = "input-group-prepend"
         self.title.render_kw["class"] = default
         self.day.render_kw["class"] = default
-        self.content.render_kw["class"] = default
-        self.example.render_kw["class"] = radio
+        self.content.render_kw["class"] = default + " form-content"
+        self.role.render_kw["class"] = radio

@@ -1,0 +1,39 @@
+{% set title = form['title'] %}
+{% set style_file = url_for('static', filename='css/formProfile.css') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ title }}</h1>
+
+<div class="document">
+    <div class="info">
+        <p>Day: {{ form['day'] }}</p>
+        <p>For:{% if form['role'] == 1 %}
+            Expert
+            {% elif form['role'] == 2 %}
+            Chief Expert
+            {% endif %}
+        </p>
+    </div>
+    <h6 style="text-align: center;">{{ title }} | Content</h6>
+    <div class="modal-body">{{ form['content'] }}</div>
+    <div class="btn-panel">
+        <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
+        <div class="edit-panel">
+            {% if momentjs(test).is_able_to_sign() %}
+            <a class="btn btn-success" href="/form/{{ form['id'] }}/sign">Sign</a>
+            {% endif %}
+            {% if current_user['role'] %}
+            <a href="/form/{{ form['id'] }}/edit" class="btn btn-primary">Edit</a>
+            <button class="btn btn-danger btn-delete">Delete</button>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

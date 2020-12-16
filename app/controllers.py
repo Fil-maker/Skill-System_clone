@@ -3,7 +3,7 @@ from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
-from api.services.forms import get_form
+from app.services.forms import get_form
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
@@ -37,6 +37,11 @@ def confirm(token):
     return "ok" if confirm_token(token) else "not ok"
 
 
+@app.route("/")
+def main():
+    return render_template("main.html")
+
+
 @app.route("/register", methods=["GET", "POST"])
 @redirect_if_authorized
 def register():
@@ -52,7 +57,7 @@ def login():
     form = LoginForm()
     if login_from_form(form):
         return redirect("/profile")
-    return render_template("login.html", form=form)
+    return render_template("profileLogin.html", form=form)
 
 
 @app.route("/logout")
@@ -111,7 +116,7 @@ def user_profile(user_id):
     return render_template("profileUser.html", user=user)
 
 
-@app.route("/create-event", methods=["GET", "POST"])
+@app.route("/event/create", methods=["GET", "POST"])
 @redirect_if_unauthorized
 @only_for_admin
 def create_event_():
@@ -130,7 +135,7 @@ def event_profile(event_id):
     return render_template("eventProfile.html", event=event)
 
 
-@app.route("/event-list")
+@app.route("/event/list")
 @redirect_if_unauthorized
 @only_for_admin
 def event_list():
@@ -189,4 +194,25 @@ def create_form():
 def sign_form(form_id):
     form_data = get_form(form_id)
     form = FormSignForm()
-    return render_template("fromSign.html", form=form, form_data=form_data)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formSign.html", form=form, form_data=form_data, test=test)
+
+
+@app.route("/form/<int:form_id>")
+@redirect_if_unauthorized
+def profile_form(form_id):
+    form = get_form(form_id)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formProfile.html", form=form, test=test)
+
+
+@app.route("/form/<int:form_id>/edit")
+@redirect_if_unauthorized
+def edit_form(form_id):
+    form_data = get_form(form_id)
+    form = FormRegisterForm(title=form_data['title'],
+                            day=form_data['day'],
+                            content=form_data['content'],
+                            role=form_data['role']
+                            )
+    return render_template('formRegister.html', form=form, form_data=form_data, edit=True)

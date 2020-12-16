@@ -36,10 +36,10 @@
                 Dates information
             </a>
             <div class="card-body">
-                <p>Start date: {{ momentjs(dates['C-N']['date']).format('L') }}</p>
-                <p>C1 date: {{ momentjs(dates['C1']).format('L') }}</p>
-                <p>C+1 date: {{ momentjs(dates['C+1']).format('L') }}</p>
-                <p>Finish date: {{ momentjs(dates['C+N']['date']).format('L') }}</p>
+                <p>Start date: {{ momentjs(dates['C-N']['date']).format(date_format) }}</p>
+                <p>C1 date: {{ momentjs(dates['C1']).format(date_format) }}</p>
+                <p>C+1 date: {{ momentjs(dates['C+1']).format(date_format) }}</p>
+                <p>Finish date: {{ momentjs(dates['C+N']['date']).format(date_format) }}</p>
             </div>
         </div>
 

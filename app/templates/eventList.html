@@ -7,9 +7,9 @@
 <table class="table table-hover">
     <thead>
     <tr>
-        <th>title</th>
-        <th>duration</th>
-        <th>participants</th>
+        <th>Title</th>
+        <th>Duration</th>
+        <th>Participants</th>
     </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@
             <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
             {% endif %}
             {{ event['title'] }}</th>
-        <td>{{ momentjs(event['dates']['C-N']['date']).format('L') }} ->{{ momentjs(event['dates']['C+N']['date']).format('L') }} </td>
+        <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }} ->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }} </td>
         <td>{{ event['participants'] | length }}</td>
     </tr>
     {% endfor %}

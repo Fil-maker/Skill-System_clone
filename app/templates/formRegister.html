@@ -1,4 +1,8 @@
-{% set title = 'Create new Form'%}
+{% if edit %}
+{% set title = form_data['title'] %}
+{% else %}
+{% set title = 'Create new Form' %}
+{% endif %}
 {% set style_file = url_for("static", filename="css/formRegister.css")%}
 
 {% extends 'base.html' %}
@@ -40,10 +44,10 @@
     </div>
 
     <div class="input-group form-item">
-        {{ form.example.label }}
-        {{ form.example() }}
+        {{ form.role.label }}
+        {{ form.role() }}
         <div class="invalid-feedback">
-            {% for error in form.example.errors %}
+            {% for error in form.role.errors %}
             <p>{{ error }}</p>
             {% endfor %}
         </div>
