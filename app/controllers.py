@@ -200,6 +200,22 @@ def create_form():
     return render_template("formRegister.html", form=form)
 
 
+@app.route("/form/<int:form_id>")
+@redirect_if_unauthorized
+def profile_form(form_id):
+    form = get_form(form_id)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formProfile.html", form=form, test=test)
+
+
+@app.route("/form/list")
+@redirect_if_unauthorized
+@only_for_admin
+def list_form():
+    forms = get_form()
+    return render_template("formList.html", forms=forms)
+
+
 @app.route("/form/<int:form_id>/sign")
 @redirect_if_unauthorized
 def sign_form(form_id):
@@ -207,14 +223,6 @@ def sign_form(form_id):
     form = FormSignForm()
     test = datetime.datetime.now().strftime("%Y-%m-%d")
     return render_template("formSign.html", form=form, form_data=form_data, test=test)
-
-
-@app.route("/form/<int:form_id>")
-@redirect_if_unauthorized
-def profile_form(form_id):
-    form = get_form(form_id)
-    test = datetime.datetime.now().strftime("%Y-%m-%d")
-    return render_template("formProfile.html", form=form, test=test)
 
 
 @app.route("/form/<int:form_id>/edit")

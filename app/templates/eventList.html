@@ -4,9 +4,9 @@
 
 {% block content %}
 <h1>{{ title }}</h1>
-<table class="table table-hover table-light">
+<table class="table table-">
     <thead>
-    <tr>
+    <tr class="table-info">
         <th>Title</th>
         <th>Duration</th>
         <th>Participants</th>
@@ -14,14 +14,17 @@
     </thead>
     <tbody>
     {% for event in events %}
-    <tr onclick="window.location.assign('/event/{{ event['id'] }}');">
-        <th scope="row">
-            {% if event.get('photos', False) %}
-            <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
-            {% else %}
-            <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
-            {% endif %}
-            {{ event['title'] }}</th>
+    <tr class="table-light">
+        <td scope="row">
+            <a class="name" href="/event/{{ event['id'] }}">
+                {% if event.get('photos', False) %}
+                    <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
+                {% else %}
+                    <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
+                {% endif %}
+                {{ event['title'] }}
+            </a>
+        </td>
         <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }} ->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }} </td>
         <td>{{ event['participants'] | length }}</td>
     </tr>

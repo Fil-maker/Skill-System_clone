@@ -28,3 +28,12 @@ class momentjs(object):
             f"""<script>\nmoment({self.timestamp.strftime('%Y-%m-%d')}).isAfter('{datetime.datetime.now().strftime(
                 '%Y-%m-%d-%S')}') || moment({self.timestamp.strftime(
                 '%Y-%m-%d')}).isSame('{datetime.datetime.now().strftime('%Y-%m-%d-%S')}');\n</script>""")
+
+
+class text(object):
+
+    def __init__(self, string):
+        self.string = string
+
+    def short(self):
+        return ' '.join(self.string.split()[:10]) + ' ...'
