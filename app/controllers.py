@@ -116,6 +116,14 @@ def user_profile(user_id):
     return render_template("profileUser.html", user=user)
 
 
+@app.route("/user/list")
+@redirect_if_unauthorized
+@only_for_admin
+def user_list():
+    users = get_user()
+    return render_template("profileList.html", users=users)
+
+
 @app.route("/event/create", methods=["GET", "POST"])
 @redirect_if_unauthorized
 @only_for_admin
@@ -160,7 +168,8 @@ def edit_event_information_(event_id):
 @only_for_admin
 def participants_manage(event_id):
     participants = get_event_participants(event_id)
-    return render_template("eventParticipants.html", participants=participants, event=g.current_event)
+    users = get_user()
+    return render_template("eventParticipants.html", participants=participants, users=users, event=g.current_event)
 
 
 @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])

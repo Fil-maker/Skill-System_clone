@@ -67,11 +67,49 @@
             <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">promote</button>
             <button class="demote-btn btn btn-danger" value="{{ user['id'] }},{{ participant['role'] }}">delete</button>
             {% else %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{ {participant['role'] }}">assign</button>
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">assign</button>
             {% endif %}
         </td>
     </tr>
     {% endfor %}
+
+
+    {% for user in users %}
+    <tr {% if loop.index == 1 %} class="table-warning" {% endif %}>
+        <td>
+            <a href="/user/{{ user['id'] }}" class="name">
+                {% if user.get('photos', False) %}
+                <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
+                {% else %}
+                <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+                {% endif %}
+                {{ user['first_name'] }} {{ user['last_name'] }}
+            </a>
+        </td>
+        <td>
+            {{ user['country']['name'] }}
+            {% if user.get('region',False) %}
+            | {{ user['region']['name'] }}
+            {% endif %}
+        </td>
+        <td>
+            {% if user['about'] %}
+            {{ user['about'] }}
+            {% else %}
+            Empty
+            {% endif %}
+        </td>
+        <td>
+            Not Contributor
+        </td>
+
+        <td>
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},0">assign</button>
+        </td>
+    </tr>
+    {% endfor %}
+
+
     </tbody>
 </table>
 

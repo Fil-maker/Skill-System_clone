@@ -1,5 +1,5 @@
 {% set title = 'Profile' %}
-{% set style_file = url_for('static', filename='css/Profile.css') %}
+{% set style_file = url_for('static', filename='css/profile.css') %}
 {% set dates =  event['dates'] %}
 {% extends 'base.html' %}
 
@@ -22,7 +22,7 @@
 
         <div class="card">
             <a href="/event/{{ event['id']}}/information" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Event information
             </a>
             <div class="card-body">
@@ -32,7 +32,7 @@
 
         <div class="card">
             <a href="/event/{{ event['id']}}/dates" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Dates information
             </a>
             <div class="card-body">
@@ -45,7 +45,7 @@
 
         <div class="card">
             <a href="/event/{{ event['id']}}/participants" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Participants
             </a>
             <div class="card-body">
