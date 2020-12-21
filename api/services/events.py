@@ -128,7 +128,26 @@ def set_photo(event_id, photo):
 def get_event_participants(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        return [participant.to_dict_participant() for participant in event.participants]
+        return {
+            "chief-expert": event.chief_expert.to_dict(),
+            "experts": [
+                expert.to_dict_participant() for expert in
+                filter(lambda x: x.role == EventRoles.EXPERT.value, event.participants)
+            ],
+            "competitors": [
+                competitor.to_dict_participant() for competitor in
+                filter(lambda x: x.role == EventRoles.COMPETITOR.value, event.participants)
+            ]
+        }
+
+
+def get_unassigned_users(event_id):
+    with create_session() as session:
+        event = session.query(Event).get(event_id)
+        unassigned = sorted(list(filter(lambda x: x.id not in map(lambda x: x.user_id, event.participants),
+                                        session.query(User).filter(User.confirmed).all())),
+                            key=lambda x: x.creation_date)
+        return [user.to_dict() for user in unassigned]
 
 
 def add_users_to_event(event_id, users):
@@ -201,8 +220,8 @@ def remove_form_from_event(event_id, form_id):
         if form is None:
             raise KeyError(f"Form {form_id} not found")
         association = session.query(FormToEventAssociation) \
-                             .filter(FormToEventAssociation.form_id == form_id,
-                                     FormToEventAssociation.event_id == event_id).first()
+            .filter(FormToEventAssociation.form_id == form_id,
+                    FormToEventAssociation.event_id == event_id).first()
 
         if association is None:
             raise KeyError(f"Form {form_id} is not added to event {event_id}")
