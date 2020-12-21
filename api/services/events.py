@@ -160,6 +160,8 @@ def add_users_to_event(event_id, users):
                 raise KeyError("You must specify user id")
             if not user:
                 raise KeyError(f"User {user_json['id']} not found")
+            if not user.confirmed:
+                raise ValueError(f"User {user.id} did not confirm his email")
             if user not in map(lambda x: x.participant, event.participants):
                 try:
                     role = EventRoles(user_json.get("role", EventRoles.COMPETITOR.value))
