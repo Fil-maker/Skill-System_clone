@@ -129,7 +129,7 @@ def get_event_participants(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
         return {
-            "chief-expert": event.chief_expert.to_dict(),
+            "chief-expert": event.chief_expert.to_dict() if event.chief_expert is not None else None,
             "experts": [
                 expert.to_dict_participant() for expert in
                 filter(lambda x: x.role == EventRoles.EXPERT.value, event.participants)
@@ -176,6 +176,37 @@ def add_users_to_event(event_id, users):
                         raise ValueError("Chief expert is already assigned")
                 association = UserToEventAssociation(user_id=user.id, role=role.value)
                 event.participants.append(association)
+
+
+def change_event_participant_role(event_id, user_id, role):
+    with create_session() as session:
+        event = session.query(Event).get(event_id)
+        if event.start_date <= datetime.date.today():
+            raise ValueError("You can't change the role after the event starts")
+
+        user = session.query(User).get(int(user_id))
+        if not user:
+            raise KeyError(f"User {user_id} not found")
+        association = session.query(UserToEventAssociation) \
+            .filter(UserToEventAssociation.user_id == user_id,
+                    UserToEventAssociation.event_id == event_id).first()
+        if association:
+            try:
+                role = EventRoles(role)
+            except ValueError:
+                raise ValueError(f"Role can be {EventRoles.COMPETITOR.value} (competitor), "
+                                 f"{EventRoles.EXPERT.value} (expert) or "
+                                 f"{EventRoles.CHIEF_EXPERT.value} (chief expert)")
+            if association.role == role.value:
+                raise ValueError(f"User is already a{'n' * int(role == EventRoles.EXPERT)} {role.name.lower()}")
+            if role == EventRoles.CHIEF_EXPERT:
+                if event.chief_expert_id is None:
+                    event.chief_expert_id = user.id
+                else:
+                    raise ValueError("Chief expert is already assigned")
+            if association.role == EventRoles.CHIEF_EXPERT.value:
+                event.chief_expert_id = None
+            association.role = role.value
 
 
 def exclude_users_from_event(event_id, users):
