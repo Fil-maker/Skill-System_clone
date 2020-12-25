@@ -31,9 +31,9 @@ class User(db.Model, ISO8601SerializerMixin):
     confirmed = Column(Boolean, nullable=False, default=False)
     photo_url = Column(String, nullable=True)
     about = Column(Text, nullable=True, default="")
-
     role = Column(SmallInteger, nullable=False, default=Roles.NO_ROLE.value)
     pin = Column(String, nullable=True)
+    hidden = Column(Boolean, default=False)
 
     country = orm.relation("Country", foreign_keys=[country_id])
     region = orm.relation("Region", foreign_keys=[region_id])

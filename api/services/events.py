@@ -145,7 +145,7 @@ def get_unassigned_users(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
         unassigned = sorted(list(filter(lambda x: x.id not in map(lambda x: x.user_id, event.participants),
-                                        session.query(User).filter(User.confirmed).all())),
+                                        session.query(User).filter(User.confirmed, User.hidden.is_(False)).all())),
                             key=lambda x: x.creation_date)
         return [user.to_dict() for user in unassigned]
 
@@ -155,7 +155,7 @@ def add_users_to_event(event_id, users):
         event = session.query(Event).get(event_id)
         for user_json in users:
             try:
-                user = session.query(User).get(int(user_json["id"]))
+                user = session.query(User).filter(User.id == int(user_json["id"], User.hidden.is_(False))).first()
             except KeyError:
                 raise KeyError("You must specify user id")
             if not user:
@@ -184,7 +184,7 @@ def change_event_participant_role(event_id, user_id, role):
         if event.start_date <= datetime.date.today():
             raise ValueError("You can't change the role after the event starts")
 
-        user = session.query(User).get(int(user_id))
+        user = session.query(User).filter(User.id == int(user_id), User.hidden.is_(False)).first()
         if not user:
             raise KeyError(f"User {user_id} not found")
         association = session.query(UserToEventAssociation) \
@@ -213,7 +213,7 @@ def exclude_users_from_event(event_id, users):
     with create_session() as session:
         event = session.query(Event).get(event_id)
         for user_id in users:
-            user = session.query(User).get(int(user_id))
+            user = session.query(User).filter(User.id == int(user_id), User.hidden.is_(False)).first()
             if not user:
                 raise KeyError(f"User {user_id} not found")
             association = session.query(UserToEventAssociation) \

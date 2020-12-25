@@ -5,7 +5,7 @@ from flask_restful.reqparse import RequestParser
 from api.services.auth import token_auth
 from api.services.users import abort_if_user_not_found, only_for_current_user, get_user, delete_user, \
     update_user, get_countries_count, get_regions_count, create_user, change_password, set_pin, \
-    reset_pin, get_events
+    reset_pin, get_events, only_for_current_user_or_admin
 
 
 class UserResource(Resource):
@@ -15,7 +15,7 @@ class UserResource(Resource):
 
     @abort_if_user_not_found
     @token_auth.login_required
-    @only_for_current_user
+    @only_for_current_user_or_admin
     def delete(self, user_id):
         delete_user(user_id)
         return jsonify({"success": True})
