@@ -25,7 +25,7 @@ def abort_if_form_not_found(func):
 def abort_if_event_form_not_found(func):
     def new_func(self, event_id, form_id):
         with create_session() as session:
-            event = session.query(Event).get(event_id)
+            event = session.query(Event).filter(Event.id == event_id, Event.hidden.is_(False)).first()
             form = session.query(Form).get(form_id)
             if not event:
                 abort(404, success=False, message=f"Event {event_id} not found")

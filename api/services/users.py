@@ -186,9 +186,12 @@ def get_events(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
         today = datetime.date.today()
-        ongoing_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date <= today, today <= Event.finish_date).all()
-        future_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date > today).order_by(Event.start_date).all()
-        past_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.finish_date < today).order_by(desc(Event.finish_date)).all()
+        ongoing_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.start_date <= today, today <= Event.finish_date, Event.hidden.is_(False)).all()
+        future_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.start_date > today, Event.hidden.is_(False)).order_by(Event.start_date).all()
+        past_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.finish_date < today, Event.hidden.is_(False)).order_by(desc(Event.finish_date)).all()
         return [event.to_dict_event() for event in ongoing_events + future_events + past_events]
 
 

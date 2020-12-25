@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey
+from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey, Boolean
 
 from api.data.db_session import db
 from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
@@ -18,7 +18,7 @@ class Event(db.Model, ISO8601SerializerMixin):
     final_stage_date = Column(Date, nullable=False)
     finish_date = Column(Date, nullable=False)
     chief_expert_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-
+    hidden = Column(Boolean, default=False)
     photo_url = Column(String, nullable=True)
 
     participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
@@ -38,7 +38,7 @@ class Event(db.Model, ISO8601SerializerMixin):
             }
             ans["photos"] = photos
         ans["participants"] = [participant.participant.id for participant in self.participants]
-        ans["chief_expert"] = self.chief_expert.to_dict()
+        ans["chief_expert"] = self.chief_expert.to_dict() if self.chief_expert is not None else None
 
         from api.services.events import get_dates_from_c_format, get_c_format_from_dates
         dates = get_dates_from_c_format(self.start_date, self.main_stage_date, self.final_stage_date,

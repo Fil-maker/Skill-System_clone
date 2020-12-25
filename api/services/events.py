@@ -16,7 +16,7 @@ from api.services.images import delete_photo, generate_photo_filename, save_phot
 def abort_if_event_not_found(func):
     def new_func(self, event_id):
         with create_session() as session:
-            event = session.query(Event).get(event_id)
+            event = session.query(Event).filter(Event.id == event_id, Event.hidden.is_(False)).first()
             if not event:
                 abort(404, success=False, message=f"Event {event_id} not found")
             return func(self, event_id)
@@ -46,12 +46,12 @@ def get_event(event_id=None):
         if event_id is not None:
             return session.query(Event).get(event_id).to_dict()
         today = datetime.date.today()
-        ongoing_events = session.query(Event).filter(Event.start_date <= today,
+        ongoing_events = session.query(Event).filter(Event.hidden.is_(False), Event.start_date <= today,
                                                      today <= Event.finish_date).all()
-        future_events = session.query(Event).filter(Event.start_date > today).order_by(
-            Event.start_date).all()
-        past_events = session.query(Event).filter(Event.finish_date < today).order_by(
-            desc(Event.finish_date)).all()
+        future_events = session.query(Event).filter(Event.hidden.is_(False), Event.start_date > today) \
+            .order_by(Event.start_date).all()
+        past_events = session.query(Event).filter(Event.hidden.is_(False), Event.finish_date < today) \
+            .order_by(desc(Event.finish_date)).all()
         return [item.to_dict() for item in ongoing_events + future_events + past_events]
 
 
@@ -59,7 +59,7 @@ def delete_event(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
         delete_photo("events", event.photo_url)
-        session.delete(event)
+        event.hidden = True
 
 
 def create_event(title, start_date, main_stage_date, final_stage_date, finish_date, photo=None):
