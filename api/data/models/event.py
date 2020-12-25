@@ -28,7 +28,7 @@ class Event(db.Model, ISO8601SerializerMixin):
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
             return super(Event, self).to_dict(*args, **kwargs)
-        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title", "chief_expert"])
+        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title"])
         if self.photo_url is not None:
             photos = {
                 "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
@@ -38,6 +38,7 @@ class Event(db.Model, ISO8601SerializerMixin):
             }
             ans["photos"] = photos
         ans["participants"] = [participant.participant.id for participant in self.participants]
+        ans["chief_expert"] = self.chief_expert.to_dict()
 
         from api.services.events import get_dates_from_c_format, get_c_format_from_dates
         dates = get_dates_from_c_format(self.start_date, self.main_stage_date, self.final_stage_date,
