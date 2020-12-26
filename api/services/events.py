@@ -234,7 +234,7 @@ def get_event_forms(event_id):
 def add_form_to_event(event_id, form_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        form = session.query(Form).get(form_id)
+        form = session.query(Form).filter(Form.id == form_id, Form.hidden.is_(False)).first()
         if form is None:
             raise KeyError(f"Form {form_id} not found")
         if form_id in map(lambda x: x.form_id, event.forms):
@@ -249,7 +249,7 @@ def add_form_to_event(event_id, form_id):
 
 def remove_form_from_event(event_id, form_id):
     with create_session() as session:
-        form = session.query(Form).get(form_id)
+        form = session.query(Form).filter(Form.id == form_id, Form.hidden.is_(False)).first()
         if form is None:
             raise KeyError(f"Form {form_id} not found")
         association = session.query(FormToEventAssociation) \

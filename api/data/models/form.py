@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, SmallInteger, orm
+from sqlalchemy import Column, Integer, String, Text, SmallInteger, orm, Boolean
 from sqlalchemy_serializer import SerializerMixin
 
 from api.data.db_session import db
@@ -12,6 +12,7 @@ class Form(db.Model, SerializerMixin):
     content = Column(Text, nullable=False)
     day = Column(String, nullable=False)
     role = Column(SmallInteger, nullable=False)
+    hidden = Column(Boolean, default=False)
 
     events = orm.relation("FormToEventAssociation", back_populates="form", lazy="dynamic")
 

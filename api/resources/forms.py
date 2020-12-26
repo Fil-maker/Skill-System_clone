@@ -20,7 +20,10 @@ class FormsResource(Resource):
     @token_auth.login_required
     @only_for_admin
     def delete(self, form_id):
-        delete_form(form_id)
+        try:
+            delete_form(form_id)
+        except ValueError as e:
+            abort(400, success=False, message=str(e))
         return jsonify({"success": True})
 
     @abort_if_form_not_found

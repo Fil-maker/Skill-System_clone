@@ -14,7 +14,7 @@ from api.services.events import check_day_format, get_dates_from_c_format
 def abort_if_form_not_found(func):
     def new_func(self, form_id):
         with create_session() as session:
-            form = session.query(Form).get(form_id)
+            form = session.query(Form).filter(Form.id == form_id, Form.hidden.is_(False)).first()
             if not form:
                 abort(404, success=False, message=f"Form {form_id} not found")
             return func(self, form_id)
@@ -26,7 +26,7 @@ def abort_if_event_form_not_found(func):
     def new_func(self, event_id, form_id):
         with create_session() as session:
             event = session.query(Event).filter(Event.id == event_id, Event.hidden.is_(False)).first()
-            form = session.query(Form).get(form_id)
+            form = session.query(Form).filter(Form.id == form_id, Form.hidden.is_(False)).first()
             if not event:
                 abort(404, success=False, message=f"Event {event_id} not found")
             if not form:
@@ -45,13 +45,15 @@ def get_form(form_id=None):
     with create_session() as session:
         if form_id is not None:
             return session.query(Form).get(form_id).to_dict()
-        return [item.to_dict() for item in session.query(Form).all()]
+        return [item.to_dict() for item in session.query(Form).filter(Form.hidden.is_(False)).all()]
 
 
 def delete_form(form_id):
     with create_session() as session:
         form = session.query(Form).get(form_id)
-        session.delete(form)
+        if form.events.count() > 0:
+            raise ValueError("Form that is used cannot be deleted")
+        form.hidden = True
 
 
 def create_form(title, content, day, role):
