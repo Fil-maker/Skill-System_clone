@@ -37,7 +37,8 @@ class Event(db.Model, ISO8601SerializerMixin):
                 "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
             }
             ans["photos"] = photos
-        ans["participants"] = [participant.participant.id for participant in self.participants]
+        ans["participants"] = [participant.participant.id for participant in filter(lambda x: not x.participant.hidden,
+                                                                                    self.participants)]
         ans["chief_expert"] = self.chief_expert.to_dict() if self.chief_expert is not None else None
 
         from api.services.events import get_dates_from_c_format, get_c_format_from_dates

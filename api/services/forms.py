@@ -33,7 +33,8 @@ def abort_if_event_form_not_found(func):
                 abort(404, success=False, message=f"Form {form_id} not found")
             association = session.query(FormToEventAssociation) \
                 .filter(FormToEventAssociation.form_id == form_id,
-                        FormToEventAssociation.event_id == event_id).first()
+                        FormToEventAssociation.event_id == event_id,
+                        FormToEventAssociation.hidden.is_(False)).first()
             if association is None:
                 abort(404, success=False, message=f"Form {form_id} is not added to event")
             return func(self, event_id, form_id)
@@ -51,7 +52,7 @@ def get_form(form_id=None):
 def delete_form(form_id):
     with create_session() as session:
         form = session.query(Form).get(form_id)
-        if form.events.count() > 0:
+        if form.events.filter(FormToEventAssociation.hidden.is_(False)).count() > 0:
             raise ValueError("Form that is used cannot be deleted")
         form.hidden = True
 
@@ -74,7 +75,7 @@ def update_form(form_id, title=None, content=None, day=None):
         raise ValueError("Incorrect day format")
     with create_session() as session:
         form = session.query(Form).get(form_id)
-        if form.events.count() > 0:
+        if form.events.filter(FormToEventAssociation.hidden.is_(False)).count() > 0:
             raise ValueError("Form that is used cannot be changed")
         if title:
             form.title = title
@@ -89,7 +90,8 @@ def get_event_form(event_id, form_id):
     with create_session() as session:
         form_to_event = session.query(FormToEventAssociation) \
             .filter(FormToEventAssociation.event_id == event_id,
-                    FormToEventAssociation.form_id == form_id).first()
+                    FormToEventAssociation.form_id == form_id,
+                    FormToEventAssociation.hidden.is_(False)).first()
         return form_to_event.to_dict()
 
 
@@ -100,6 +102,7 @@ def get_form_signatory(event_id, form_id):
             .join(FormSignatoryAssociation, FormSignatoryAssociation.form_to_event_id == FormToEventAssociation.id) \
             .filter(FormToEventAssociation.event_id == event_id,
                     FormToEventAssociation.form_id == form_id,
+                    FormToEventAssociation.hidden.is_(False),
                     UserToEventAssociation.event_id == FormToEventAssociation.event_id,
                     FormToEventAssociation.id == FormSignatoryAssociation.form_to_event_id,
                     UserToEventAssociation.user_id == FormSignatoryAssociation.user_id
@@ -117,7 +120,8 @@ def sign_form(event_id, form_id, pin):
     with create_session() as session:
         association = session.query(FormToEventAssociation) \
             .filter(FormToEventAssociation.form_id == form_id,
-                    FormToEventAssociation.event_id == event_id).first()
+                    FormToEventAssociation.event_id == event_id,
+                    FormToEventAssociation.hidden.is_(False)).first()
         cur_user = session.query(UserToEventAssociation) \
             .filter(UserToEventAssociation.user_id == g.current_user.id,
                     UserToEventAssociation.event_id == event_id).first()

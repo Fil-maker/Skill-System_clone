@@ -101,7 +101,7 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
                 raise ValueError("Event is already finished")
 
             new_dates = get_dates_from_c_format(start_date, main_stage_date, final_stage_date, finish_date)
-            for form in event.forms:
+            for form in event.forms.filter(FormToEventAssociation.hidden.is_(False)):
                 if form.day not in new_dates:
                     raise ValueError(f"Dates don't match form {form.id}")
 
@@ -132,11 +132,11 @@ def get_event_participants(event_id):
             "chief-expert": event.chief_expert.to_dict() if event.chief_expert is not None else None,
             "experts": [
                 expert.to_dict_participant() for expert in
-                filter(lambda x: x.role == EventRoles.EXPERT.value, event.participants)
+                filter(lambda x: x.role == EventRoles.EXPERT.value and not x.participant.hidden, event.participants)
             ],
             "competitors": [
                 competitor.to_dict_participant() for competitor in
-                filter(lambda x: x.role == EventRoles.COMPETITOR.value, event.participants)
+                filter(lambda x: x.role == EventRoles.COMPETITOR.value and not x.participant.hidden, event.participants)
             ]
         }
 
@@ -228,7 +228,7 @@ def exclude_users_from_event(event_id, users):
 def get_event_forms(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        return [form.to_dict() for form in event.forms]
+        return [form.to_dict() for form in event.forms.filter(FormToEventAssociation.hidden.is_(False))]
 
 
 def add_form_to_event(event_id, form_id):
@@ -237,7 +237,7 @@ def add_form_to_event(event_id, form_id):
         form = session.query(Form).filter(Form.id == form_id, Form.hidden.is_(False)).first()
         if form is None:
             raise KeyError(f"Form {form_id} not found")
-        if form_id in map(lambda x: x.form_id, event.forms):
+        if form_id in map(lambda x: x.form_id, event.forms.filter(FormToEventAssociation.hidden.is_(False))):
             raise ValueError(f"Form {form_id} is already added to event {event_id}")
         dates = get_dates_from_c_format(event.start_date, event.main_stage_date,
                                         event.final_stage_date, event.finish_date)
@@ -254,11 +254,12 @@ def remove_form_from_event(event_id, form_id):
             raise KeyError(f"Form {form_id} not found")
         association = session.query(FormToEventAssociation) \
             .filter(FormToEventAssociation.form_id == form_id,
-                    FormToEventAssociation.event_id == event_id).first()
+                    FormToEventAssociation.event_id == event_id,
+                    FormToEventAssociation.hidden.is_(False)).first()
 
         if association is None:
             raise KeyError(f"Form {form_id} is not added to event {event_id}")
-        session.delete(association)
+        association.hidden = True
 
 
 def get_dates_from_c_format(start_date: datetime.date, main_stage_date: datetime.date,
