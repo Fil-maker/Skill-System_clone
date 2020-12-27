@@ -9,9 +9,13 @@
 }
 
 .header{
-    margin-bottom: 50pt;
+    margin-bottom: 1rem;
 }
 
 #submit{
     text-align: right;
+}
+
+.navbar{
+    padding-bottom: 0px;
 }

@@ -9,3 +9,19 @@
 .name:hover{
     text-decoration: none;
 }
+
+.btn{
+    text-align: center;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+    height: 2rem;
+    width: -webkit-fill-available;
+}
+
+.promote-btn{
+    margin-bottom: 0.5rem;
+}
+
+.assign-col{
+    width: 1rem;
+}

@@ -1,10 +1,10 @@
-{% set title = 'Profile' %}
+{% set title = current_user["first_name"] + ' ' + current_user["last_name"] %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ title }} of {{ current_user.get("first_name") }} {{ current_user.get("last_name") }}</h1>
+<h1>{{ current_user.get("first_name") }} {{ current_user.get("last_name") }}</h1>
 <div class="row">
 
     <div class="col-sm">
@@ -22,7 +22,7 @@
 
         <div class="card">
             <a href="/change-password" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Login information
             </a>
             <div class="card-body">
@@ -33,7 +33,7 @@
 
         <div class="card">
             <a href="/edit-profile" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Profile information
             </a>
             <div class="card-body">
@@ -49,7 +49,7 @@
 
         <div class="card">
             <a href="/pin" style="background-color: #89d6f7;">
-                <img src="/static/img/icons/other/edit.svg" width="7%" height="7%">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Personal Identification Number
             </a>
             <div class="card-body">

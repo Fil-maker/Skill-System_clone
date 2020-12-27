@@ -2,11 +2,15 @@ import datetime
 from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
+
+from app.services.forms import get_form, create_form_from_form
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
+from app.forms.formSign import FormSignForm
+from app.forms.formRegister import FormRegisterForm
 from app.forms.login import LoginForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
@@ -33,13 +37,18 @@ def confirm(token):
     return "ok" if confirm_token(token) else "not ok"
 
 
+@app.route("/")
+def main():
+    return render_template("main.html")
+
+
 @app.route("/register", methods=["GET", "POST"])
 @redirect_if_authorized
 def register():
     form = RegisterForm()
     if register_from_form(form):
         return redirect("/profile")
-    return render_template("register.html", form=form)
+    return render_template("profileRegister.html", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -48,7 +57,7 @@ def login():
     form = LoginForm()
     if login_from_form(form):
         return redirect("/profile")
-    return render_template("login.html", form=form)
+    return render_template("profileLogin.html", form=form)
 
 
 @app.route("/logout")
@@ -66,7 +75,7 @@ def pin():
     form = PinForm()
     if set_pin_from_form(form):
         return redirect("/profile")
-    return render_template("pin.html", form=form)
+    return render_template("profilePin.html", form=form)
 
 
 @app.route("/change-password", methods=["GET", "POST"])
@@ -75,7 +84,7 @@ def change_password_():
     form = PasswordForm()
     if change_password_from_form(form):
         return redirect("/profile")
-    return render_template("password.html", form=form)
+    return render_template("profilePassword.html", form=form)
 
 
 @app.route("/edit-profile", methods=["GET", "POST"])
@@ -89,13 +98,13 @@ def edit_profile_():
         form.region.process_data(g.current_user["region"]["id"])
     if edit_profile_from_form(form):
         return redirect("/profile")
-    return render_template("editProfile.html", form=form, current_user=g.current_user)
+    return render_template("profileEdit.html", form=form, current_user=g.current_user)
 
 
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("selfProfile.html", current_user=g.current_user)
+    return render_template("profileSelf.html", current_user=g.current_user)
 
 
 @app.route("/user/<int:user_id>")
@@ -104,10 +113,18 @@ def user_profile(user_id):
     user = get_user(user_id)
     if user is None:
         abort(404)
-    return render_template("userProfile.html", user=user)
+    return render_template("profileUser.html", user=user)
 
 
-@app.route("/create-event", methods=["GET", "POST"])
+@app.route("/user/list")
+@redirect_if_unauthorized
+@only_for_admin
+def user_list():
+    users = get_user()
+    return render_template("profileList.html", users=users)
+
+
+@app.route("/event/create", methods=["GET", "POST"])
 @redirect_if_unauthorized
 @only_for_admin
 def create_event_():
@@ -126,7 +143,7 @@ def event_profile(event_id):
     return render_template("eventProfile.html", event=event)
 
 
-@app.route("/event-list")
+@app.route("/event/list")
 @redirect_if_unauthorized
 @only_for_admin
 def event_list():
@@ -151,7 +168,8 @@ def edit_event_information_(event_id):
 @only_for_admin
 def participants_manage(event_id):
     participants = get_event_participants(event_id)
-    return render_template("participantsManage.html", participants=participants, event=g.current_event)
+    users = get_user()
+    return render_template("eventParticipants.html", participants=participants, users=users, event=g.current_event)
 
 
 @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
@@ -170,3 +188,50 @@ def edit_event_dates_(event_id):
     if edit_event_information_from_form(event_id, form):
         return redirect(f"/event/{event_id}/dates")
     return render_template("eventDates.html", form=form, event=g.current_event)
+
+
+@app.route("/form/create", methods=["GET", "POST"])
+@redirect_if_unauthorized
+@only_for_admin
+def create_form():
+    form = FormRegisterForm()
+    if create_form_from_form(form):
+        return redirect("/forms")  # TODO redirect to forms list
+    return render_template("formRegister.html", form=form)
+
+
+@app.route("/form/<int:form_id>")
+@redirect_if_unauthorized
+def profile_form(form_id):
+    form = get_form(form_id)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formProfile.html", form=form, test=test)
+
+
+@app.route("/form/list")
+@redirect_if_unauthorized
+@only_for_admin
+def list_form():
+    forms = get_form()
+    return render_template("formList.html", forms=forms)
+
+
+@app.route("/form/<int:form_id>/sign")
+@redirect_if_unauthorized
+def sign_form(form_id):
+    form_data = get_form(form_id)
+    form = FormSignForm()
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formSign.html", form=form, form_data=form_data, test=test)
+
+
+@app.route("/form/<int:form_id>/edit")
+@redirect_if_unauthorized
+def edit_form(form_id):
+    form_data = get_form(form_id)
+    form = FormRegisterForm(title=form_data['title'],
+                            day=form_data['day'],
+                            content=form_data['content'],
+                            role=form_data['role']
+                            )
+    return render_template('formRegister.html', form=form, form_data=form_data, edit=True)

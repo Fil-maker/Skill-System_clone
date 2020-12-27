@@ -1,17 +1,18 @@
 {% set title = 'Participant Manage' %}
 {% set style_file = url_for('static', filename='css/list.css') %}
 {% set script_file = url_for('static', filename='js/participant.js') %}
+
 {% extends 'base.html' %}
 
 {% block content %}
 <h1>{{ title }}</h1>
 
-<table class="table table-sm table-responsive">
+<table class="table table-hover table-sm">
     <thead>
-    <tr>
+    <tr class="table-info">
         <th>name</th>
-        <th>country</th>
-        <th>about</th>
+        <th class="mobile-stp">country</th>
+        <th class="mobile-stp">about</th>
         <th>role</th>
         <th>assign</th>
     </tr>
@@ -19,11 +20,8 @@
     <tbody>
     {% for participant in participants %}
     {% set user = participant['user'] %}
-    <tr
-            {% if loop.index % 2== 0 %}
-            class="table-info"
-            {% endif %}>
-        <td>
+    <tr class="table-light">
+        <th scope="col">
             <a href="/user/{{ user['id'] }}" class="name">
                 {% if user.get('photos', False) %}
                 <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
@@ -32,14 +30,14 @@
                 {% endif %}
                 {{ user['first_name'] }} {{ user['last_name'] }}
             </a>
-        </td>
-        <td>
+        </th>
+        <td class="mobile-stp">
             {{ user['country']['name'] }}
             {% if user.get('region',False) %}
             | {{ user['region']['name'] }}
             {% endif %}
         </td>
-        <td>
+        <td class="mobile-stp">
             {% if user['about'] %}
             {{ user['about'] }}
             {% else %}
@@ -55,8 +53,7 @@
             Chief expert
             {% endif %}
         </td>
-
-        <td>
+        <td class="assign-col">
             <!--Buttons of users-->
             {% if participant['role'] == 3 %}
             <button class="demote-btn btn btn-warning" value="{{ user['id'] }},{{ participant['role'] }}">demote</button>
@@ -67,11 +64,49 @@
             <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">promote</button>
             <button class="demote-btn btn btn-danger" value="{{ user['id'] }},{{ participant['role'] }}">delete</button>
             {% else %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{ {participant['role'] }}">assign</button>
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">assign</button>
             {% endif %}
         </td>
     </tr>
     {% endfor %}
+
+
+    {% for user in users %}
+    <tr {% if loop.index == 1 %} class="table-warning" {% else %} class="table-light" {% endif %}>
+        <th scope="row">
+            <a href="/user/{{ user['id'] }}" class="name">
+                {% if user.get('photos', False) %}
+                <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
+                {% else %}
+                <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+                {% endif %}
+                {{ user['first_name'] }} {{ user['last_name'] }}
+            </a>
+        </th>
+        <td>
+            {{ user['country']['name'] }}
+            {% if user.get('region',False) %}
+            | {{ user['region']['name'] }}
+            {% endif %}
+        </td>
+        <td>
+            {% if user['about'] %}
+            {{ user['about'] }}
+            {% else %}
+            Empty
+            {% endif %}
+        </td>
+        <td>
+            Not Contributor
+        </td>
+
+        <td class="assign-col">
+            <button class="assign-btn btn btn-success" value="{{ user['id'] }},0">assign</button>
+        </td>
+    </tr>
+    {% endfor %}
+
+
     </tbody>
 </table>
 

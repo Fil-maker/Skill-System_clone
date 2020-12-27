@@ -20,5 +20,20 @@ class momentjs(object):
     def calendar(self):
         return self.render("calendar()")
 
-    def fromNow(self):
+    def from_now(self):
         return self.render("fromNow()")
+
+    def is_able_to_sign(self):
+        return Markup(
+            f"""<script>\nmoment({self.timestamp.strftime('%Y-%m-%d')}).isAfter('{datetime.datetime.now().strftime(
+                '%Y-%m-%d-%S')}') || moment({self.timestamp.strftime(
+                '%Y-%m-%d')}).isSame('{datetime.datetime.now().strftime('%Y-%m-%d-%S')}');\n</script>""")
+
+
+class text(object):
+
+    def __init__(self, string):
+        self.string = string
+
+    def short(self):
+        return ' '.join(self.string.split()[:10]) + ' ...'

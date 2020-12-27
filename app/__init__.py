@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask
-from app.momentjs import momentjs
+from app.momentjs import momentjs, text
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 if os.path.exists(dotenv_path):
@@ -13,6 +13,7 @@ else:
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("APP_SECRET")
 app.jinja_env.globals["momentjs"] = momentjs
+app.jinja_env.globals["text"] = text
 
 from app import controllers
 from app.ajax_controllers import ajax
