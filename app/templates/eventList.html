@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>{{ title }}</h1>
-<table class="table table-">
+<table class="table table-hover">
     <thead>
     <tr class="table-info">
         <th>Title</th>
@@ -15,7 +15,7 @@
     <tbody>
     {% for event in events %}
     <tr class="table-light">
-        <td scope="row">
+        <th scope="col">
             <a class="name" href="/event/{{ event['id'] }}">
                 {% if event.get('photos', False) %}
                     <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
@@ -24,7 +24,7 @@
                 {% endif %}
                 {{ event['title'] }}
             </a>
-        </td>
+        </th>
         <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }} ->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }} </td>
         <td>{{ event['participants'] | length }}</td>
     </tr>

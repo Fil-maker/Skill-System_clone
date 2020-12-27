@@ -10,7 +10,7 @@ from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
 from app.forms.formSign import FormSignForm
-from app.forms.fromRegister import FormRegisterForm
+from app.forms.formRegister import FormRegisterForm
 from app.forms.login import LoginForm
 from app.forms.password import PasswordForm
 from app.forms.pin import PinForm

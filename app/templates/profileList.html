@@ -16,7 +16,7 @@
     <tbody>
     {% for user in users %}
     <tr class="table-light" >
-        <td>
+        <th scope="row">
             <a class="name" href="/user/{{ user['id'] }}">
                 {% if user.get('photos', False) %}
                 <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
@@ -25,7 +25,7 @@
                 {% endif %}
                 {{ user['first_name'] }} {{ user['last_name'] }}
             </a>
-        </td>
+        </th>
         <td>
             {{ user['country']['name'] }}
             {% if user.get('region',False) %}

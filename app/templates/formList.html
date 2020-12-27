@@ -9,16 +9,16 @@
 <table class="table table-hover">
     <thead>
     <tr class="table-info">
-        <td>Title</td>
-        <td>Day</td>
-        <td>Content</td>
-        <td>Role</td>
+        <th>Title</th>
+        <th>Day</th>
+        <th>Content</th>
+        <th>Role</th>
     </tr>
     </thead>
     <tbody>
     {% for form in forms %}
     <tr class="table-light">
-        <th scope="col"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+        <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
         <td>{{ form['day'] }}</td>
         <td>{{ text(form['content']).short() }}</td>
         <td>{% if form['role'] == 0 %}
