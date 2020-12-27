@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey
+from sqlalchemy import Column, Integer, Date, String, orm, ForeignKey, Boolean
 
 from api.data.db_session import db
 from api.data.mixins.iso8601_serializer_mixin import ISO8601SerializerMixin
@@ -18,7 +18,7 @@ class Event(db.Model, ISO8601SerializerMixin):
     final_stage_date = Column(Date, nullable=False)
     finish_date = Column(Date, nullable=False)
     chief_expert_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-
+    hidden = Column(Boolean, default=False)
     photo_url = Column(String, nullable=True)
 
     participants = orm.relation("UserToEventAssociation", back_populates="event", lazy="dynamic")
@@ -28,7 +28,7 @@ class Event(db.Model, ISO8601SerializerMixin):
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
             return super(Event, self).to_dict(*args, **kwargs)
-        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title", "chief_expert"])
+        ans = super(Event, self).to_dict(*args, **kwargs, only=["id", "title"])
         if self.photo_url is not None:
             photos = {
                 "initial": f"{os.environ.get('S3_BUCKET_URL')}/events/init/{self.photo_url}",
@@ -37,7 +37,9 @@ class Event(db.Model, ISO8601SerializerMixin):
                 "512": f"{os.environ.get('S3_BUCKET_URL')}/events/512/{self.photo_url}",
             }
             ans["photos"] = photos
-        ans["participants"] = [participant.participant.id for participant in self.participants]
+        ans["participants"] = [participant.participant.id for participant in filter(lambda x: not x.participant.hidden,
+                                                                                    self.participants)]
+        ans["chief_expert"] = self.chief_expert.to_dict() if self.chief_expert is not None else None
 
         from api.services.events import get_dates_from_c_format, get_c_format_from_dates
         dates = get_dates_from_c_format(self.start_date, self.main_stage_date, self.final_stage_date,

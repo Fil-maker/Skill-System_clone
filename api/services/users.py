@@ -16,7 +16,7 @@ from api.services.images import generate_photo_filename, save_photo, delete_phot
 def abort_if_user_not_found(func):
     def new_func(self, user_id):
         with create_session() as session:
-            user = session.query(User).get(user_id)
+            user = session.query(User).filter(User.id == user_id, User.hidden.is_(False)).first()
             if not user:
                 abort(404, success=False, message=f"User {user_id} not found")
             return func(self, user_id)
@@ -27,6 +27,15 @@ def abort_if_user_not_found(func):
 def only_for_current_user(func):
     def new_func(self, user_id):
         if user_id != g.current_user.id:
+            abort(403, success=False)
+        return func(self, user_id)
+
+    return new_func
+
+
+def only_for_current_user_or_admin(func):
+    def new_func(self, user_id):
+        if not(user_id == g.current_user.id or Roles(g.current_user.role) == Roles.ADMIN):
             abort(403, success=False)
         return func(self, user_id)
 
@@ -46,14 +55,16 @@ def get_user(user_id=None):
     with create_session() as session:
         if user_id is not None:
             return session.query(User).get(user_id).to_dict()
-        return [item.to_dict() for item in session.query(User).all()]
+        return [item.to_dict() for item in session.query(User).filter(User.hidden.is_(False)).all()]
 
 
 def delete_user(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
+        if Roles(user.role) == Roles.ADMIN:
+            abort(403, success=False)
         delete_photo("users", user.photo_url)
-        session.delete(user)
+        user.hidden = True
 
 
 def update_user(user_id, country=None, region=None, first_name=None, last_name=None, photo=None, about=None):
@@ -175,9 +186,12 @@ def get_events(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
         today = datetime.date.today()
-        ongoing_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date <= today, today <= Event.finish_date).all()
-        future_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.start_date > today).order_by(Event.start_date).all()
-        past_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(Event.finish_date < today).order_by(desc(Event.finish_date)).all()
+        ongoing_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.start_date <= today, today <= Event.finish_date, Event.hidden.is_(False)).all()
+        future_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.start_date > today, Event.hidden.is_(False)).order_by(Event.start_date).all()
+        past_events = user.events.join(Event, UserToEventAssociation.event_id == Event.id).filter(
+            Event.finish_date < today, Event.hidden.is_(False)).order_by(desc(Event.finish_date)).all()
         return [event.to_dict_event() for event in ongoing_events + future_events + past_events]
 
 

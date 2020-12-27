@@ -122,3 +122,13 @@ def get_event_participants(event_id):
     data = response.json()
     if data["success"]:
         return data["participants"]
+
+
+def add_form_to_event(event_id, form_id):
+    response = requests.post(f"{api_url}/{event_id}", {"form_id": form_id}, auth=HTTPTokenAuth())
+    return response.json()
+
+
+def remove_form_from_event(event_id, form_id):
+    response = requests.delete(f"{api_url}/{event_id}", params={"form_id": form_id}, auth=HTTPTokenAuth())
+    return response.json()
