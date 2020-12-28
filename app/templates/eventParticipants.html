@@ -1,6 +1,9 @@
 {% set title = 'Participant Manage' %}
 {% set style_file = url_for('static', filename='css/list.css') %}
 {% set script_file = url_for('static', filename='js/participant.js') %}
+{% set chief = participants['chief-expert'] %}
+{% set experts = participants['expert'] %}
+{% set competitors = participants['competitors'] %}
 
 {% extends 'base.html' %}
 
@@ -18,8 +21,45 @@
     </tr>
     </thead>
     <tbody>
-    {% for participant in participants %}
-    {% set user = participant['user'] %}
+
+    {% if chief %}
+    <tr class="table-light">
+        <th scope="col">
+            <a href="/user/{{ chief['id'] }}" class="name">
+                {% if chief.get('photos', False) %}
+                <img src="{{ chief['photos']['128'] }} " class="img-fluid img-thumbnail">
+                {% else %}
+                <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+                {% endif %}
+                {{ chief['first_name'] }} {{ chief['last_name'] }}
+            </a>
+        </th>
+        <td class="mobile-stp">
+            {{ chief['country']['name'] }}
+            {% if chief.get('region',False) %}
+            | {{ chief['region']['name'] }}
+            {% endif %}
+        </td>
+        <td class="mobile-stp">
+            {% if chief['about'] %}
+            {{ chief['about'] }}
+            {% else %}
+            Empty
+            {% endif %}
+        </td>
+        <td>
+            Chief expert
+        </td>
+        <td class="assign-col">
+            <!--Buttons of users-->
+            {% if participant['role'] == 3 %}
+            <button class="demote-btn btn btn-warning" value="{{ chief['id'] }},3">demote</button>
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+
+    {% for user in experts %}
     <tr class="table-light">
         <th scope="col">
             <a href="/user/{{ user['id'] }}" class="name">
@@ -45,31 +85,52 @@
             {% endif %}
         </td>
         <td>
-            {% if participant['role'] == 0 %}
-            Contributor
-            {% elif participant['role'] == 1 %}
             Expert
-            {% elif participant['role'] == 2 %}
-            Chief expert
-            {% endif %}
         </td>
         <td class="assign-col">
             <!--Buttons of users-->
-            {% if participant['role'] == 3 %}
-            <button class="demote-btn btn btn-warning" value="{{ user['id'] }},{{ participant['role'] }}">demote</button>
-            {% elif participant['role'] >=1 %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">promote</button>
-            <button class="demote-btn btn btn-warning" value="{{ user['id'] }},{{ participant['role'] }}">demote</button>
-            {% elif participant['role'] == 0 %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">promote</button>
-            <button class="demote-btn btn btn-danger" value="{{ user['id'] }},{{ participant['role'] }}">delete</button>
-            {% else %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},{{ participant['role'] }}">assign</button>
-            {% endif %}
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},2">promote</button>
+            <button class="demote-btn btn btn-warning" value="{{ user['id'] }},2">demote</button>
         </td>
     </tr>
     {% endfor %}
 
+
+    {% for user in competitors %}
+    <tr class="table-light">
+        <th scope="col">
+            <a href="/user/{{ user['id'] }}" class="name">
+                {% if user.get('photos', False) %}
+                <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
+                {% else %}
+                <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+                {% endif %}
+                {{ user['first_name'] }} {{ user['last_name'] }}
+            </a>
+        </th>
+        <td class="mobile-stp">
+            {{ user['country']['name'] }}
+            {% if user.get('region',False) %}
+            | {{ user['region']['name'] }}
+            {% endif %}
+        </td>
+        <td class="mobile-stp">
+            {% if user['about'] %}
+            {{ user['about'] }}
+            {% else %}
+            Empty
+            {% endif %}
+        </td>
+        <td>
+            Expert
+        </td>
+        <td class="assign-col">
+            <!--Buttons of users-->
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},1">promote</button>
+            <button class="demote-btn btn btn-danger" value="{{ user['id'] }},1">delete</button>
+        </td>
+    </tr>
+    {% endfor %}
 
     {% for user in users %}
     <tr {% if loop.index == 1 %} class="table-warning" {% else %} class="table-light" {% endif %}>
