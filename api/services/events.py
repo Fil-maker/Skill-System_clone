@@ -7,6 +7,7 @@ from sqlalchemy import desc
 from api.data.db_session import create_session
 from api.data.models.event import Event
 from api.data.models.form import Form
+from api.data.models.form_must_sign_association import FormMustSignAssociation
 from api.data.models.form_to_event_association import FormToEventAssociation
 from api.data.models.user import Roles, User
 from api.data.models.user_to_event_association import EventRoles, UserToEventAssociation
@@ -155,7 +156,7 @@ def add_users_to_event(event_id, users):
         event = session.query(Event).get(event_id)
         for user_json in users:
             try:
-                user = session.query(User).filter(User.id == int(user_json["id"], User.hidden.is_(False))).first()
+                user = session.query(User).filter(User.id == int(user_json["id"]), User.hidden.is_(False)).first()
             except KeyError:
                 raise KeyError("You must specify user id")
             if not user:
@@ -176,6 +177,9 @@ def add_users_to_event(event_id, users):
                         raise ValueError("Chief expert is already assigned")
                 association = UserToEventAssociation(user_id=user.id, role=role.value)
                 event.participants.append(association)
+                for form in event.forms:
+                    if not form.hidden and (form.form.role == role.value or role == EventRoles.CHIEF_EXPERT):
+                        form.must_sign.append(FormMustSignAssociation(user_id=user.id))
 
 
 def change_event_participant_role(event_id, user_id, role):
@@ -206,6 +210,12 @@ def change_event_participant_role(event_id, user_id, role):
                     raise ValueError("Chief expert is already assigned")
             if association.role == EventRoles.CHIEF_EXPERT.value:
                 event.chief_expert_id = None
+            for form in event.forms:
+                if not form.hidden:
+                    if form.form.role == role.value or role == EventRoles.CHIEF_EXPERT:
+                        form.must_sign.append(FormMustSignAssociation(user_id=user.id))
+                    else:
+                        session.delete(form.must_sign.filter(FormMustSignAssociation.user_id == user_id).first())
             association.role = role.value
 
 
@@ -222,6 +232,10 @@ def exclude_users_from_event(event_id, users):
             if association:
                 if user.id == event.chief_expert_id:
                     event.chief_expert_id = None
+                for form in event.forms:
+                    if not form.hidden and (form.form.role == association.role or
+                                            association.role == EventRoles.CHIEF_EXPERT.value):
+                        session.delete(form.must_sign.filter(FormMustSignAssociation.user_id == user_id).first())
                 session.delete(association)
 
 
@@ -245,6 +259,12 @@ def add_form_to_event(event_id, form_id):
             raise ValueError(f"Event {event_id} doesn't have day {form.day}")
         association = FormToEventAssociation(form_id=form_id, date=dates[form.day])
         event.forms.append(association)
+        session.commit()
+        for user in event.participants.filter(UserToEventAssociation.role == form.role):
+            if not user.participant.hidden:
+                association.must_sign.append(FormMustSignAssociation(user_id=user.participant.id))
+        if event.chief_expert:
+            association.must_sign.append(FormMustSignAssociation(user_id=event.chief_expert_id))
 
 
 def remove_form_from_event(event_id, form_id):

@@ -4,7 +4,7 @@ from flask import g
 from flask_restful import abort
 
 from api.data.db_session import create_session
-from api.data.models import UserToEventAssociation, FormToEventAssociation, Event
+from api.data.models import UserToEventAssociation, FormToEventAssociation, Event, FormMustSignAssociation
 from api.data.models.form import Form
 from api.data.models.form_signatory_association import FormSignatoryAssociation
 from api.data.models.user_to_event_association import EventRoles
@@ -135,6 +135,11 @@ def sign_form(event_id, form_id, pin):
             elif not g.current_user.check_pin(str(pin)):
                 raise ValueError("Incorrect pin")
             else:
+                must_sign = session.query(FormMustSignAssociation).filter(
+                    FormMustSignAssociation.form_to_event_id == association.id,
+                    FormMustSignAssociation.user_id == g.current_user.id
+                ).first()
+                session.delete(must_sign)
                 signatory = FormSignatoryAssociation(form_to_event_id=association.id,
                                                      user_id=g.current_user.id)
                 session.add(signatory)

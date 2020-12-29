@@ -79,6 +79,20 @@ def get_user(user_id=None):
     return None
 
 
+def get_events(user_id):
+    response = requests.get(f"{api_url}/{user_id}/events")
+    data = response.json()
+    if data["success"]:
+        return data["events"]
+
+
+def get_forms(user_id):
+    response = requests.get(f"{api_url}/{user_id}/forms")
+    data = response.json()
+    if data["success"]:
+        return data
+
+
 def confirm_token(token) -> bool:
     r = requests.post(f"{api_url}/confirm/{token}")
     return r.json()["success"]

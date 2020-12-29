@@ -12,7 +12,7 @@ from api.resources.events import EventResource, EventListResource, EventParticip
 from api.resources.forms import FormsResource, FormListResource, FormSignatoryResource, FormDocumentResource, \
     EventFormResource
 from api.resources.users import UserResource, UserListResource, UserPinResource, \
-    UsersEventListResource
+    UsersEventListResource, UsersFormListResource
 
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 if os.path.exists(dotenv_path):
@@ -44,6 +44,7 @@ api.add_resource(UserResource, "/api/users/<int:user_id>")
 api.add_resource(UserListResource, "/api/users")
 api.add_resource(UserPinResource, "/api/users/<int:user_id>/pin")
 api.add_resource(UsersEventListResource, "/api/users/<int:user_id>/events")
+api.add_resource(UsersFormListResource, "/api/users/<int:user_id>/forms")
 
 api.add_resource(EventResource, "/api/events/<int:event_id>")
 api.add_resource(EventListResource, "/api/events")

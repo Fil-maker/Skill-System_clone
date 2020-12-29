@@ -195,6 +195,19 @@ def get_events(user_id):
         return [event.to_dict_event() for event in ongoing_events + future_events + past_events]
 
 
+def get_unsigned_forms(user_id):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        return [form.to_dict_form() for form in user.must_sign]
+
+
+def get_signed_forms(user_id):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        return [form.to_dict() for form in user.signed_forms]
+
+
+
 _COUNTRIES = None
 _REGIONS = None
 _COUNTRIES_COUNT = None
