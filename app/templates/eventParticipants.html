@@ -1,9 +1,10 @@
 {% set title = 'Participant Manage' %}
 {% set style_file = url_for('static', filename='css/list.css') %}
 {% set script_file = url_for('static', filename='js/participant.js') %}
-{% set chief = participants['chief-expert'] %}
-{% set experts = participants['expert'] %}
-{% set competitors = participants['competitors'] %}
+{% set chief = participants['participants']['chief-expert'] %}
+{% set experts = participants['participants']['experts'] %}
+{% set competitors = participants['participants']['competitors'] %}
+{% set unassigned = participants['unassigned'] %}
 
 {% extends 'base.html' %}
 
@@ -52,14 +53,15 @@
         </td>
         <td class="assign-col">
             <!--Buttons of users-->
-            {% if participant['role'] == 3 %}
+            {% if current_user['role'] == 1 %}
             <button class="demote-btn btn btn-warning" value="{{ chief['id'] }},3">demote</button>
             {% endif %}
         </td>
     </tr>
     {% endif %}
 
-    {% for user in experts %}
+    {% for expert in experts %}
+    {% set user = expert['user'] %}
     <tr class="table-light">
         <th scope="col">
             <a href="/user/{{ user['id'] }}" class="name">
@@ -89,7 +91,9 @@
         </td>
         <td class="assign-col">
             <!--Buttons of users-->
+            {% if not chief and current_user['role'] == 1 %}
             <button class="promote-btn btn btn-success" value="{{ user['id'] }},2">promote</button>
+            {% endif %}
             <button class="demote-btn btn btn-warning" value="{{ user['id'] }},2">demote</button>
         </td>
     </tr>
@@ -132,7 +136,7 @@
     </tr>
     {% endfor %}
 
-    {% for user in users %}
+    {% for user in unassigned %}
     <tr {% if loop.index == 1 %} class="table-warning" {% else %} class="table-light" {% endif %}>
         <th scope="row">
             <a href="/user/{{ user['id'] }}" class="name">
@@ -158,7 +162,7 @@
             {% endif %}
         </td>
         <td>
-            Not Contributor
+            Not Competitor
         </td>
 
         <td class="assign-col">

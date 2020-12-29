@@ -121,7 +121,7 @@ def get_event_participants(event_id):
     response = requests.get(f"{api_url}/{event_id}/participants")
     data = response.json()
     if data["success"]:
-        return data["participants"]
+        return data
 
 
 def add_form_to_event(event_id, form_id):
