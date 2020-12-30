@@ -132,7 +132,7 @@
         <td class="assign-col">
             <!--Buttons of users-->
             <button class="promote-btn btn btn-success" value="{{ user['id'] }},0">promote</button>
-            <button class="demote-btn btn btn-danger" value="{{ user['id'] }},0">delete</button>
+            <button class="delete-btn btn btn-danger" value="{{ user['id'] }}">delete</button>
         </td>
     </tr>
     {% endfor %}
@@ -167,7 +167,7 @@
         </td>
 
         <td class="assign-col">
-            <button class="assign-btn btn btn-success" value="{{ user['id'] }},0">assign</button>
+            <button class="assign-btn btn btn-success" value="{{ user['id'] }}">assign</button>
         </td>
     </tr>
     {% endfor %}
