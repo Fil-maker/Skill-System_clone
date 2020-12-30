@@ -54,7 +54,7 @@
         <td class="assign-col">
             <!--Buttons of users-->
             {% if current_user['role'] == 1 %}
-            <button class="demote-btn btn btn-warning" value="{{ chief['id'] }},3">demote</button>
+            <button class="demote-btn btn btn-warning" value="{{ chief['id'] }},2">demote</button>
             {% endif %}
         </td>
     </tr>
@@ -92,15 +92,16 @@
         <td class="assign-col">
             <!--Buttons of users-->
             {% if not chief and current_user['role'] == 1 %}
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},2">promote</button>
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},1">promote</button>
             {% endif %}
-            <button class="demote-btn btn btn-warning" value="{{ user['id'] }},2">demote</button>
+            <button class="demote-btn btn btn-warning" value="{{ user['id'] }},1">demote</button>
         </td>
     </tr>
     {% endfor %}
 
 
-    {% for user in competitors %}
+    {% for competitor in competitors %}
+    {% set user = competitor['user'] %}
     <tr class="table-light">
         <th scope="col">
             <a href="/user/{{ user['id'] }}" class="name">
@@ -126,12 +127,12 @@
             {% endif %}
         </td>
         <td>
-            Expert
+            Competitor
         </td>
         <td class="assign-col">
             <!--Buttons of users-->
-            <button class="promote-btn btn btn-success" value="{{ user['id'] }},1">promote</button>
-            <button class="demote-btn btn btn-danger" value="{{ user['id'] }},1">delete</button>
+            <button class="promote-btn btn btn-success" value="{{ user['id'] }},0">promote</button>
+            <button class="demote-btn btn btn-danger" value="{{ user['id'] }},0">delete</button>
         </td>
     </tr>
     {% endfor %}

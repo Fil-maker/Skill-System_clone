@@ -65,6 +65,17 @@ def only_for_admin(func):
     return new_func
 
 
+def only_for_admin_and_chief_expert(func):
+    def new_func(*args, **kwargs):
+        if not (Roles(g.current_user["role"]) == Roles.ADMIN or
+                g.current_event["chief_expert"] and g.current_event["chief_expert"]["id"] == g.current_user["id"]):
+            abort(404)
+        return func(*args, **kwargs)
+
+    new_func.__name__ = func.__name__
+    return new_func
+
+
 def get_user(user_id=None):
     if user_id is not None:
         response = requests.get(f"{api_url}/{user_id}")

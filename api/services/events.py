@@ -213,7 +213,8 @@ def change_event_participant_role(event_id, user_id, role):
             for form in event.forms:
                 if not form.hidden:
                     if form.form.role == role.value or role == EventRoles.CHIEF_EXPERT:
-                        form.must_sign.append(FormMustSignAssociation(user_id=user.id))
+                        if association.role != EventRoles.CHIEF_EXPERT.value and form.form.role != association.role:
+                            form.must_sign.append(FormMustSignAssociation(user_id=user.id))
                     else:
                         session.delete(form.must_sign.filter(FormMustSignAssociation.user_id == user_id).first())
             association.role = role.value

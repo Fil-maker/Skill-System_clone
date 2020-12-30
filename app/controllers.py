@@ -19,7 +19,7 @@ from app.services.events import create_event_from_form, edit_event_information_f
     load_event_to_g_or_abort, get_event, get_event_participants
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user
+    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert
 
 
 @app.before_request
@@ -154,7 +154,7 @@ def event_list():
 @app.route("/event/<int:event_id>/information", methods=["GET", "POST"])
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
-@only_for_admin
+@only_for_admin_and_chief_expert
 def edit_event_information_(event_id):
     form = EditEventInformationForm(title=g.current_event["title"])
     if edit_event_information_from_form(event_id, form):
@@ -165,7 +165,7 @@ def edit_event_information_(event_id):
 @app.route("/event/<int:event_id>/participants")
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
-@only_for_admin
+@only_for_admin_and_chief_expert
 def participants_manage(event_id):
     participants = get_event_participants(event_id)
     users = get_user()
@@ -175,7 +175,7 @@ def participants_manage(event_id):
 @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
-@only_for_admin
+@only_for_admin_and_chief_expert
 def edit_event_dates_(event_id):
     st = datetime.datetime.strptime(g.current_event["dates"]["C-N"]["date"], '%Y-%m-%d')
     ms = datetime.datetime.strptime(g.current_event["dates"]["C1"], '%Y-%m-%d')

@@ -124,6 +124,28 @@ def get_event_participants(event_id):
         return data
 
 
+def add_user_to_event(event_id, user_id):
+    response = requests.post(f"{api_url}/{event_id}/participants", json={
+        "users": [{"id": user_id}]
+    }, auth=HTTPTokenAuth())
+    return response.json()
+
+
+def change_event_participant_role(event_id, user_id, role):
+    response = requests.put(f"{api_url}/{event_id}/participants", {
+        "user_id": user_id,
+        "role": role
+    }, auth=HTTPTokenAuth())
+    return response.json()
+
+
+def exclude_user_from_event(event_id, user_id):
+    response = requests.delete(f"{api_url}/{event_id}/participants", params={
+        "users": user_id
+    }, auth=HTTPTokenAuth())
+    return response.json()
+
+
 def add_form_to_event(event_id, form_id):
     response = requests.post(f"{api_url}/{event_id}", {"form_id": form_id}, auth=HTTPTokenAuth())
     return response.json()
