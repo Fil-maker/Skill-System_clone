@@ -35,5 +35,5 @@ class text(object):
     def __init__(self, string):
         self.string = string
 
-    def short(self):
-        return ' '.join(self.string.split()[:10]) + ' ...'
+    def short(self, length=10):
+        return ' '.join(self.string.split()[:length]) + ' ...'

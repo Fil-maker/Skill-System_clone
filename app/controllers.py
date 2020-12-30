@@ -19,7 +19,7 @@ from app.services.events import create_event_from_form, edit_event_information_f
     load_event_to_g_or_abort, get_event, get_event_participants
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert
+    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, get_events, get_forms
 
 
 @app.before_request
@@ -38,7 +38,12 @@ def confirm(token):
 
 
 @app.route("/")
-def main():
+def meet_page():
+    # TODO: Сделать нормальное перенаправление
+    if get_myself() is not None:
+        events = get_events(g.current_user['id'])
+        forms = get_forms(g.current_user['id'])
+        return render_template("dashboard.html", events=events, forms=forms)
     return render_template("main.html")
 
 
@@ -196,7 +201,7 @@ def edit_event_dates_(event_id):
 def create_form():
     form = FormRegisterForm()
     if create_form_from_form(form):
-        return redirect("/forms")  # TODO redirect to forms list
+        return redirect("/form/list")
     return render_template("formRegister.html", form=form)
 
 
