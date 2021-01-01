@@ -55,6 +55,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <a href="/event/{{ event['id']}}/forms" style="background-color: #89d6f7;">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
+                Forms
+            </a>
+            <div class="card-body">
+                <p class="left-item">Forms: {{ event['forms'] | length }}</p>
+                <div class="right-item">
+                    <a class="btn btn-warning " href="/event/{{ event['id']}}/forms">Manage</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

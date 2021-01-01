@@ -19,7 +19,8 @@ from app.services.events import create_event_from_form, edit_event_information_f
     load_event_to_g_or_abort, get_event, get_event_participants
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
-    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, get_events, get_forms
+    set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, \
+    get_events, get_forms
 
 
 @app.before_request
@@ -193,6 +194,14 @@ def edit_event_dates_(event_id):
     if edit_event_information_from_form(event_id, form):
         return redirect(f"/event/{event_id}/dates")
     return render_template("eventDates.html", form=form, event=g.current_event)
+
+
+@app.route("/event/<int:event_id>/forms")
+@load_event_to_g_or_abort
+@redirect_if_unauthorized
+def event_forms(event_id):
+    forms = get_form()
+    return render_template("formList.html", forms=forms, event=g.current_event)
 
 
 @app.route("/form/create", methods=["GET", "POST"])

@@ -3,7 +3,7 @@ $(function() {
         var data = this.value.split(",");
         var href = window.location.href;
         var event_id = href.split("/")[4];
-        $.ajax("/ajax/promote/" + event_id + "/" + data[0] + "/" + data[1], {
+        $.ajax("/ajax/participants/promote/" + event_id + "/" + data[0] + "/" + data[1], {
             method: 'post',
             dataType: 'json',
 
@@ -22,7 +22,7 @@ $(function() {
         var data = this.value.split(",");
         var href = window.location.href;
         var event_id = href.split("/")[4];
-        $.ajax("/ajax/demote/" + event_id + "/" + data[0] + "/" + data[1], {
+        $.ajax("/ajax/participants/demote/" + event_id + "/" + data[0] + "/" + data[1], {
 	        method: 'post',
 	        dataType: 'json',
 
@@ -41,7 +41,7 @@ $(function() {
         var user_id = this.value;
         var href = window.location.href;
         var event_id = href.split("/")[4];
-        $.ajax("/ajax/assign/" + event_id + "/" + user_id, {
+        $.ajax("/ajax/participants/assign/" + event_id + "/" + user_id, {
             method: 'post',
             dataType: 'json',
 
@@ -60,7 +60,7 @@ $(function() {
         var user_id = this.value;
         var href = window.location.href;
         var event_id = href.split("/")[4];
-        $.ajax("/ajax/exclude/" + event_id + "/" + user_id, {
+        $.ajax("/ajax/participants/exclude/" + event_id + "/" + user_id, {
             method: 'post',
             dataType: 'json',
 
