@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint
 
-from app.services.events import change_event_participant_role, add_user_to_event, exclude_user_from_event
+from app.services.events import change_event_participant_role, add_user_to_event, exclude_user_from_event, \
+    add_form_to_event, remove_form_from_event
 
 ajax = Blueprint("ajax", __name__)
 
@@ -30,12 +31,12 @@ def exclude_user_from_event_(event_id, user_id):
 
 
 @ajax.route("/forms/assign/<int:event_id>/<int:form_id>", methods=["POST"])
-def assign_form_to_event(event_id, form_id):
-    data = {'success': True}
+def add_form_to_event(event_id, form_id):
+    data = add_form_to_event(event_id, form_id)
     return jsonify(data)
 
 
 @ajax.route("/forms/delete/<int:event_id>/<int:form_id>", methods=["POST"])
-def delete_form_from_event(event_id, form_id):
-    data = {'success': True}
+def remove_form_from_event(event_id, form_id):
+    data = remove_form_from_event(event_id, form_id)
     return jsonify(data)
