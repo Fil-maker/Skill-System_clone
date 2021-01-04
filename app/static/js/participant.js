@@ -7,12 +7,12 @@ $(function() {
             method: 'post',
             dataType: 'json',
 
-            success: function(data) {
+            success: function() {
                 $.jGrowl('', {'header': 'Successfully promoted'});
                 location.reload(); // Заглушка TODO
             },
 
-            error: function(data) {
+            error: function() {
                 $.jGrowl(data["message"], {'header': 'Error'});
             }
         });
@@ -26,12 +26,12 @@ $(function() {
 	        method: 'post',
 	        dataType: 'json',
 
-            success: function(data) {
+            success: function() {
                 $.jGrowl('', {'header': 'Successfully demoted'});
                 location.reload(); // Заглушка TODO
             },
 
-            error: function(data) {
+            error: function() {
                 $.jGrowl(data["message"], {'header': 'Error'});
             }
         });

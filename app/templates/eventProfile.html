@@ -1,10 +1,23 @@
-{% set title = 'Profile' %}
+{% set title = 'Profile of ' + event['title'] %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
+{% set script_file = url_for('static', filename='js/delete.js') %}
 {% set dates =  event['dates'] %}
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ title }} of {{ event.get("title") }}</h1>
+
+{% if current_user['role'] == 1 %}
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="col-sm right-item delete-item">
+        <button class="btn btn-danger delete-btn" value="2,{{ event['id'] }}">Delete</button>
+    </div>
+</div>
+{% else %}
+<h1>{{ title }}</h1>
+{% endif %}
 <div class="row">
 
     <div class="col-sm">

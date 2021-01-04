@@ -14,7 +14,9 @@
         <td>Day</td>
         <td>Content</td>
         <td>Role</td>
+        {% if event %}
         <td>Assign</td>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -31,11 +33,13 @@
             Chief Expert
             {% endif %}
         </td>
+        {% if event %}
         <td>
             <!--TODO: Разделение на те формы, что в событии и нет-->
             <button class="assign-btn btn btn-success" value="{{ form['id'] }},0">assign</button>
             <button class="delete-btn btn btn-danger" value="{{ form['id'] }},1">delete</button>
         </td>
+        {% endif %}
     </tr>
     {% endfor %}
     </tbody>

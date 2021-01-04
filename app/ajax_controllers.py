@@ -25,18 +25,36 @@ def assign_user_to_event(event_id, user_id):
 
 
 @ajax.route("/participants/exclude/<int:event_id>/<int:user_id>", methods=["POST"])
-def exclude_user_from_event_(event_id, user_id):
+def delete_user_from_event_(event_id, user_id):
     data = exclude_user_from_event(event_id, user_id)
     return jsonify(data)
 
 
 @ajax.route("/forms/assign/<int:event_id>/<int:form_id>", methods=["POST"])
-def add_form_to_event(event_id, form_id):
+def assign_form_to_event(event_id, form_id):
     data = add_form_to_event(event_id, form_id)
     return jsonify(data)
 
 
 @ajax.route("/forms/delete/<int:event_id>/<int:form_id>", methods=["POST"])
-def remove_form_from_event(event_id, form_id):
+def delete_form_from_event(event_id, form_id):
     data = remove_form_from_event(event_id, form_id)
+    return jsonify(data)
+
+
+@ajax.route("/delete/user/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    data = {"success": True}
+    return jsonify(data)
+
+
+@ajax.route("/delete/event/<int:event_id>", methods=["POST"])
+def delete_event(event_id):
+    data = {"success": True}
+    return jsonify(data)
+
+
+@ajax.route("/delete/form/<int:form_id>", methods=["POST"])
+def delete_form(form_id):
+    data = {"success": True}
     return jsonify(data)

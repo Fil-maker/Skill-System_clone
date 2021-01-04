@@ -47,7 +47,9 @@
                     <div class="card-footer">
                         <small class="text-muted">
                             {% if event_info['chief_expert'] %}
-                            {{ event_info['chief_expert'] }}
+                            <a href="user/{{ event_info['chief_expert']['id'] }}"
+                               style="color: gray; font-weight: 600;">{{ event_info['chief_expert']['first_name'] }} {{
+                                event_info['chief_expert']['last_name'] }}</a>
                             {% else %}
                             No Chief Expert
                             {% endif %}
@@ -73,7 +75,9 @@
                 <div class="card-footer">
                     <small class="text-muted">
                         {% if event_info['chief_expert'] %}
-                        {{ event_info['chief_expert'] }}
+                        <a href="user/{{ event_info['chief_expert']['id'] }}"
+                               style="color: gray; font-weight: 600;">{{ event_info['chief_expert']['first_name'] }} {{
+                                event_info['chief_expert']['last_name'] }}</a>
                         {% else %}
                         No Chief Expert
                         {% endif %}

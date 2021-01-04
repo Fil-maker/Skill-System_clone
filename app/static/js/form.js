@@ -8,11 +8,11 @@ $(function(){
             method: 'post',
             dataType: 'json',
 
-            success: function(data) {
+            success: function() {
                 $.jGrowl('', {'header': 'Successfully assigned'});
             },
 
-            error: function(data) {
+            error: function() {
                 $.jGrowl(data["message"], {'header': 'Error'});
                 location.reload();
             }
@@ -28,11 +28,11 @@ $(function(){
             method: 'post',
             dataType: 'json',
 
-            success: function(data) {
+            success: function() {
                 $.jGrowl('', {'header': 'Successfully deleted'});
             },
 
-            error: function(data) {
+            error: function() {
                 $.jGrowl(data["message"], {'header': 'Error'});
                 location.reload();
             }

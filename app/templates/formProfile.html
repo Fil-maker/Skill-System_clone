@@ -1,12 +1,23 @@
 {% set title = form['title'] %}
 {% set style_file = url_for('static', filename='css/formProfile.css') %}
-
+{% set script_file = url_for('static', filename='js/delete.js') %}
 {% extends 'base.html' %}
 
 {% block content %}
 
-<h1>{{ title }}</h1>
 
+{% if current_user['role'] == 1 %}
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="col-sm right-item delete-item">
+        <button class="btn btn-danger delete-btn" value="3,{{ form['id'] }}">Delete</button>
+    </div>
+</div>
+{% else %}
+<h1>{{ title }}</h1>
+{% endif %}
 <div class="document">
     <div class="info">
         <p>Day: {{ form['day'] }}</p>

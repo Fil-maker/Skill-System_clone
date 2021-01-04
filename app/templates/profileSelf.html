@@ -1,10 +1,18 @@
 {% set title = current_user["first_name"] + ' ' + current_user["last_name"] %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
+{% set script_file = url_for('static', filename='js/delete.js') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ current_user.get("first_name") }} {{ current_user.get("last_name") }}</h1>
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="col-sm right-item delete-item">
+        <button class="btn btn-danger delete-btn" value="1,{{ current_user['id'] }}">Delete</button>
+    </div>
+</div>
 <div class="row">
 
     <div class="col-sm">
@@ -43,7 +51,9 @@
                 {% if current_user['country']['numeric_code'] == '643' %}
                 <p>Region: {{ current_user['region']['name'] }}</p>
                 {% endif %}
+                {% if current_user.get('about',False) %}
                 <p>About: {{ current_user['about'] }}</p>
+                {% endif %}
             </div>
         </div>
 
@@ -54,14 +64,18 @@
             </a>
             <div class="card-body">
                 {% if current_user.get('is_pin_set', False)%}
-                <p class="left-item">PIN: ****</p>
+                <div class="left-item">
+                    <p>PIN: ****</p>
+                </div>
                 <div class="right-item">
-                    <a class="btn btn-success " href="/pin">reset PIN</a>
+                    <a class="btn btn-warning" href="/pin">reset PIN</a>
                 </div>
                 {% else %}
-                <p class="left-item">PIN: ____ </p>
+                <div class="left-item">
+                    <p>PIN: ____</p>
+                </div>
                 <div class="right-item">
-                    <a class="btn btn-warning" href="/pin">set PIN</a>
+                    <a class="btn btn-danger" href="/pin">set PIN</a>
                 </div>
                 {% endif %}
             </div>

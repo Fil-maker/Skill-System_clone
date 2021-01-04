@@ -172,7 +172,7 @@ def edit_event_information_(event_id):
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
 @only_for_admin_and_chief_expert
-def participants_manage(event_id):
+def event_participants(event_id):
     participants = get_event_participants(event_id)
     users = get_user()
     return render_template("eventParticipants.html", participants=participants, users=users, event=g.current_event)
