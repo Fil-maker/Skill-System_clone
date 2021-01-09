@@ -67,5 +67,6 @@ class Event(db.Model, ISO8601SerializerMixin):
             }
         }
 
-        ans["forms"] = [form.id for form in self.forms]
+        from api.data.models import FormToEventAssociation
+        ans["forms"] = [form.id for form in self.forms.filter(FormToEventAssociation.hidden.is_(False))]
         return ans
