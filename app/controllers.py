@@ -239,6 +239,25 @@ def profile_form(form_id):
     return render_template("formProfile.html", form=form, test=test)
 
 
+@app.route("event/<int:event_id>/form/<int:form_id>")
+@redirect_if_unauthorized
+@load_event_to_g_or_abort
+def profile_form(event_id, form_id):
+    form = get_form(form_id)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template("formProfile.html", form=form, test=test, event=g.current_event)
+
+
+@app.route("event/<int:event_id>/form/<int:form_id>")
+@redirect_if_unauthorized
+@load_event_to_g_or_abort
+def event_form(event_id, form_id):
+    form = get_form(form_id)
+    test = datetime.datetime.now().strftime("%Y-%m-%d")
+    # TODO: Сделать отдельный шаблон под формы ивента
+    return render_template("formProfile.html", form=form, test=test, event=g.current_event)
+
+
 @app.route("/form/list")
 @redirect_if_unauthorized
 @only_for_admin
