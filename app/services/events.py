@@ -123,6 +123,14 @@ def delete_event(event_id):
     return data
 
 
+def get_event_forms(event_id):
+    if event_id is not None:
+        response = requests.get(f"{api_url}/{event_id}/forms")
+        data = response.json()
+        if data["success"]:
+            return data
+
+
 def get_event_participants(event_id):
     response = requests.get(f"{api_url}/{event_id}/participants")
     data = response.json()
@@ -153,10 +161,10 @@ def exclude_user_from_event(event_id, user_id):
 
 
 def add_form_to_event(event_id, form_id):
-    response = requests.post(f"{api_url}/{event_id}", {"form_id": form_id}, auth=HTTPTokenAuth())
+    response = requests.post(f"{api_url}/{event_id}/forms", {"form_id": form_id}, auth=HTTPTokenAuth())
     return response.json()
 
 
 def remove_form_from_event(event_id, form_id):
-    response = requests.delete(f"{api_url}/{event_id}", params={"form_id": form_id}, auth=HTTPTokenAuth())
+    response = requests.delete(f"{api_url}/{event_id}/forms", params={"form_id": form_id}, auth=HTTPTokenAuth())
     return response.json()

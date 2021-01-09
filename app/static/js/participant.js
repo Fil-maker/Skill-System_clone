@@ -2,17 +2,16 @@ $(function() {
     $('.promote-btn').on("click", function() {
         var data = this.value.split(",");
         var href = window.location.href;
-        var event_id = href.split("/")[4];
-        $.ajax("/ajax/participants/promote/" + event_id + "/" + data[0] + "/" + data[1], {
+        $.ajax("/ajax/participants/promote/" + data[2] + "/" + data[0] + "/" + data[1], {
             method: 'post',
             dataType: 'json',
 
-            success: function() {
+            success: function(data) {
                 $.jGrowl('', {'header': 'Successfully promoted'});
                 location.reload(); // Заглушка TODO
             },
 
-            error: function() {
+            error: function(data) {
                 $.jGrowl(data["message"], {'header': 'Error'});
             }
         });
@@ -21,27 +20,25 @@ $(function() {
     $('.demote-btn').on("click", function() {
         var data = this.value.split(",");
         var href = window.location.href;
-        var event_id = href.split("/")[4];
-        $.ajax("/ajax/participants/demote/" + event_id + "/" + data[0] + "/" + data[1], {
+        $.ajax("/ajax/participants/demote/" + data[2] + "/" + data[0] + "/" + data[1], {
 	        method: 'post',
 	        dataType: 'json',
 
-            success: function() {
+            success: function(data) {
                 $.jGrowl('', {'header': 'Successfully demoted'});
                 location.reload(); // Заглушка TODO
             },
 
-            error: function() {
+            error: function(data) {
                 $.jGrowl(data["message"], {'header': 'Error'});
             }
         });
     });
 
     $('.assign-btn').on("click", function() {
-        var user_id = this.value;
+        var data = this.value.split(",");
         var href = window.location.href;
-        var event_id = href.split("/")[4];
-        $.ajax("/ajax/participants/assign/" + event_id + "/" + user_id, {
+        $.ajax("/ajax/participants/assign/" + data[1] + "/" + data[0], {
             method: 'post',
             dataType: 'json',
 
@@ -57,10 +54,9 @@ $(function() {
     });
 
     $('.delete-btn').on("click", function() {
-        var user_id = this.value;
+        var data = this.value.split(",");
         var href = window.location.href;
-        var event_id = href.split("/")[4];
-        $.ajax("/ajax/participants/exclude/" + event_id + "/" + user_id, {
+        $.ajax("/ajax/participants/exclude/" + data[1] + "/" + data[0], {
             method: 'post',
             dataType: 'json',
 

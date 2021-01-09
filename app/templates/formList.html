@@ -5,44 +5,63 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <h1>{{ title }} {% if event %} of <a href="/event/{{ event['id'] }}" style="color: black;">{{ event['title'] }}</a>{% endif %}</h1>
-<table class="table table-hover">
-    <thead>
-    <tr class="table-info">
-        <td>Title</td>
-        <td>Day</td>
-        <td>Content</td>
-        <td>Role</td>
-        {% if event %}
-        <td>Assign</td>
-        {% endif %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for form in forms %}
-    <tr class="table-light">
-        <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
-        <td>{{ form['day'] }}</td>
-        <td>{{ text(form['content']).short(15) }}</td>
-        <td>{% if form['role'] == 0 %}
-            Competitor
-            {% elif form['role'] == 1 %}
-            Expert
-            {% else %}
-            Chief Expert
+<div class="tbl-border">
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <td>Title</td>
+            <td>Day</td>
+            <td>Content</td>
+            <td>Role</td>
+            {% if event %}
+            <td>Assign</td>
             {% endif %}
-        </td>
-        {% if event %}
-        <td>
-            <!--TODO: Разделение на те формы, что в событии и нет-->
-            <button class="assign-btn btn btn-success" value="{{ form['id'] }},0">assign</button>
-            <button class="delete-btn btn btn-danger" value="{{ form['id'] }},1">delete</button>
-        </td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </tr>
+        </thead>
+        <tbody>
+        {% for form in forms['forms'] %}
+        <tr class="table-light">
+            <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['form']['title'] }}</a></th>
+            <td>{{ form['form']['day'] }} ({{ momentjs(form['date']).format(date_format) }})</td>
+            <td>{{ text(form['form']['content']).short(15) }}</td>
+            <td>{% if form['form']['role'] == 0 %}
+                Competitor
+                {% elif form['form']['role'] == 1 %}
+                Expert
+                {% else %}
+                Chief Expert
+                {% endif %}
+            </td>
+            {% if event %}
+            <td>
+                <button class="delete-btn btn btn-danger" value="{{ form['form']['id'] }},1">delete</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
 
+        {% for form in forms['unassigned'] %}
+        <tr class="table-light">
+            <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+            <td>{{ form['day'] }}</td>
+            <td>{{ text(form['content']).short(15) }}</td>
+            <td>{% if form['role'] == 0 %}
+                Competitor
+                {% elif form['role'] == 1 %}
+                Expert
+                {% else %}
+                Chief Expert
+                {% endif %}
+            </td>
+            {% if event %}
+            <td>
+                <button class="assign-btn btn btn-success" value="{{ form['id'] }},0">assign</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

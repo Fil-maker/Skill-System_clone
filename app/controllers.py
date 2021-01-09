@@ -16,11 +16,11 @@ from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 from app.services.events import create_event_from_form, edit_event_information_from_form, \
-    load_event_to_g_or_abort, get_event, get_event_participants
+    load_event_to_g_or_abort, get_event, get_event_participants, get_event_forms
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
     set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, \
-    get_events, get_forms
+    get_events, get_forms, get_events_to_assign
 
 
 @app.before_request
@@ -122,6 +122,23 @@ def user_profile(user_id):
     return render_template("profileUser.html", user=user)
 
 
+@app.route("/profile/events")
+@redirect_if_unauthorized
+def self_events_to_assign():
+    user_events = get_events_to_assign(g.current_user["id"])
+    return render_template("profileEvents.html", user=g.current_user, events=user_events)
+
+
+@app.route("/user/<int:user_id>/events")
+@redirect_if_unauthorized
+def user_events_to_assign(user_id):
+    user = get_user(user_id)
+    user_events = get_events_to_assign(user_id)
+    if user is None:
+        abort(404)
+    return render_template("profileEvents.html", user=user, events=user_events)
+
+
 @app.route("/user/list")
 @redirect_if_unauthorized
 @only_for_admin
@@ -133,7 +150,7 @@ def user_list():
 @app.route("/event/create", methods=["GET", "POST"])
 @redirect_if_unauthorized
 @only_for_admin
-def create_event_():
+def create_event():
     form = EventRegisterForm()
     if create_event_from_form(form):
         return redirect("/events")
@@ -200,7 +217,7 @@ def edit_event_dates_(event_id):
 @load_event_to_g_or_abort
 @redirect_if_unauthorized
 def event_forms(event_id):
-    forms = get_form()
+    forms = get_event_forms(event_id)
     return render_template("formList.html", forms=forms, event=g.current_event)
 
 

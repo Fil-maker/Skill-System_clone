@@ -4,7 +4,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <div class="row">
     <div class="col event-board">
         <div class="row row-cols-1 row-cols-md-3">
@@ -25,7 +24,7 @@
                         </a>
                         <div class="dates">
                             <div class="row row-cols-md-2 period">
-                                <div class="col-sm">C-N</div>
+                                <div class="col-sm">{{ dates['C-N']['name'] }}</div>
                                 <div class="col-sm">{{ momentjs(dates['C-N']['date']).format(date_format) }}</div>
                                 <div class="col-sm">C-1</div>
                                 <div class="col-sm">{{ momentjs(dates['C-1']).format(date_format) }}</div>
@@ -33,13 +32,13 @@
                             <div class="row row-cols-md-2 period">
                                 <div class="col-sm">C1</div>
                                 <div class="col-sm">{{ momentjs(dates['C1']).format(date_format) }}</div>
-                                <div class="col-sm">CN</div>
+                                <div class="col-sm">{{ dates['CN']['name'] }}</div>
                                 <div class="col-sm">{{ momentjs(dates['CN']['date']).format(date_format) }}</div>
                             </div>
                             <div class="row row-cols-md-2 period">
                                 <div class="col-sm">C+1</div>
                                 <div class="col-sm">{{ momentjs(dates['C+1']).format(date_format) }}</div>
-                                <div class="col-sm">C+N</div>
+                                <div class="col-sm">{{ dates['C+N']['name'] }}</div>
                                 <div class="col-sm">{{ momentjs(dates['C+N']['date']).format(date_format) }}</div>
                             </div>
                         </div>
@@ -63,32 +62,57 @@
     <div class="col-md-auto form-board">
         <div class="row row-cols-1 row-cols-md-1">
             {% if forms %}
-            {% for form in forms %}
+            {% set must_sign_forms = forms['must_sign'] %}
+            {% set signed_forms = forms['signed'] %}
+
+            {% for object in must_sign_forms %}
+            {% set form_info = object['form']['form'] %}
             <div class="card h-100">
                 <div class="card-body">
-                    <a href="form/{{ form['id'] }}">
+                    <a href="form/{{ form_info['id'] }}">
                         <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">
-                        <h5 class="card-title">{{ form['title'] }}</h5>
+                        <h5 class="card-title">{{ form_info['title'] }}</h5>
                     </a>
-                    <p>{{ text(form['content']).short(15) }}</p>
+                    <p>{{ text(form_info['content']).short(15) }}</p>
                 </div>
                 <div class="card-footer">
                     <small class="text-muted">
-                        {% if event_info['chief_expert'] %}
-                        <a href="user/{{ event_info['chief_expert']['id'] }}"
-                               style="color: gray; font-weight: 600;">{{ event_info['chief_expert']['first_name'] }} {{
-                                event_info['chief_expert']['last_name'] }}</a>
+                        {% if form_info['role'] == 0 %}
+                        Competitor
                         {% else %}
-                        No Chief Expert
+                        Expert
                         {% endif %}
                     </small>
                 </div>
             </div>
             {% endfor %}
+
+            {% for object in signed_forms %}
+            {% set form_info = object['form']['form'] %}
+            <div class="card h-100">
+                <div class="card-body">
+                    <a href="form/{{ form_info['id'] }}">
+                        <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">
+                        <h5 class="card-title">{{ form_info['title'] }}</h5>
+                    </a>
+                    <p>{{ text(form_info['content']).short(15) }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        {% if form_info['role'] == 0 %}
+                        Competitor
+                        {% else %}
+                        Expert
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+
             {% else %}
             <div class="col mb-2">
                 <div class="card">
-                    No Forms yet
+                    <div class="card-body">No Forms yet</div>
                 </div>
             </div>
             {% endif %}

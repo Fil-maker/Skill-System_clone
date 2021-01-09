@@ -1,0 +1,101 @@
+{% set title = 'Events list of ' %}
+{% set style_file = url_for('static', filename='css/list.css') %}
+{% set script_file = url_for('static', filename='js/participant.js') %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h1>{{ title }} {% if current_user["id"] == user['id'] %}
+    <a class="name" href="/profile" >{{ user['first_name'] }} {{ user['last_name'] }}</a>
+    {% else %}
+    <a class="name" href="/user/{{ user['id'] }}" >{{ user['first_name'] + ' ' + user['last_name'] }}</a>
+    {% endif %}
+</h1>
+<div class="tbl-border">
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <td>Title</td>
+            <td>Duration</td>
+            <td>Role</td>
+            <td>Assign</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in events['assigned'] %}
+        {% set event = object['event'] %}
+        <tr class="table-light">
+            <th scope="col">
+                <a class="name" href="/event/{{ event['id'] }}">
+                    {% if event.get('photos', False) %}
+                    <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
+                    {% else %}
+                    <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
+                    {% endif %}
+                    {{ event['title'] }}
+                </a>
+            </th>
+            <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }}->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }}
+            </td>
+            <td>
+                {% if object['role'] == 0 %}
+                Competitor
+                {% elif object['role'] == 1 %}
+                Expert
+                {% elif object['role'] == 2 %}
+                Chief Expert
+                {% endif %}
+            </td>
+            <td>
+                {% if object['role'] == 0 %}
+                    <button class="promote-btn btn btn-success" value="{{ user['id'] }},0">promote</button>
+                    <button class="delete-btn btn btn-danger" value="{{ user['id'] }}">delete</button>
+                {% elif object['role'] == 1 %}
+                    {% if not chief %}
+                        <button class="promote-btn btn btn-success" value="{{ user['id'] }},1,{{ event['id'] }}">promote</button>
+                    {% endif %}
+                    <button class="demote-btn btn btn-warning" value="{{ user['id'] }},1,{{ event['id'] }}">demote</button>
+                {% elif object['role'] == 2%}
+                    <button class="demote-btn btn btn-warning" value="{{ user['id'] }},2,{{ event['id'] }}">demote</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+        {% for object in events['not_assigned'] %}
+        {% set event = object['event'] %}
+        <tr {% if loop.index== 1 %} class="table-warning" {% else %} class="table-light" {% endif %}>
+            <th scope="col">
+                <a class="name" href="/event/{{ event['id'] }}">
+                    {% if event.get('photos', False) %}
+                    <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
+                    {% else %}
+                    <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
+                    {% endif %}
+                    {{ event['title'] }}
+                </a>
+            </th>
+            <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }}->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }}
+            </td>
+            <td>
+                {% if object['role'] == 0 %}
+                Competitor
+                {% elif object['role'] == 1 %}
+                Expert
+                {% elif object['role'] == 2 %}
+                Chief Expert
+                {% else %}
+                Not assigned
+                {% endif %}
+            </td>
+            <td class="assign-col">
+                <button class="assign-btn btn btn-success" value="{{ user['id'] }},{{ event['id'] }}">assign</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -23,7 +23,6 @@ $(function(){
         var data = e.value;
         var href = window.location.href;
         var event_id = href.split("/")[4];
-        var suc = false;
         $.ajax("/ajax/forms/delete/" + event_id + "/" + data[0], {
             method: 'post',
             dataType: 'json',

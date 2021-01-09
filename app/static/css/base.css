@@ -19,3 +19,11 @@
 .navbar{
     padding-bottom: 0px;
 }
+
+body {
+  background-image: linear-gradient(white, #80808080);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+}

@@ -97,6 +97,13 @@ def get_events(user_id):
         return data["events"]
 
 
+def get_events_to_assign(user_id):
+    response = requests.get(f"{api_url}/{user_id}/events_to_assign", auth=HTTPTokenAuth())
+    data = response.json()
+    if data["success"]:
+        return data["events"]
+
+
 def get_forms(user_id):
     response = requests.get(f"{api_url}/{user_id}/forms", auth=HTTPTokenAuth())
     data = response.json()

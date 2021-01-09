@@ -17,7 +17,7 @@ class FormRegisterForm(FlaskForm):
                       validators=[DataRequired()],
                       render_kw={
                           "required": True,
-                          "pattern": "C[-+]?[1-9]+",
+                          "pattern": "C[-+]?[1-9][0-9]*",
                           "placeholder": label
                       })
 
