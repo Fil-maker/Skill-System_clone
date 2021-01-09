@@ -117,6 +117,12 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
     return data
 
 
+def delete_event(event_id):
+    response = requests.delete(f"{api_url}/{event_id}", auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
 def get_event_participants(event_id):
     response = requests.get(f"{api_url}/{event_id}/participants")
     data = response.json()

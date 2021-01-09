@@ -3,7 +3,7 @@ from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
-from app.services.forms import get_form, create_form_from_form
+from app.services.forms import get_form, create_form_from_form, update_form_from_form
 from app import app
 from app.forms.editProfile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
@@ -239,13 +239,15 @@ def sign_form(form_id):
     return render_template("formSign.html", form=form, form_data=form_data, test=test)
 
 
-@app.route("/form/<int:form_id>/edit")
+@app.route("/form/<int:form_id>/edit", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def edit_form(form_id):
     form_data = get_form(form_id)
-    form = FormRegisterForm(title=form_data['title'],
-                            day=form_data['day'],
-                            content=form_data['content'],
-                            role=form_data['role']
+    form = FormRegisterForm(title=form_data["title"],
+                            day=form_data["day"],
+                            content=form_data["content"],
+                            role=form_data["role"]
                             )
-    return render_template('formRegister.html', form=form, form_data=form_data, edit=True)
+    if update_form_from_form(form_id, form):
+        return redirect(f"/form/{form_id}")
+    return render_template("formRegister.html", form=form, form_data=form_data, edit=True)

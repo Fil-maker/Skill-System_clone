@@ -43,12 +43,16 @@
         </div>
     </div>
 
-    <div class="input-group form-item">
+    <div class="input-group form-item" style="margin-bottom: 0;">
         {{ form.role.label }}
-        {{ form.role() }}
+        {{ form.role(style="margin-bottom: 0;") }}
+    </div>
+
+    <div class="form-item">
+        {{ form.errors() }}
         <div class="invalid-feedback">
-            {% for error in form.role.errors %}
-            <p>{{ error }}</p>
+            {% for error in form.errors.errors %}
+            <p style="font-size: 16px;">{{ error }}</p>
             {% endfor %}
         </div>
     </div>

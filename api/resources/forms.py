@@ -34,6 +34,7 @@ class FormsResource(Resource):
         parser.add_argument("title")
         parser.add_argument("content")
         parser.add_argument("day")
+        parser.add_argument("role", type=int, choices=[EventRoles.COMPETITOR.value, EventRoles.EXPERT.value])
         args = parser.parse_args(strict=True)
         try:
             form = update_form(form_id, **args)

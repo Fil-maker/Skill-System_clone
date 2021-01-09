@@ -44,7 +44,44 @@ def create_form(title, day, content, role):
     return response.json()
 
 
-# TODO update_form() && update_form_from_form()
+def delete_form(form_id):
+    response = requests.delete(f"{api_url}/{form_id}", auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
+def update_form_from_form(form_id, form: FlaskForm) -> bool:
+    if form.validate_on_submit():
+        data = update_form(form_id, form.title.data, form.content.data, form.day.data, form.role.data)
+
+        if data["success"]:
+            return True
+        if "Incorrect day format" == data.get("message", ""):
+            form.day.render_kw["class"] = "form-control is-invalid"
+            form.day.errors.append(data["message"])
+        elif "Form that is used cannot be changed" == data.get("message", ""):
+            form.title.render_kw["class"] = "form-control is-invalid"
+            form.content.render_kw["class"] = "form-control is-invalid"
+            form.day.render_kw["class"] = "form-control is-invalid"
+            form.errors.render_kw["class"] = "form-control is-invalid"
+            form.errors.errors.append(data["message"])
+    return False
+
+
+def update_form(form_id, title=None, content=None, day=None, role=None):
+    params = {}
+    if title:
+        params["title"] = title
+    if content:
+        params["content"] = content
+    if day:
+        params["day"] = day
+    if role:
+        params["role"] = role
+
+    response = requests.put(f"{api_url}/{form_id}", params, auth=HTTPTokenAuth())
+    data = response.json()
+    return data
 
 
 def get_form_signatory(event_id, form_id):

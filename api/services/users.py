@@ -195,6 +195,23 @@ def get_events(user_id):
         return [event.to_dict_event() for event in ongoing_events + future_events + past_events]
 
 
+def get_events_to_assign(user_id):
+    with create_session() as session:
+        user = session.query(User).get(user_id)
+        events = session.query(Event).all()
+        assigned = []
+        not_assigned = []
+        for event in events:
+            association = session.query(UserToEventAssociation).filter(
+                UserToEventAssociation.user_id == user_id,
+                UserToEventAssociation.event_id == event.id).first()
+            if association is not None:
+                assigned.append({"event": event.to_dict(), "role": association.role})
+            else:
+                not_assigned.append({"event": event.to_dict()})
+        return {"assigned": assigned, "not_assigned": not_assigned}
+
+
 def get_unsigned_forms(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)

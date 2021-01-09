@@ -91,14 +91,14 @@ def get_user(user_id=None):
 
 
 def get_events(user_id):
-    response = requests.get(f"{api_url}/{user_id}/events")
+    response = requests.get(f"{api_url}/{user_id}/events", auth=HTTPTokenAuth())
     data = response.json()
     if data["success"]:
         return data["events"]
 
 
 def get_forms(user_id):
-    response = requests.get(f"{api_url}/{user_id}/forms")
+    response = requests.get(f"{api_url}/{user_id}/forms", auth=HTTPTokenAuth())
     data = response.json()
     if data["success"]:
         return data
@@ -175,6 +175,12 @@ def update_user(user_id, first_name=None, last_name=None, country=None, region=N
         params["about"] = about
 
     response = requests.put(f"{api_url}/{user_id}", params, auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
+def delete_user(user_id):
+    response = requests.delete(f"{api_url}/{user_id}", auth=HTTPTokenAuth())
     data = response.json()
     return data
 

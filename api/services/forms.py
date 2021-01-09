@@ -70,7 +70,7 @@ def create_form(title, content, day, role):
         return form.to_dict()
 
 
-def update_form(form_id, title=None, content=None, day=None):
+def update_form(form_id, title=None, content=None, day=None, role=None):
     if not check_day_format(day):
         raise ValueError("Incorrect day format")
     with create_session() as session:
@@ -83,6 +83,8 @@ def update_form(form_id, title=None, content=None, day=None):
             form.content = content
         if day:
             form.day = day
+        if role:
+            form.role = role
         return form.to_dict()
 
 
