@@ -67,7 +67,7 @@
 
             {% for object in must_sign_forms %}
             {% set form_info = object['form']['form'] %}
-            <div class="card h-100">
+            <div class="card h-100 form-card">
                 <div class="card-body">
                     <a href="form/{{ form_info['id'] }}">
                         <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">
@@ -89,7 +89,7 @@
 
             {% for object in signed_forms %}
             {% set form_info = object['form']['form'] %}
-            <div class="card h-100">
+            <div class="card h-100 form-card">
                 <div class="card-body">
                     <a href="form/{{ form_info['id'] }}">
                         <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">

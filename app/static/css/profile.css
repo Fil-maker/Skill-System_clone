@@ -15,3 +15,13 @@
     width: 30px;
     height: 30px;
 }
+.edit-button{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    background-color: #89d6f7;
+}
+.card-body{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem
+}

@@ -10,8 +10,12 @@
     width: 1.8rem;
 }
 .form-board{
-    border-left: solid #1d2124 2px;
+    width: 30%;
+    border-left: solid #69b0ee 2px;
 }
 .event-board{
     margin-right: 15px;
+}
+.form-card{
+    margin-bottom: 10px;
 }

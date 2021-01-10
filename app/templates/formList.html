@@ -21,14 +21,15 @@
         </thead>
         <tbody>
         {% if event %}
-        {% for form in forms['forms'] %}
+        {% for object in forms['forms'] %}
+        {% set form = object['form'] %}
         <tr class="table-light">
-            <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['form']['title'] }}</a></th>
-            <td>{{ form['form']['day'] }} ({{ momentjs(form['date']).format(date_format) }})</td>
-            <td>{{ text(form['form']['content']).short(15) }}</td>
-            <td>{% if form['form']['role'] == 0 %}
+            <th scope="row"><a class="name" href="/event/{{ object['event_id'] }}/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+            <td>{{ form['day'] }} ({{ momentjs(object['date']).format(date_format) }})</td>
+            <td>{{ text(form['content']).short(15) }}</td>
+            <td>{% if form['role'] == 0 %}
                 Competitor
-                {% elif form['form']['role'] == 1 %}
+                {% elif form['role'] == 1 %}
                 Expert
                 {% else %}
                 Chief Expert
@@ -36,7 +37,7 @@
             </td>
             {% if event %}
             <td>
-                <button class="delete-btn btn btn-danger" value="{{ form['form']['id'] }},1">delete</button>
+                <button class="delete-btn btn btn-danger" value="{{ form['id'] }},1">delete</button>
             </td>
             {% endif %}
         </tr>

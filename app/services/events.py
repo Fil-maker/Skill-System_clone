@@ -131,6 +131,14 @@ def get_event_forms(event_id):
             return data
 
 
+def get_event_form(event_id, form_id):
+    if event_id is not None:
+        response = requests.get(f"{api_url}/{event_id}/forms/{form_id}")
+        data = response.json()
+        if data["success"]:
+            return data["eventForm"]
+
+
 def get_event_participants(event_id):
     response = requests.get(f"{api_url}/{event_id}/participants")
     data = response.json()
