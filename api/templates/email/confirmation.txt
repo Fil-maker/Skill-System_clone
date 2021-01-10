@@ -1,11 +1,12 @@
-Skill Management System приветствует Вас! Благодарим за регистрацию в сервисе!
+Welcome to Skill Management System!
 
-Подтвердите свой адрес эл. почты.
-Нам необходимо убедиться в том, что {{ user.email }} - именно Ваш e-mail адрес.
+Thanks for becoming a new member on tra-bla-bla.com!
+We need to make sure that {{ user.email }} is your email address.
+Please confirm your email address.
 
-Для подтверждения эл. почты, перейдите по ссылке ниже:
+To confirm your email follow the link below:
 {{ url }}
-Если ссылка не открывается, скопируйте её в адресную строку браузера.
+If it does not open copy that link and paste it to the browser`s address bar
 
-Это письмо было отправлено автоматически.
-Если Вы считаете, что получили его по ошибке, просто проигнорируйте его.
+This email was sent automatically.
+If you believe You have received this email in error, please ignore it.
