@@ -249,8 +249,10 @@ def get_event_forms(event_id):
 def get_unassigned_forms(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
-        unassigned = list(filter(lambda x: x.id not in map(lambda x: x.form_id, event.forms),
-                                 session.query(Form).filter(Form.hidden.is_(False)).all()))
+        unassigned = list(filter(
+            lambda x: x.id not in map(lambda x: x.form_id, event.forms.filter(
+                FormToEventAssociation.hidden.is_(False))),
+            session.query(Form).filter(Form.hidden.is_(False)).all()))
         return [form.to_dict() for form in unassigned]
 
 

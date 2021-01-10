@@ -1,5 +1,5 @@
 import datetime
-from flask import render_template, g, session
+from flask import render_template, g, session, send_file
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
@@ -16,7 +16,7 @@ from app.forms.password import PasswordForm
 from app.forms.pin import PinForm
 from app.forms.register import RegisterForm
 from app.services.events import create_event_from_form, edit_event_information_from_form, \
-    load_event_to_g_or_abort, get_event, get_event_participants, get_event_forms, get_event_form
+    load_event_to_g_or_abort, get_event, get_event_participants, get_event_forms, get_event_form, download_event_form
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
     set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, \
@@ -244,6 +244,16 @@ def profile_form(form_id):
 def event_form(event_id, form_id):
     form_of_event = get_event_form(event_id, form_id)
     return render_template("formEventProfile.html", eventForm=form_of_event)
+
+
+@app.route("/event/<int:event_id>/form/<int:form_id>/download")
+@redirect_if_unauthorized
+@load_event_to_g_or_abort
+def download_event_form_(event_id, form_id):
+    file = download_event_form(event_id, form_id)
+    if file is not None:
+        return send_file(file, as_attachment=True, attachment_filename="form.docx")
+    abort(400)
 
 
 @app.route("/form/list")

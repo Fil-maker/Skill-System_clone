@@ -20,9 +20,8 @@
     <div class="modal-body">{{ form_data['content'] }}</div>
 
     {% if momentjs(test).is_able_to_sign() %}
-    <form class="form" enctype="multipart/form-data">
+    <form class="form" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-
 
         <div class="form-item">
             {{ form.pin.label }}

@@ -14,7 +14,7 @@
         <h1>{{ title }}</h1>
     </div>
     <div class="col-sm right-item admin-item">
-        <a class="btn btn-info" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/download">Download</a>
+        <a class="btn btn-info" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/download" download>Download</a>
         <button class="btn btn-danger delete-btn" value="3,{{ form['id'] }}">Delete</button>
     </div>
 </div>

@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 
 import requests
 from flask import g
@@ -124,19 +125,27 @@ def delete_event(event_id):
 
 
 def get_event_forms(event_id):
-    if event_id is not None:
-        response = requests.get(f"{api_url}/{event_id}/forms")
-        data = response.json()
-        if data["success"]:
-            return data
+    response = requests.get(f"{api_url}/{event_id}/forms")
+    data = response.json()
+    if data["success"]:
+        return data
 
 
 def get_event_form(event_id, form_id):
-    if event_id is not None:
-        response = requests.get(f"{api_url}/{event_id}/forms/{form_id}")
-        data = response.json()
-        if data["success"]:
-            return data["eventForm"]
+    response = requests.get(f"{api_url}/{event_id}/forms/{form_id}")
+    data = response.json()
+    if data["success"]:
+        return data["eventForm"]
+
+
+def download_event_form(event_id, form_id):
+    response = requests.get(f"{api_url}/{event_id}/forms/{form_id}/document", auth=HTTPTokenAuth())
+    if response.status_code == 200:
+        file = BytesIO()
+        file.write(response.content)
+        file.seek(0)
+        return file
+    return None
 
 
 def get_event_participants(event_id):
