@@ -4,8 +4,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{{ doc }}
 <h1>Sign</h1>
 <div class="document">
 
@@ -26,7 +24,6 @@
     <form class="form" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
-
         <div class="form-item">
             {{ form.pin.label }}
             {{ form.pin() }}
@@ -39,9 +36,9 @@
 
         <div class="confirm-item" id="submit">
             {{ form.submit() }}
+            <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
         </div>
     </form>
     {% endif %}
 </div>
-
 {% endblock %}

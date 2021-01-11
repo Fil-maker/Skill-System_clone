@@ -27,12 +27,7 @@ def render_form_template(event_id, form_id) -> BytesIO:
                                        event.final_stage_date, event.finish_date)[form.day]
         chief_expert = event.chief_expert
 
-        r = requests.get(f"{os.environ.get('S3_BUCKET_URL')}/events/init/{event.photo_url}")
-        bytes_io = BytesIO()
-        bytes_io.write(r.content)
-        bytes_io.seek(0)
-
-        doc.render({
+        params = {
             "form_title": form.title,
             "day": form.day,
             "date": date,
@@ -41,9 +36,17 @@ def render_form_template(event_id, form_id) -> BytesIO:
             "chief_expert_last_name": chief_expert.last_name if chief_expert else "",
             "content": form.content,
             "signatory": [{"role": str(EventRoles(user["role"])), "user": user["user"]} for user in
-                          get_form_signatory(event_id, form_id)],
-            "image": InlineImage(doc, bytes_io, height=Mm(25))
-        })
+                          get_form_signatory(event_id, form_id)]
+        }
+
+        bytes_io = BytesIO()
+        if event.photo_url is not None:
+            r = requests.get(f"{os.environ.get('S3_BUCKET_URL')}/events/init/{event.photo_url}")
+            bytes_io.write(r.content)
+            bytes_io.seek(0)
+            params["image"] = InlineImage(doc, bytes_io, height=Mm(25))
+
+        doc.render(params)
         bytes_io.close()
 
         file = BytesIO()
