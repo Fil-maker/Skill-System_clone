@@ -19,3 +19,17 @@
 .form-card{
     margin-bottom: 10px;
 }
+.left-item, .right-item{
+    float: left;
+    width: 50%;
+}
+.right-item{
+    text-align: right;
+}
+.source{
+    color: gray;
+    font-weight: 700;
+}
+p{
+    margin-bottom: 0;
+}

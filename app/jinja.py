@@ -1,5 +1,4 @@
 import datetime
-
 from jinja2 import Markup
 
 
@@ -24,10 +23,7 @@ class momentjs(object):
         return self.render("fromNow()")
 
     def is_able_to_sign(self):
-        return Markup(
-            f"""<script>\nmoment({self.timestamp.strftime('%Y-%m-%d')}).isAfter('{datetime.datetime.now().strftime(
-                '%Y-%m-%d-%S')}') || moment({self.timestamp.strftime(
-                '%Y-%m-%d')}).isSame('{datetime.datetime.now().strftime('%Y-%m-%d-%S')}');\n</script>""")
+        return datetime.datetime.now() >= self.timestamp
 
 
 class text(object):

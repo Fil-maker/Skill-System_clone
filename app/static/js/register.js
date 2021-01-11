@@ -18,7 +18,7 @@ $(function(){
         reader.onload = function(e) {
           $("#preload").attr("src", e.target.result);
           $("#photo_base64").val(e.target.result);
-          $("#photoField").val("");
+          $("#photoField").val(e.target.result);
           $("#croppie-toggler").attr("disabled", false);
         }
 

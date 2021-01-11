@@ -1,4 +1,6 @@
 {% set title = "Event Information"%}
+{% set style_file = url_for('static', filename='css/register.css') %}
+{% set script_file = url_for('static', filename='js/register.js') %}
 {% extends 'base.html' %}
 
 {% block content %}
@@ -6,26 +8,68 @@
 <form method="post">
     {{ form.hidden_tag() }}
     <div class="row">
-        <div class="col">
-            {{ form.title.label() }}
+        <div class="col-sm">
+            <div class="image-item">
+                {{ form.photo.label }}
+                <img id="preload" class="img-fluid img-thumbnail"
+                     {% if photo_available %}
+                     src="{{ event['photos']['initial'] }}"
+                     {% else %}
+                     src="/static/img/icons/other/user.svg"
+                     {% endif %}>
+                <div class="left-item">
+                    {{ form.photo() }}
+                </div>
+                <div class="right-item">
+                    <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
+                            data-target="#croppie-modal" disabled>Create thumbnail
+                    </button>
+                </div>
+                <div class="invalid-feedback">
+                    {% for error in form.photo.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        <div class="col">
+        <div class="col-sm">
+            {{ form.title.label() }}
             {{ form.title() }}
             <div class="invalid-feedback">
                 {% for error in form.title.errors %}
                 <p>{{ error }}</p>
                 {% endfor %}
             </div>
+            <div class="confirm-item" id="submit">
+                {{ form.submit() }}
+                <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+            </div>
         </div>
     </div>
-
-    <br>
-
-    <div class="confirm-item" id="submit">
-        {{ form.submit() }}
-        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
-    </div>
-
 </form>
 
+<div class="modal" id="croppie-modal" tabindex="-1" aria-labelledby="croppie-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="croppie-modal-label">Create thumbnail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="thumbnail" style="width: 100%; height: 500px; margin-bottom: 32px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-button">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 {% endblock %}

@@ -1,13 +1,16 @@
 {% set title = 'Form Sign' %}
 {% set style_file = url_for('static', filename='css/formSign.css') %}
+{% set form_data = doc['form'] %}
 {% extends 'base.html' %}
 
 {% block content %}
+
+{{ doc }}
 <h1>Sign</h1>
 <div class="document">
 
     <div class="info">
-        <p>Day: {{ form_data['day'] }}</p>
+        <p>Day: {{ form_data['day'] }}({{ momentjs(doc['date']).format(date_format) }}) </p>
         <p>For:{% if form_data['role'] == 1 %}
             Expert
             {% elif form_data['role'] == 2 %}
@@ -19,7 +22,7 @@
     <p style="text-align: center">{{ form_data['title'] }}</p>
     <div class="modal-body">{{ form_data['content'] }}</div>
 
-    {% if momentjs(test).is_able_to_sign() %}
+    {% if momentjs(doc['date']).is_able_to_sign() %}
     <form class="form" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
@@ -36,7 +39,6 @@
 
         <div class="confirm-item" id="submit">
             {{ form.submit() }}
-            <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
         </div>
     </form>
     {% endif %}

@@ -46,8 +46,7 @@
                     <div class="card-footer">
                         <small class="text-muted">
                             {% if event_info['chief_expert'] %}
-                            <a href="user/{{ event_info['chief_expert']['id'] }}"
-                               style="color: gray; font-weight: 600;">{{ event_info['chief_expert']['first_name'] }} {{
+                            <a class="source" href="user/{{ event_info['chief_expert']['id'] }}">{{ event_info['chief_expert']['first_name'] }} {{
                                 event_info['chief_expert']['last_name'] }}</a>
                             {% else %}
                             No Chief Expert
@@ -69,19 +68,32 @@
             {% set form_info = object['form']['form'] %}
             <div class="card h-100 form-card">
                 <div class="card-body">
-                    <a href="form/{{ form_info['id'] }}">
+                    <a href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}">
                         <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">
                         <h5 class="card-title">{{ form_info['title'] }}</h5>
                     </a>
                     <p>{{ text(form_info['content']).short(15) }}</p>
+                    <p>For
+                            {% if form_info['role'] == 0 %}
+                            Competitors
+                            {% else %}
+                            Experts
+                            {% endif %}
+                    </p>
                 </div>
                 <div class="card-footer">
                     <small class="text-muted">
-                        {% if form_info['role'] == 0 %}
-                        Competitor
-                        {% else %}
-                        Expert
-                        {% endif %}
+                        <div class="left-item">
+                            {% if momentjs(object['form']['date']).is_able_to_sign() and current_user['id'] not in object['form']['signatory'] %}
+                            {{ object }}
+                            <a class="source" href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}/sign">Sign {{ object['form']['signed'] }}/{{ object['form']['must_sign'] | length }}</a>
+                            {% else %}
+                            {{ form_info['day'] }}
+                            {% endif %}
+                        </div>
+                        <div class="right-item" style="display: grid;">
+                            {{ momentjs(object['form']['date']).format(date_format) }}
+                        </div>
                     </small>
                 </div>
             </div>
@@ -91,7 +103,7 @@
             {% set form_info = object['form']['form'] %}
             <div class="card h-100 form-card">
                 <div class="card-body">
-                    <a href="form/{{ form_info['id'] }}">
+                    <a href="/event{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}">
                         <img class="icon" src="{{ url_for('static', filename='img/icons/other/form.svg') }}">
                         <h5 class="card-title">{{ form_info['title'] }}</h5>
                     </a>
@@ -99,11 +111,16 @@
                 </div>
                 <div class="card-footer">
                     <small class="text-muted">
-                        {% if form_info['role'] == 0 %}
-                        Competitor
-                        {% else %}
-                        Expert
-                        {% endif %}
+                        <div class="left-item">
+                            {% if form_info['role'] == 0 %}
+                            Competitor
+                            {% else %}
+                            Expert
+                            {% endif %}
+                        </div>
+                        <div class="right-item">
+                            {{ momentjs(object['form']['date']).format(date_format) }}
+                        </div>
                     </small>
                 </div>
             </div>

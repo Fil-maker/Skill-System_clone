@@ -1,4 +1,4 @@
-{% set title = current_user["first_name"] + ' ' + current_user["last_name"] %}
+{% set title = 'Your profile' %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
 {% set script_file = url_for('static', filename='js/delete.js') %}
 
@@ -6,10 +6,9 @@
 
 {% block content %}
 
-
 <div class="row">
     <div class="col-sm left-item">
-        <h1>{{ title }}</h1>
+        <h1>{{ current_user["first_name"] + ' ' + current_user["last_name"] }}</h1>
     </div>
     <div class="col-sm right-item admin-item">
 
@@ -36,7 +35,7 @@
     <div class="col-sm">
 
         <div class="card">
-            <a class="edit-button" href="/change-password">
+            <a class="edit-button" href="/profile/password">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Login information
             </a>
@@ -47,7 +46,7 @@
         </div>
 
         <div class="card">
-            <a class="edit-button" href="/edit-profile">
+            <a class="edit-button" href="/profile/edit">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Profile information
             </a>

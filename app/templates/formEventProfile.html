@@ -38,7 +38,7 @@
         <div class="edit-panel">
             {% if momentjs(eventForm['date']).is_able_to_sign() and current_user['id'] in eventForm['must_sign'] %}
             <p style="margin-bottom: 0;">{{ eventForm['signed'] }}/{{ eventForm['must_sign'] | length }} Signed
-                <a class="btn btn-success" href="/form/{{ form['id'] }}/sign">Sign</a>
+                <a class="btn btn-success" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/sign">Sign</a>
             </p>
             {% endif %}
         </div>

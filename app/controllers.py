@@ -3,9 +3,9 @@ from flask import render_template, g, session
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
-from app.services.forms import get_form, create_form_from_form, update_form_from_form
+from app.services.forms import get_form, create_form_from_form, update_form_from_form, sign_form_from_form
 from app import app
-from app.forms.editProfile import EditProfileForm
+from app.forms.profile import EditProfileForm
 from app.forms.eventDates import EditEventDatesForm
 from app.forms.eventInformation import EditEventInformationForm
 from app.forms.eventRegister import EventRegisterForm
@@ -84,7 +84,7 @@ def pin():
     return render_template("profilePin.html", form=form)
 
 
-@app.route("/change-password", methods=["GET", "POST"])
+@app.route("/profile/password", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def change_password_():
     form = PasswordForm()
@@ -93,7 +93,7 @@ def change_password_():
     return render_template("profilePassword.html", form=form)
 
 
-@app.route("/edit-profile", methods=["GET", "POST"])
+@app.route("/profile/edit", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def edit_profile_():
     form = EditProfileForm(first_name=g.current_user["first_name"],
@@ -104,13 +104,13 @@ def edit_profile_():
         form.region.process_data(g.current_user["region"]["id"])
     if edit_profile_from_form(form):
         return redirect("/profile")
-    return render_template("profileEdit.html", form=form, current_user=g.current_user)
+    return render_template("profileEdit.html", form=form)
 
 
 @app.route("/profile", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def profile():
-    return render_template("profileSelf.html", current_user=g.current_user)
+    return render_template("profileSelf.html")
 
 
 @app.route("/user/<int:user_id>")
@@ -181,7 +181,7 @@ def event_list():
 def edit_event_information_(event_id):
     form = EditEventInformationForm(title=g.current_event["title"])
     if edit_event_information_from_form(event_id, form):
-        return redirect(f"/event/{event_id}/information")
+        return redirect(f"/event/{event_id}")
     return render_template("eventInformation.html", form=form)
 
 
@@ -209,7 +209,7 @@ def edit_event_dates_(event_id):
                               final_stage_date=fs,
                               finish_date=fd)
     if edit_event_information_from_form(event_id, form):
-        return redirect(f"/event/{event_id}/dates")
+        return redirect(f"/event/{event_id}")
     return render_template("eventDates.html", form=form, event=g.current_event)
 
 
@@ -254,13 +254,17 @@ def list_form():
     return render_template("formList.html", forms=forms)
 
 
-@app.route("/form/<int:form_id>/sign")
+@app.route("/event/<int:event_id>/form/<int:form_id>/sign")
 @redirect_if_unauthorized
-def sign_form(form_id):
-    form_data = get_form(form_id)
-    form = FormSignForm()
-    test = datetime.datetime.now().strftime("%Y-%m-%d")
-    return render_template("formSign.html", form=form, form_data=form_data, test=test)
+def sign_form(event_id, form_id):
+    form_data = get_event_form(event_id, form_id)
+    if datetime.datetime.now() >= datetime.datetime.strptime(form_data['date'], "%Y-%m-%d")\
+            and g.current_user['id'] in form_data['must_sign']:
+        form = FormSignForm()
+        if sign_form_from_form(event_id, form_id, form):
+            return redirect(f"event/{event_id}/form/{form_id}")
+        return render_template("formSign.html", form=form, doc=form_data)
+    return redirect('/')
 
 
 @app.route("/form/<int:form_id>/edit", methods=["GET", "POST"])

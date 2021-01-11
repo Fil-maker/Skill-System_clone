@@ -1,7 +1,6 @@
 {% set title = 'Edit profile' %}
 {% set script_file = url_for('static', filename='js/register.js') %}
 {% set style_file = url_for('static', filename='css/register.css') %}
-{% set photo_available = current_user.get('photos', False) %}
 
 {% extends 'base.html' %}
 
@@ -11,6 +10,7 @@
 
 
 {% block content %}
+{% set photo_available = current_user.get('photos', False) %}
 <h1>Edit Profile</h1>
 
 <form method="post" enctype="multipart/form-data">
@@ -23,14 +23,18 @@
                 {{ form.photo.label }}
                 <img id="preload" class="img-fluid img-thumbnail"
                      {% if photo_available %}
-                        src="{{ current_user['photos']['initial'] }}"
+                     src="{{ current_user['photos']['initial'] }}"
                      {% else %}
-                        src="/static/img/icons/other/user.svg"
+                     src="/static/img/icons/other/user.svg"
                      {% endif %}>
-                {{ form.photo() }}
-                <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
-                        data-target="#croppie-modal" disabled>Create thumbnail
-                </button>
+                <div class="left-item">
+                    {{ form.photo() }}
+                </div>
+                <div class="right-item">
+                    <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
+                            data-target="#croppie-modal" disabled>Create thumbnail
+                    </button>
+                </div>
                 <div class="invalid-feedback">
                     {% for error in form.photo.errors %}
                     <p>{{ error }}</p>
@@ -96,9 +100,6 @@
                     {{message}}
                 </p>
                 {% endif %}
-
-                <br>
-
                 <div class="form-item confirm-item" id="submit">
                     {{ form.submit() }}
                     <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
