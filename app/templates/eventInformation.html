@@ -1,9 +1,11 @@
 {% set title = "Event Information"%}
-{% set style_file = url_for('static', filename='css/register.css') %}
-{% set script_file = url_for('static', filename='js/register.js') %}
+{% set style_file = url_for('static', filename='css/thumbnail.css') %}
+{% set script_file = url_for('static', filename='js/thumbnail.js') %}
 {% extends 'base.html' %}
 
 {% block content %}
+{% set photo_available = g.current_event.get('photos', False) %}
+
 
 <form method="post">
     {{ form.hidden_tag() }}
@@ -13,17 +15,18 @@
                 {{ form.photo.label }}
                 <img id="preload" class="img-fluid img-thumbnail"
                      {% if photo_available %}
-                     src="{{ event['photos']['initial'] }}"
+                     src="{{ g.current_event['photos']['initial'] }}"
                      {% else %}
                      src="/static/img/icons/other/event.svg"
                      {% endif %}>
-                <div class="left-item">
-                    {{ form.photo() }}
-                </div>
-                <div class="right-item">
-                    <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
-                            data-target="#croppie-modal" disabled>Create thumbnail
-                    </button>
+                {{ form.photo() }}
+                <div class="row">
+                    <button class="btn btn-primary col" id="file-wrapper">Select file</button>
+                    <div class="col-5">
+                        <p class="photo-filename">File is not selected</p>
+                    </div>
+                    <button type="button" class="btn btn-primary col" id="croppie-toggler" data-toggle="modal"
+                            data-target="#croppie-modal" disabled>Create thumbnail</button>
                 </div>
                 <div class="invalid-feedback">
                     {% for error in form.photo.errors %}

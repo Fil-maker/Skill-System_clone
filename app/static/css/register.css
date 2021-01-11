@@ -1,17 +1,3 @@
 #region-div{
     display: none;
 }
-.confirm-item{
-    margin-top: 10pt;
-    display: inline-block;
-}
-#preload{
-    margin-bottom: 10pt;
-}
-.left-item, .right-item{
-    float: left;
-    width: 50%;
-}
-.right-item{
-    text-align: right;
-}

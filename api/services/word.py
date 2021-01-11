@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 import os
 
@@ -35,8 +36,10 @@ def render_form_template(event_id, form_id) -> BytesIO:
             "chief_expert_first_name": chief_expert.first_name if chief_expert else "-",
             "chief_expert_last_name": chief_expert.last_name if chief_expert else "",
             "content": form.content,
-            "signatory": [{"role": str(EventRoles(user["role"])), "user": user["user"]} for user in
-                          get_form_signatory(event_id, form_id)]
+            "signatory": [{"role": str(EventRoles(item["participant"]["role"])),
+                           "user": item["participant"]["user"]}
+                          for item in get_form_signatory(event_id, form_id)],
+            "now": str(datetime.datetime.now())
         }
 
         bytes_io = BytesIO()
@@ -44,7 +47,7 @@ def render_form_template(event_id, form_id) -> BytesIO:
             r = requests.get(f"{os.environ.get('S3_BUCKET_URL')}/events/init/{event.photo_url}")
             bytes_io.write(r.content)
             bytes_io.seek(0)
-            params["image"] = InlineImage(doc, bytes_io, height=Mm(25))
+            params["image"] = InlineImage(doc, bytes_io, height=Mm(30))
 
         doc.render(params)
         bytes_io.close()

@@ -85,7 +85,7 @@ def update_form(form_id, title=None, content=None, day=None, role=None):
 
 
 def get_form_signatory(event_id, form_id):
-    response = requests.get(f"{events_api_url}/{event_id}/forms/{form_id}", auth=HTTPTokenAuth())
+    response = requests.get(f"{events_api_url}/{event_id}/forms/{form_id}/signatory", auth=HTTPTokenAuth())
     data = response.json()
     if data["success"]:
         return data["signatory"]
@@ -103,7 +103,7 @@ def sign_form_from_form(event_id, form_id, form: FlaskForm) -> bool:
 
 
 def sign_form(event_id, form_id, pin):
-    response = requests.post(f"{events_api_url}/{event_id}/forms/{form_id}", {
+    response = requests.post(f"{events_api_url}/{event_id}/forms/{form_id}/signatory", {
         "pin": pin
     }, auth=HTTPTokenAuth())
 

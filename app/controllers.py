@@ -272,7 +272,7 @@ def sign_form(event_id, form_id):
             and g.current_user['id'] in form_data['must_sign']:
         form = FormSignForm()
         if sign_form_from_form(event_id, form_id, form):
-            return redirect(f"event/{event_id}/form/{form_id}")
+            return redirect(f"/event/{event_id}/form/{form_id}")
         return render_template("formSign.html", form=form, doc=form_data)
     return redirect('/')
 

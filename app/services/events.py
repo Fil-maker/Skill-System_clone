@@ -71,7 +71,7 @@ def create_event(title, start_date, main_stage_date, final_stage_date, finish_da
 
 def edit_event_information_from_form(event_id, form: FlaskForm) -> bool:
     if form.validate_on_submit():
-        data = update_event(event_id, title=form.title.data)
+        data = update_event(event_id, title=form.title.data, photo=form.photo_base64.data)
         return data["success"]
     return False
 

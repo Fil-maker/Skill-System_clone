@@ -113,7 +113,7 @@ def get_form_signatory(event_id, form_id):
         for user_to_event, form_to_event, signatory in data:
             resp.append({
                 "participant": user_to_event.to_dict_participant(),
-                "sign_date": signatory.to_dict(only=["sign_date"])
+                **signatory.to_dict(only=["sign_date"])
             })
         return resp
 
