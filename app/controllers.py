@@ -264,7 +264,7 @@ def list_form():
     return render_template("formList.html", forms=forms)
 
 
-@app.route("/event/<int:event_id>/form/<int:form_id>/sign")
+@app.route("/event/<int:event_id>/form/<int:form_id>/sign", methods=["GET", "POST"])
 @redirect_if_unauthorized
 def sign_form(event_id, form_id):
     form_data = get_event_form(event_id, form_id)

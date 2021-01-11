@@ -85,7 +85,6 @@
                     <small class="text-muted">
                         <div class="left-item">
                             {% if momentjs(object['form']['date']).is_able_to_sign() and current_user['id'] not in object['form']['signatory'] %}
-                            {{ object }}
                             <a class="source" href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}/sign">Sign {{ object['form']['signed'] }}/{{ object['form']['must_sign'] | length }}</a>
                             {% else %}
                             {{ form_info['day'] }}
