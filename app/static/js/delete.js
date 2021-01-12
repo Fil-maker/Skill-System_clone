@@ -21,7 +21,7 @@ $(function(){
                 },
 
                 error: function() {
-                    $.jGrowl(data["message"], {'header': 'Error'});
+                    $.jGrowl(data.responseJSON["message"], {'header': 'Error'});
             }
         });
    });

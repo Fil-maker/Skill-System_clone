@@ -12,7 +12,7 @@ $(function() {
             },
 
             error: function(data) {
-                $.jGrowl(data["message"], {'header': 'Error'});
+                $.jGrowl(data.responseJSON["message"], {'header': 'Error'});
             }
         });
     });
@@ -30,7 +30,7 @@ $(function() {
             },
 
             error: function(data) {
-                $.jGrowl(data["message"], {'header': 'Error'});
+                $.jGrowl(data.responseJSON["message"], {'header': 'Error'});
             }
         });
     });
@@ -48,7 +48,7 @@ $(function() {
             },
 
             error: function(data) {
-                $.jGrowl(data["message"], {'header': 'Error'});
+                $.jGrowl(data.responseJSON["message"], {'header': 'Error'});
             }
         });
     });
@@ -66,7 +66,7 @@ $(function() {
             },
 
             error: function(data) {
-                $.jGrowl(data["message"], {'header': 'Error'});
+                $.jGrowl(data.responseJSON["message"], {'header': 'Error'});
             }
         });
     });
