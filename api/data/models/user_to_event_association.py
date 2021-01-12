@@ -14,7 +14,7 @@ class EventRoles(Enum):
     def __str__(self):
         if self.value == self.COMPETITOR.value:
             return "Competitor"
-        elif self == self.EXPERT.value:
+        elif self.value == self.EXPERT.value:
             return "Expert"
         elif self.value == self.CHIEF_EXPERT.value:
             return "Chief expert"

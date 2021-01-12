@@ -37,8 +37,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a href="/" class="navbar-brand mb-0 h1">S-M-S</a>
 
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            {% if current_user and current_user['role'] == 1 %}
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item dropdown">
                     <div class="btn-group nav-item">
@@ -82,6 +82,9 @@
                     </div>
                 </li>
             </ul>
+            {% else %}
+            <ul class="navbar-nav mr-auto"></ul>
+            {% endif %}
 
             <ul class="nav justify-content-end">
                 {% if current_user %}

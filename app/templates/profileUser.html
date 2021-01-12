@@ -1,10 +1,27 @@
 {% set title = user["first_name"] + ' ' + user["last_name"] %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
+{% set script_file = url_for('static', filename='js/delete.js') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ user.get("first_name") }} {{ user.get("last_name") }}</h1>
+
+{% if current_user['role'] == 1 and user['role'] == 0 %}
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="col-sm right-item admin-item">
+        {% if current_user['role'] == 1%}
+        <a class="btn btn-info" href="/events"> Edit Events</a>
+        {% endif %}
+        <button class="btn btn-danger delete-btn" value="1,{{ user['id'] }}">Delete</button>
+    </div>
+</div>
+{% else %}
+<h1>{{ title }}</h1>
+{% endif %}
+
 <div class="row">
 
     <div class="col-sm">
@@ -19,8 +36,21 @@
 
 
     <div class="col-sm">
+
+        {% if current_user['role'] %}
         <div class="card">
-            <p style="background-color: #89d6f7;">
+            <p class="edit-button">
+                For Admin information
+            </p>
+            <div class="card-body">
+                <p>Role:{% if user['role'] %} Admin.{% else %} Not admin.{% endif %}</p>
+                <p>email: {{ user['email'] }}{% if user['confirmed'] %} (Confirmed)</p>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <p class="edit-button">
                 Profile information
             </p>
             <div class="card-body">
@@ -30,11 +60,12 @@
                 {% if user['country']['numeric_code'] == '643' %}
                 <p>Region: {{ user['region']['name'] }}</p>
                 {% endif %}
-                {% if user.get('about',False)%}
+                {% if user.get('about',False) %}
                 <p>About: {{ user['about'] }}</p>
                 {% endif %}
             </div>
         </div>
+
     </div>
 </div>
 

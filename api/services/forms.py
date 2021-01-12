@@ -4,7 +4,7 @@ from flask import g
 from flask_restful import abort
 
 from api.data.db_session import create_session
-from api.data.models import UserToEventAssociation, FormToEventAssociation, Event
+from api.data.models import UserToEventAssociation, FormToEventAssociation, Event, FormMustSignAssociation
 from api.data.models.form import Form
 from api.data.models.form_signatory_association import FormSignatoryAssociation
 from api.data.models.user_to_event_association import EventRoles
@@ -70,7 +70,7 @@ def create_form(title, content, day, role):
         return form.to_dict()
 
 
-def update_form(form_id, title=None, content=None, day=None):
+def update_form(form_id, title=None, content=None, day=None, role=None):
     if not check_day_format(day):
         raise ValueError("Incorrect day format")
     with create_session() as session:
@@ -83,6 +83,8 @@ def update_form(form_id, title=None, content=None, day=None):
             form.content = content
         if day:
             form.day = day
+        if role:
+            form.role = role
         return form.to_dict()
 
 
@@ -111,7 +113,7 @@ def get_form_signatory(event_id, form_id):
         for user_to_event, form_to_event, signatory in data:
             resp.append({
                 "participant": user_to_event.to_dict_participant(),
-                "sign_date": signatory.to_dict(only=["sign_date"])
+                **signatory.to_dict(only=["sign_date"])
             })
         return resp
 
@@ -135,6 +137,11 @@ def sign_form(event_id, form_id, pin):
             elif not g.current_user.check_pin(str(pin)):
                 raise ValueError("Incorrect pin")
             else:
+                must_sign = session.query(FormMustSignAssociation).filter(
+                    FormMustSignAssociation.form_to_event_id == association.id,
+                    FormMustSignAssociation.user_id == g.current_user.id
+                ).first()
+                session.delete(must_sign)
                 signatory = FormSignatoryAssociation(form_to_event_id=association.id,
                                                      user_id=g.current_user.id)
                 session.add(signatory)

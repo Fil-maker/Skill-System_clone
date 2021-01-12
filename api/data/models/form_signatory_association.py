@@ -15,6 +15,18 @@ class FormSignatoryAssociation(db.Model, ISO8601SerializerMixin):
     form_to_event = orm.relation("FormToEventAssociation", foreign_keys=[form_to_event_id])
     user = orm.relation("User", foreign_keys=[user_id])
 
-    def to_dict(self, *args, **kwargs):
+    def to_dict_form(self, *args, **kwargs):
         if "only" in kwargs:
             return super(FormSignatoryAssociation, self).to_dict(*args, **kwargs)
+        return {
+            "form": self.form_to_event.to_dict(),
+            "sign_date": self.serialize_datetime(self.sign_date)
+        }
+
+    def to_dict_user(self, *args, **kwargs):
+        if "only" in kwargs:
+            return super(FormSignatoryAssociation, self).to_dict(*args, **kwargs)
+        return {
+            "user": self.user.to_dict(),
+            "sign_date": self.serialize_datetime(self.sign_date)
+        }

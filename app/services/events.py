@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 
 import requests
 from flask import g
@@ -70,7 +71,7 @@ def create_event(title, start_date, main_stage_date, final_stage_date, finish_da
 
 def edit_event_information_from_form(event_id, form: FlaskForm) -> bool:
     if form.validate_on_submit():
-        data = update_event(event_id, title=form.title.data)
+        data = update_event(event_id, title=form.title.data, photo=form.photo_base64.data)
         return data["success"]
     return False
 
@@ -117,18 +118,70 @@ def update_event(event_id, title=None, start_date=None, main_stage_date=None, fi
     return data
 
 
+def delete_event(event_id):
+    response = requests.delete(f"{api_url}/{event_id}", auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
+def get_event_forms(event_id):
+    response = requests.get(f"{api_url}/{event_id}/forms")
+    data = response.json()
+    if data["success"]:
+        return data
+
+
+def get_event_form(event_id, form_id):
+    response = requests.get(f"{api_url}/{event_id}/forms/{form_id}")
+    data = response.json()
+    if data["success"]:
+        return data["eventForm"]
+
+
+def download_event_form(event_id, form_id):
+    response = requests.get(f"{api_url}/{event_id}/forms/{form_id}/document", auth=HTTPTokenAuth())
+    if response.status_code == 200:
+        file = BytesIO()
+        file.write(response.content)
+        file.seek(0)
+        return file
+    return None
+
+
 def get_event_participants(event_id):
     response = requests.get(f"{api_url}/{event_id}/participants")
     data = response.json()
     if data["success"]:
-        return data["participants"]
+        return data
+
+
+def add_user_to_event(event_id, user_id):
+    response = requests.post(f"{api_url}/{event_id}/participants", json={
+        "users": [{"id": user_id}]
+    }, auth=HTTPTokenAuth())
+    return response.json()
+
+
+def change_event_participant_role(event_id, user_id, role):
+    response = requests.put(f"{api_url}/{event_id}/participants", {
+        "user_id": user_id,
+        "role": role
+    }, auth=HTTPTokenAuth())
+    return response.json()
+
+
+def exclude_user_from_event(event_id, user_id):
+    response = requests.delete(f"{api_url}/{event_id}/participants", params={
+        "users": user_id
+    }, auth=HTTPTokenAuth())
+    return response.json()
 
 
 def add_form_to_event(event_id, form_id):
-    response = requests.post(f"{api_url}/{event_id}", {"form_id": form_id}, auth=HTTPTokenAuth())
+    response = requests.post(f"{api_url}/{event_id}/forms", {"form_id": form_id}, auth=HTTPTokenAuth())
     return response.json()
 
 
 def remove_form_from_event(event_id, form_id):
-    response = requests.delete(f"{api_url}/{event_id}", params={"form_id": form_id}, auth=HTTPTokenAuth())
+    response = requests.delete(f"{api_url}/{event_id}/forms", params={"form_id": form_id}, auth=HTTPTokenAuth())
     return response.json()

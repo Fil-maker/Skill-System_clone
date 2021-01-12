@@ -1,10 +1,23 @@
-{% set title = 'Profile' %}
+{% set title = 'Profile of ' + event['title'] %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
+{% set script_file = url_for('static', filename='js/delete.js') %}
 {% set dates =  event['dates'] %}
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ title }} of {{ event.get("title") }}</h1>
+
+{% if current_user['role'] == 1 %}
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="col-sm right-item admin-item">
+        <button class="btn btn-danger delete-btn" value="2,{{ event['id'] }}">Delete</button>
+    </div>
+</div>
+{% else %}
+<h1>{{ title }}</h1>
+{% endif %}
 <div class="row">
 
     <div class="col-sm">
@@ -21,7 +34,7 @@
     <div class="col-sm">
 
         <div class="card">
-            <a href="/event/{{ event['id']}}/information" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/event/{{ event['id']}}/information">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Event information
             </a>
@@ -31,7 +44,7 @@
         </div>
 
         <div class="card">
-            <a href="/event/{{ event['id']}}/dates" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/event/{{ event['id']}}/dates">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Dates information
             </a>
@@ -43,8 +56,9 @@
             </div>
         </div>
 
+        {% if current_user['role'] or current_user['id'] == event['chief_expert']['id'] %}
         <div class="card">
-            <a href="/event/{{ event['id']}}/participants" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/event/{{ event['id']}}/participants">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Participants
             </a>
@@ -55,6 +69,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <a class="edit-button" href="/event/{{ event['id']}}/forms">
+                <img class="edit-icon" src="/static/img/icons/other/edit.svg">
+                Forms
+            </a>
+            <div class="card-body">
+                <p class="left-item">Forms: {{ event['forms'] | length }}</p>
+                <div class="right-item">
+                    <a class="btn btn-warning " href="/event/{{ event['id']}}/forms">Manage</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}

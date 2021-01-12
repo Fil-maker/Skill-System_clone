@@ -1,16 +1,17 @@
 {% set title = 'Edit profile' %}
 {% set script_file = url_for('static', filename='js/register.js') %}
 {% set style_file = url_for('static', filename='css/register.css') %}
-{% set photo_available = current_user.get('photos', False) %}
 
 {% extends 'base.html' %}
 
 {% block style %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/thumbnail.css') }}">
 {% endblock %}
 
 
 {% block content %}
+{% set photo_available = current_user.get('photos', False) %}
 <h1>Edit Profile</h1>
 
 <form method="post" enctype="multipart/form-data">
@@ -23,14 +24,19 @@
                 {{ form.photo.label }}
                 <img id="preload" class="img-fluid img-thumbnail"
                      {% if photo_available %}
-                        src="{{ current_user['photos']['initial'] }}"
+                     src="{{ current_user['photos']['initial'] }}"
                      {% else %}
-                        src="/static/img/icons/other/user.svg"
+                     src="/static/img/icons/other/user.svg"
                      {% endif %}>
                 {{ form.photo() }}
-                <button type="button" class="btn btn-primary" id="croppie-toggler" data-toggle="modal"
-                        data-target="#croppie-modal" disabled>Create thumbnail
-                </button>
+                <div class="row">
+                    <button class="btn btn-primary col" id="file-wrapper">Select file</button>
+                    <div class="col-5">
+                        <p class="photo-filename">File is not selected</p>
+                    </div>
+                    <button type="button" class="btn btn-primary col" id="croppie-toggler" data-toggle="modal"
+                            data-target="#croppie-modal" disabled>Create thumbnail</button>
+                </div>
                 <div class="invalid-feedback">
                     {% for error in form.photo.errors %}
                     <p>{{ error }}</p>
@@ -96,9 +102,6 @@
                     {{message}}
                 </p>
                 {% endif %}
-
-                <br>
-
                 <div class="form-item confirm-item" id="submit">
                     {{ form.submit() }}
                     <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
@@ -133,4 +136,5 @@
 
 {% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+<script src="{{ url_for('static', filename='js/thumbnail.js') }}"></script>
 {% endblock %}

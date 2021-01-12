@@ -25,3 +25,9 @@
 .assign-col{
     width: 1rem;
 }
+.tbl-border{
+    border: solid #262a2ecf 2px;
+}
+.table{
+    margin: 0;
+}

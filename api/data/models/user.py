@@ -40,6 +40,7 @@ class User(db.Model, ISO8601SerializerMixin):
 
     events = orm.relation("UserToEventAssociation", back_populates="participant", lazy="dynamic")
     signed_forms = orm.relation("FormSignatoryAssociation", back_populates="user", lazy="dynamic")
+    must_sign = orm.relation("FormMustSignAssociation", back_populates="user", lazy="dynamic")
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

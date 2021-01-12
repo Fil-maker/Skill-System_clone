@@ -1,10 +1,24 @@
-{% set title = current_user["first_name"] + ' ' + current_user["last_name"] %}
+{% set title = 'Your profile' %}
 {% set style_file = url_for('static', filename='css/profile.css') %}
+{% set script_file = url_for('static', filename='js/delete.js') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ current_user.get("first_name") }} {{ current_user.get("last_name") }}</h1>
+
+<div class="row">
+    <div class="col-sm left-item">
+        <h1>{{ current_user["first_name"] + ' ' + current_user["last_name"] }}</h1>
+    </div>
+    <div class="col-sm right-item admin-item">
+
+        {% if current_user['role'] == 1%}
+        <a class="btn btn-info" href="profile/events"> Edit Events</a>
+        {% endif %}
+
+        <button class="btn btn-danger delete-btn" value="1,{{ current_user['id'] }}">Delete</button>
+    </div>
+</div>
 <div class="row">
 
     <div class="col-sm">
@@ -21,7 +35,7 @@
     <div class="col-sm">
 
         <div class="card">
-            <a href="/change-password" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/profile/password">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Login information
             </a>
@@ -32,7 +46,7 @@
         </div>
 
         <div class="card">
-            <a href="/edit-profile" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/profile/edit">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Profile information
             </a>
@@ -43,29 +57,36 @@
                 {% if current_user['country']['numeric_code'] == '643' %}
                 <p>Region: {{ current_user['region']['name'] }}</p>
                 {% endif %}
+                {% if current_user.get('about',False) %}
                 <p>About: {{ current_user['about'] }}</p>
+                {% endif %}
             </div>
         </div>
 
         <div class="card">
-            <a href="/pin" style="background-color: #89d6f7;">
+            <a class="edit-button" href="/pin">
                 <img class="edit-icon" src="/static/img/icons/other/edit.svg">
                 Personal Identification Number
             </a>
             <div class="card-body">
                 {% if current_user.get('is_pin_set', False)%}
-                <p class="left-item">PIN: ****</p>
+                <div class="left-item">
+                    <p>PIN: ****</p>
+                </div>
                 <div class="right-item">
-                    <a class="btn btn-success " href="/pin">reset PIN</a>
+                    <a class="btn btn-warning" href="/pin">reset PIN</a>
                 </div>
                 {% else %}
-                <p class="left-item">PIN: ____ </p>
+                <div class="left-item">
+                    <p>PIN: ____</p>
+                </div>
                 <div class="right-item">
-                    <a class="btn btn-warning" href="/pin">set PIN</a>
+                    <a class="btn btn-danger" href="/pin">set PIN</a>
                 </div>
                 {% endif %}
             </div>
         </div>
+
     </div>
 </div>
 {% endblock %}

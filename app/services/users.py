@@ -65,6 +65,17 @@ def only_for_admin(func):
     return new_func
 
 
+def only_for_admin_and_chief_expert(func):
+    def new_func(*args, **kwargs):
+        if not (Roles(g.current_user["role"]) == Roles.ADMIN or
+                g.current_event["chief_expert"] and g.current_event["chief_expert"]["id"] == g.current_user["id"]):
+            abort(404)
+        return func(*args, **kwargs)
+
+    new_func.__name__ = func.__name__
+    return new_func
+
+
 def get_user(user_id=None):
     if user_id is not None:
         response = requests.get(f"{api_url}/{user_id}")
@@ -77,6 +88,27 @@ def get_user(user_id=None):
         if data["success"]:
             return data["users"]
     return None
+
+
+def get_events(user_id):
+    response = requests.get(f"{api_url}/{user_id}/events", auth=HTTPTokenAuth())
+    data = response.json()
+    if data["success"]:
+        return data["events"]
+
+
+def get_events_to_assign(user_id):
+    response = requests.get(f"{api_url}/{user_id}/events_to_assign", auth=HTTPTokenAuth())
+    data = response.json()
+    if data["success"]:
+        return data["events"]
+
+
+def get_forms(user_id):
+    response = requests.get(f"{api_url}/{user_id}/forms", auth=HTTPTokenAuth())
+    data = response.json()
+    if data["success"]:
+        return data
 
 
 def confirm_token(token) -> bool:
@@ -150,6 +182,12 @@ def update_user(user_id, first_name=None, last_name=None, country=None, region=N
         params["about"] = about
 
     response = requests.put(f"{api_url}/{user_id}", params, auth=HTTPTokenAuth())
+    data = response.json()
+    return data
+
+
+def delete_user(user_id):
+    response = requests.delete(f"{api_url}/{user_id}", auth=HTTPTokenAuth())
     data = response.json()
     return data
 

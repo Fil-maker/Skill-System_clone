@@ -17,6 +17,7 @@ class FormToEventAssociation(db.Model, ISO8601SerializerMixin):
     event = orm.relation("Event", foreign_keys=[event_id])
 
     signatory = orm.relation("FormSignatoryAssociation", back_populates="form_to_event", lazy="dynamic")
+    must_sign = orm.relation("FormMustSignAssociation", back_populates="form_to_event", lazy="dynamic")
 
     def to_dict(self, *args, **kwargs):
         if "only" in kwargs:
@@ -25,9 +26,6 @@ class FormToEventAssociation(db.Model, ISO8601SerializerMixin):
         ans["form"] = self.form.to_dict()
         ans["date"] = self.serialize_date(self.date)
         ans["signed"] = self.signatory.count()
-        ans["must_sign"] = len(list(filter(lambda x: x.role == EventRoles.CHIEF_EXPERT.value or
-                                                     x.role == self.form.role, self.event.participants.filter(
-            UserToEventAssociation.participant.hidden.is_(False)
-        ))))
-        ans["signatory"] = [sign.user_id for sign in self.signatory]
+        ans["must_sign"] = [item.user_id for item in self.must_sign]
+        ans["signatory"] = [item.user_id for item in self.signatory]
         return ans

@@ -1,37 +1,91 @@
 {% set title = 'Form List' %}
 {% set style_file = url_for('static', filename='css/list.css') %}
+{% set script_file = url_for('static', filename='js/form.js') %}
 
 {% extends 'base.html' %}
 
 {% block content %}
-
-<h1>{{ title }}</h1>
-<table class="table table-hover">
-    <thead>
-    <tr class="table-info">
-        <th>Title</th>
-        <th>Day</th>
-        <th>Content</th>
-        <th>Role</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for form in forms %}
-    <tr class="table-light">
-        <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
-        <td>{{ form['day'] }}</td>
-        <td>{{ text(form['content']).short() }}</td>
-        <td>{% if form['role'] == 0 %}
-            Competitor
-            {% elif form['role'] == 1 %}
-            Expert
-            {% else %}
-            Chief Expert
+<h1>{{ title }} {% if event %} of <a class="name" href="/event/{{ event['id'] }}">{{ event['title'] }}</a>{% endif %}</h1>
+<div class="tbl-border">
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <td>Title</td>
+            <td>Day</td>
+            <td>Content</td>
+            <td>Role</td>
+            {% if event %}
+            <td>Assign</td>
             {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </tr>
+        </thead>
+        <tbody>
+        {% if event %}
+        {% for object in forms['forms'] %}
+        {% set form = object['form'] %}
+        <tr class="table-light">
+            <th scope="row"><a class="name" href="/event/{{ object['event_id'] }}/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+            <td>{{ form['day'] }} ({{ momentjs(object['date']).format(date_format) }})</td>
+            <td>{{ text(form['content']).short(15) }}</td>
+            <td>{% if form['role'] == 0 %}
+                Competitor
+                {% elif form['role'] == 1 %}
+                Expert
+                {% else %}
+                Chief Expert
+                {% endif %}
+            </td>
+            {% if event %}
+            <td>
+                <button class="delete-btn btn btn-danger" value="{{ form['id'] }},1">delete</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
 
+        {% for form in forms['unassigned'] %}
+        <tr class="table-light">
+            <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+            <td>{{ form['day'] }}</td>
+            <td>{{ text(form['content']).short(15) }}</td>
+            <td>{% if form['role'] == 0 %}
+                Competitor
+                {% elif form['role'] == 1 %}
+                Expert
+                {% else %}
+                Chief Expert
+                {% endif %}
+            </td>
+            {% if event %}
+            <td>
+                <button class="assign-btn btn btn-success" value="{{ form['id'] }},0">assign</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% else %}
+            {% for form in forms %}
+                <tr class="table-light">
+                    <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
+                    <td>{{ form['day'] }}</td>
+                    <td>{{ text(form['content']).short(15) }}</td>
+                    <td>{% if form['role'] == 0 %}
+                        Competitor
+                        {% elif form['role'] == 1 %}
+                        Expert
+                        {% else %}
+                        Chief Expert
+                        {% endif %}
+                    </td>
+                    {% if event %}
+                    <td>
+                        <button class="delete-btn btn btn-danger" value="{{ form['id'] }},1">delete</button>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

@@ -3,32 +3,37 @@
 {% set style_file = url_for('static', filename='css/list.css') %}
 
 {% block content %}
+
 <h1>{{ title }}</h1>
-<table class="table table-hover">
-    <thead>
-    <tr class="table-info">
-        <th>Title</th>
-        <th>Duration</th>
-        <th>Participants</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for event in events %}
-    <tr class="table-light">
-        <th scope="col">
-            <a class="name" href="/event/{{ event['id'] }}">
-                {% if event.get('photos', False) %}
+<div class="tbl-border">
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <td>Title</td>
+            <td>Duration</td>
+            <td>Participants</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+        <tr class="table-light">
+            <th scope="col">
+                <a class="name" href="/event/{{ event['id'] }}">
+                    {% if event.get('photos', False) %}
                     <img src="{{ event['photos']['128'] }} " class="img-fluid img-thumbnail">
-                {% else %}
+                    {% else %}
                     <img src="/static/img/icons/other/calendar.svg" class="img-fluid img-thumbnail">
-                {% endif %}
-                {{ event['title'] }}
-            </a>
-        </th>
-        <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }} ->{{ momentjs(event['dates']['C+N']['date']).format(date_format) }} </td>
-        <td>{{ event['participants'] | length }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                    {% endif %}
+                    {{ event['title'] }}
+                </a>
+            </th>
+            <td>{{ momentjs(event['dates']['C-N']['date']).format(date_format) }} ->{{
+                momentjs(event['dates']['C+N']['date']).format(date_format) }}
+            </td>
+            <td>{{ event['participants'] | length }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock%}

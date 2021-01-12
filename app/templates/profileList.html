@@ -3,52 +3,54 @@
 {% set style_file = url_for('static', filename='css/list.css') %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<table class="table table-hover">
-    <thead>
-    <tr class="table-info">
-        <th>Name</th>
-        <th>Country</th>
-        <th>About</th>
-        <th>Role</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for user in users %}
-    <tr class="table-light" >
-        <th scope="row">
-            <a class="name" href="/user/{{ user['id'] }}">
-                {% if user.get('photos', False) %}
-                <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
-                {% else %}
-                <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
-                {% endif %}
-                {{ user['first_name'] }} {{ user['last_name'] }}
-            </a>
-        </th>
-        <td>
-            {{ user['country']['name'] }}
-            {% if user.get('region',False) %}
-            | {{ user['region']['name'] }}
-            {% endif %}
-        </td>
-        <td>
-            {% if user['about'] %}
-            {{ user['about'] }}
-            {% else %}
-            Empty
-            {% endif %}
-        </td>
-        <td>
-            {% if user['role'] == 1 %}
-            Admin
-            {% else %}
-            User
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
 
+<h1>{{ title }}</h1>
+<div class="tbl-border">
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-info">
+            <td>Name</td>
+            <td>Country</td>
+            <td>About</td>
+            <td>Role</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr class="table-light">
+            <th scope="row">
+                <a class="name" href="/user/{{ user['id'] }}">
+                    {% if user.get('photos', False) %}
+                    <img src="{{ user['photos']['128'] }} " class="img-fluid img-thumbnail">
+                    {% else %}
+                    <img src="/static/img/icons/other/user.svg" class="img-fluid img-thumbnail">
+                    {% endif %}
+                    {{ user['first_name'] }} {{ user['last_name'] }}
+                </a>
+            </th>
+            <td>
+                {{ user['country']['name'] }}
+                {% if user.get('region',False) %}
+                | {{ user['region']['name'] }}
+                {% endif %}
+            </td>
+            <td>
+                {% if user['about'] %}
+                {{ user['about'] }}
+                {% else %}
+                Empty
+                {% endif %}
+            </td>
+            <td>
+                {% if user['role'] == 1 %}
+                Admin
+                {% else %}
+                User
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

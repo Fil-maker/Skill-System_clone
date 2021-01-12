@@ -14,3 +14,13 @@
     text-align: center;
     margin-bottom: 15pt;
 }
+.left-item, .right-item{
+    float: left;
+    width: 50%;
+}
+.right-item{
+    text-align: right;
+}
+.admin-item{
+    align-self: center;
+}

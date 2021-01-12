@@ -1,6 +1,8 @@
+{% set form = eventForm['form'] %}
 {% set title = form['title'] %}
 {% set style_file = url_for('static', filename='css/formProfile.css') %}
 {% set script_file = url_for('static', filename='js/delete.js') %}
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -12,6 +14,7 @@
         <h1>{{ title }}</h1>
     </div>
     <div class="col-sm right-item admin-item">
+        <a class="btn btn-info" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/download" download>Download</a>
         <button class="btn btn-danger delete-btn" value="3,{{ form['id'] }}">Delete</button>
     </div>
 </div>
@@ -20,11 +23,11 @@
 {% endif %}
 <div class="document">
     <div class="info">
-        <p>Day: {{ form['day'] }}</p>
-        <p>For:{% if form['role'] == 1 %}
-            Expert
-            {% elif form['role'] == 2 %}
-            Chief Expert
+        <p>Day: {{ form['day'] }} ({{ momentjs(eventForm['date']).format(date_format) }})</p>
+        <p>For {{ eventForm['must_sign'] | length }} {% if form['role'] == 1 %}
+            Expert(s)
+            {% elif form['role'] == 0 %}
+            Competitor(s)
             {% endif %}
         </p>
     </div>
@@ -33,8 +36,10 @@
     <div class="btn-panel">
         <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
         <div class="edit-panel">
-            {% if current_user['role'] %}
-            <a href="/form/{{ form['id'] }}/edit" class="btn btn-primary">Edit</a>
+            {% if momentjs(eventForm['date']).is_able_to_sign() and current_user['id'] in eventForm['must_sign'] %}
+            <p style="margin-bottom: 0;">{{ eventForm['signed'] }}/{{ eventForm['must_sign'] | length }} Signed
+                <a class="btn btn-success" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/sign">Sign</a>
+            </p>
             {% endif %}
         </div>
 

@@ -5,7 +5,8 @@ from flask_restful.reqparse import RequestParser
 from api.services.auth import token_auth
 from api.services.users import abort_if_user_not_found, only_for_current_user, get_user, delete_user, \
     update_user, get_countries_count, get_regions_count, create_user, change_password, set_pin, \
-    reset_pin, get_events, only_for_current_user_or_admin
+    reset_pin, get_events, only_for_current_user_or_admin, get_signed_forms, get_unsigned_forms, get_events_to_assign, \
+    only_for_admin
 
 
 class UserResource(Resource):
@@ -98,5 +99,27 @@ class UserPinResource(Resource):
 
 class UsersEventListResource(Resource):
     @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_current_user
     def get(self, user_id):
         return jsonify({"success": True, "events": get_events(user_id)})
+
+
+class UsersAssignToEventResource(Resource):
+    @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_admin
+    def get(self, user_id):
+        return jsonify({"success": True, "events": get_events_to_assign(user_id)})
+
+
+class UsersFormListResource(Resource):
+    @abort_if_user_not_found
+    @token_auth.login_required
+    @only_for_current_user
+    def get(self, user_id):
+        return jsonify({
+            "success": True,
+            "signed": get_signed_forms(user_id),
+            "must_sign": get_unsigned_forms(user_id)
+        })
