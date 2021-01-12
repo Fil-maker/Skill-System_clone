@@ -36,6 +36,19 @@
 
 
     <div class="col-sm">
+
+        {% if current_user['role'] %}
+        <div class="card">
+            <p class="edit-button">
+                For Admin information
+            </p>
+            <div class="card-body">
+                <p>Role:{% if user['role'] %} Admin.{% else %} Not admin.{% endif %}</p>
+                <p>email: {{ user['email'] }}{% if user['confirmed'] %} (Confirmed)</p>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card">
             <p class="edit-button">
                 Profile information
@@ -52,6 +65,7 @@
                 {% endif %}
             </div>
         </div>
+
     </div>
 </div>
 

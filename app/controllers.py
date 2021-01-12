@@ -152,7 +152,7 @@ def user_list():
 def create_event():
     form = EventRegisterForm()
     if create_event_from_form(form):
-        return redirect("/events")
+        return redirect("/event/list")
     return render_template("eventRegister.html", form=form)
 
 
@@ -190,8 +190,7 @@ def edit_event_information_(event_id):
 @only_for_admin_and_chief_expert
 def event_participants(event_id):
     participants = get_event_participants(event_id)
-    users = get_user()
-    return render_template("eventParticipants.html", participants=participants, users=users, event=g.current_event)
+    return render_template("eventParticipants.html", participants=participants, event=g.current_event)
 
 
 @app.route("/event/<int:event_id>/dates", methods=["GET", "POST"])

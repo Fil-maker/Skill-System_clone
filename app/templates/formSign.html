@@ -20,7 +20,7 @@
     <p style="text-align: center">{{ form_data['title'] }}</p>
     <div class="modal-body">{{ form_data['content'] }}</div>
 
-    {% if momentjs(doc['date']).is_able_to_sign() %}
+    {% if momentjs(doc['date']).is_able_to_sign() and current_user['id'] in object['form']['must_sign'] %}
     <form class="form" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 

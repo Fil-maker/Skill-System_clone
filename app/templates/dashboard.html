@@ -6,6 +6,7 @@
 {% block content %}
 <div class="row">
     <div class="col event-board">
+        <h3>My Events</h3>
         <div class="row row-cols-1 row-cols-md-3">
             {% if events %}
                 {% for event in events %}
@@ -58,15 +59,16 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="col mb-2">
-                    <div class="card">
-                        <div class="card-body">No Events yet</div>
-                    </div>
+            <div class="col mb-2">
+                <div class="card">
+                    <div class="card-body">No Events yet</div>
                 </div>
+            </div>
             {% endif %}
         </div>
     </div>
     <div class="col-md-auto form-board">
+        <h3>My Forms</h3>
         <div class="row row-cols-1 row-cols-md-1">
             {% set must_sign_forms = forms['must_sign'] %}
             {% set signed_forms = forms['signed'] %}
@@ -92,8 +94,14 @@
                 <div class="card-footer">
                     <small class="text-muted">
                         <div class="left-item">
-                            {% if momentjs(object['form']['date']).is_able_to_sign() and current_user['id'] not in object['form']['signatory'] %}
-                            <a class="source" href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}/sign">Sign {{ object['form']['signed'] }}/{{ object['form']['must_sign'] | length }}</a>
+                            {% if momentjs(object['form']['date']).is_able_to_sign() and current_user['id'] in
+                            object['form']['must_sign'] %}
+                            {{ object }}
+                            <a class="source"
+                               href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}/sign">Sign {{
+                                object['form']['signed'] }}/{{ object['form']['must_sign'] | length }}</a>
+                            {% elif current_user['id'] in object['form']['signatory'] %}
+                            already signed
                             {% else %}
                             {{ form_info['day'] }}
                             {% endif %}
@@ -105,6 +113,9 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+        <h3>My Signed Forms</h3>
+        <div class="row row-cols-1 row-cols-md-1">
 
             {% for object in signed_forms %}
             {% set form_info = object['form']['form'] %}
@@ -132,6 +143,7 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
 
             {% else %}
             <div class="col mb-2">
