@@ -40,7 +40,6 @@ def confirm(token):
 
 @app.route("/")
 def meet_page():
-    # TODO: Сделать нормальное перенаправление
     if get_myself() is not None:
         events = get_events(g.current_user['id'])
         forms = get_forms(g.current_user['id'])

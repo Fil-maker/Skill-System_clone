@@ -8,7 +8,7 @@ $(function() {
 
             success: function(data) {
                 $.jGrowl('', {'header': 'Successfully promoted'});
-                location.reload(); // Заглушка TODO
+                location.reload();
             },
 
             error: function(data) {
@@ -26,7 +26,7 @@ $(function() {
 
             success: function(data) {
                 $.jGrowl('', {'header': 'Successfully demoted'});
-                location.reload(); // Заглушка TODO
+                location.reload();
             },
 
             error: function(data) {
@@ -44,7 +44,7 @@ $(function() {
 
             success: function(data) {
                 $.jGrowl('', {'header': 'Successfully assigned'});
-                location.reload(); // Заглушка TODO
+                location.reload();
             },
 
             error: function(data) {
@@ -62,7 +62,7 @@ $(function() {
 
             success: function(data) {
                 $.jGrowl('', {'header': 'Successfully deleted'});
-                location.reload(); // Заглушка TODO
+                location.reload();
             },
 
             error: function(data) {

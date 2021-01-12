@@ -215,13 +215,13 @@ def get_events_to_assign(user_id):
 def get_unsigned_forms(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
-        return [form.to_dict_form() for form in user.must_sign]
+        return [form.to_dict_form() for form in filter(lambda x: not x.form_to_event.hidden, user.must_sign)]
 
 
 def get_signed_forms(user_id):
     with create_session() as session:
         user = session.query(User).get(user_id)
-        return [form.to_dict() for form in user.signed_forms]
+        return [form.to_dict_form() for form in filter(lambda x: not x.form_to_event.hidden, user.signed_forms)]
 
 
 
