@@ -23,7 +23,7 @@
     <div class="col-sm">
         <div class="image-item">
             {% if event.get('photos', False) %}
-            <img class="img-fluid img-thumbnail" src="{{ event['photos']['512'] }}">
+            <img class="img-fluid img-thumbnail" src="{{ event['photos']['initial'] }}">
             {% else %}
             <img class="img-fluid img-thumbnail" src="/static/img/icons/other/calendar.svg">
             {% endif %}
