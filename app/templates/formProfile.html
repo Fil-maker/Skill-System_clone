@@ -29,7 +29,9 @@
         </p>
     </div>
     <h6 style="text-align: center;">{{ title }} | Content</h6>
-    <div class="modal-body">{{ form['content'] }}</div>
+    <div class="modal-body">
+        <textarea class="text-content" disabled> {{ form['content'] }}</textarea>
+    </div>
     <div class="btn-panel">
         <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
         <div class="edit-panel">

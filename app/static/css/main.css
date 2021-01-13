@@ -12,7 +12,9 @@
     float: left;
     margin-bottom: 1rem;
 }
-
+.advantage-list{
+    display: inline-flex;
+}
 .advantage{
     background-color:#e5eaf8;
     margin-right: 2rem;

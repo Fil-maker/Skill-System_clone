@@ -9,55 +9,56 @@
         <h3>My Events</h3>
         <div class="row row-cols-1 row-cols-md-3">
             {% if events %}
-                {% for event in events %}
-                {% set event_info = event['event'] %}
-                {% set dates = event_info['dates'] %}
-                <div class="col mb-2">
-                    <div class="card h-100">
-                        {% if event_info.get('photos', False) %}
-                        <img class="card-img-top" src="{{ event_info['photos']['512'] }}">
-                        {% else %}
-                        <img class="card-img-top" src="/static/img/icons/other/calendar.svg">
-                        {% endif %}
-                        <div class="card-body">
-                            <a href="event/{{ event_info['id'] }}">
-                                <img class="icon" src="{{ url_for('static', filename='img/icons/other/event.svg') }}">
-                                <h5 class="card-title">{{ event_info['title'] }}</h5>
-                            </a>
-                            <div class="dates">
-                                <div class="row row-cols-md-2 period">
-                                    <div class="col-sm">{{ dates['C-N']['name'] }}</div>
-                                    <div class="col-sm">{{ momentjs(dates['C-N']['date']).format(date_format) }}</div>
-                                    <div class="col-sm">C-1</div>
-                                    <div class="col-sm">{{ momentjs(dates['C-1']).format(date_format) }}</div>
-                                </div>
-                                <div class="row row-cols-md-2 period">
-                                    <div class="col-sm">C1</div>
-                                    <div class="col-sm">{{ momentjs(dates['C1']).format(date_format) }}</div>
-                                    <div class="col-sm">{{ dates['CN']['name'] }}</div>
-                                    <div class="col-sm">{{ momentjs(dates['CN']['date']).format(date_format) }}</div>
-                                </div>
-                                <div class="row row-cols-md-2 period">
-                                    <div class="col-sm">C+1</div>
-                                    <div class="col-sm">{{ momentjs(dates['C+1']).format(date_format) }}</div>
-                                    <div class="col-sm">{{ dates['C+N']['name'] }}</div>
-                                    <div class="col-sm">{{ momentjs(dates['C+N']['date']).format(date_format) }}</div>
-                                </div>
+            {% for event in events %}
+            {% set event_info = event['event'] %}
+            {% set dates = event_info['dates'] %}
+            <div class="col mb-2">
+                <div class="card h-100">
+                    {% if event_info.get('photos', False) %}
+                    <img class="card-img-top" src="{{ event_info['photos']['initial'] }}">
+                    {% else %}
+                    <img class="card-img-top" src="/static/img/icons/other/calendar.svg">
+                    {% endif %}
+                    <div class="card-body">
+                        <a href="event/{{ event_info['id'] }}">
+                            <img class="icon" src="{{ url_for('static', filename='img/icons/other/event.svg') }}">
+                            <h5 class="card-title">{{ event_info['title'] }}</h5>
+                        </a>
+                        <div class="dates">
+                            <div class="row row-cols-md-2 period">
+                                <div class="col-sm">{{ dates['C-N']['name'] }}</div>
+                                <div class="col-sm">{{ momentjs(dates['C-N']['date']).format(date_format) }}</div>
+                                <div class="col-sm">C-1</div>
+                                <div class="col-sm">{{ momentjs(dates['C-1']).format(date_format) }}</div>
+                            </div>
+                            <div class="row row-cols-md-2 period">
+                                <div class="col-sm">C1</div>
+                                <div class="col-sm">{{ momentjs(dates['C1']).format(date_format) }}</div>
+                                <div class="col-sm">{{ dates['CN']['name'] }}</div>
+                                <div class="col-sm">{{ momentjs(dates['CN']['date']).format(date_format) }}</div>
+                            </div>
+                            <div class="row row-cols-md-2 period">
+                                <div class="col-sm">C+1</div>
+                                <div class="col-sm">{{ momentjs(dates['C+1']).format(date_format) }}</div>
+                                <div class="col-sm">{{ dates['C+N']['name'] }}</div>
+                                <div class="col-sm">{{ momentjs(dates['C+N']['date']).format(date_format) }}</div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <small class="text-muted">
-                                {% if event_info['chief_expert'] %}
-                                <a class="source" href="user/{{ event_info['chief_expert']['id'] }}">{{ event_info['chief_expert']['first_name'] }} {{
-                                    event_info['chief_expert']['last_name'] }}</a>
-                                {% else %}
-                                No Chief Expert
-                                {% endif %}
-                            </small>
-                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            {% if event_info['chief_expert'] %}
+                            <a class="source" href="user/{{ event_info['chief_expert']['id'] }}">{{
+                                event_info['chief_expert']['first_name'] }} {{
+                                event_info['chief_expert']['last_name'] }}</a>
+                            {% else %}
+                            No Chief Expert
+                            {% endif %}
+                        </small>
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+            {% endfor %}
             {% else %}
             <div class="col mb-2">
                 <div class="card">
@@ -84,11 +85,11 @@
                     </a>
                     <p>{{ text(form_info['content']).short(15) }}</p>
                     <p>For
-                            {% if form_info['role'] == 0 %}
-                            Competitors
-                            {% else %}
-                            Experts
-                            {% endif %}
+                        {% if form_info['role'] == 0 %}
+                        Competitors
+                        {% else %}
+                        Experts
+                        {% endif %}
                     </p>
                 </div>
                 <div class="card-footer">
@@ -96,7 +97,6 @@
                         <div class="left-item">
                             {% if momentjs(object['form']['date']).is_able_to_sign() and current_user['id'] in
                             object['form']['must_sign'] %}
-                            {{ object }}
                             <a class="source"
                                href="/event/{{ object['form']['event_id'] }}/form/{{ form_info['id'] }}/sign">Sign {{
                                 object['form']['signed'] }}/{{ object['form']['must_sign'] | length }}</a>
@@ -114,9 +114,9 @@
             </div>
             {% endfor %}
         </div>
+        {% if signed_forms %}
         <h3>My Signed Forms</h3>
         <div class="row row-cols-1 row-cols-md-1">
-
             {% for object in signed_forms %}
             {% set form_info = object['form']['form'] %}
             <div class="card h-100 form-card">
@@ -143,17 +143,18 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
-
-            {% else %}
-            <div class="col mb-2">
-                <div class="card">
-                    <div class="card-body">No Forms yet</div>
-                </div>
-            </div>
             {% endif %}
         </div>
+
+        {% else %}
+        <div class="col mb-2">
+            <div class="card">
+                <div class="card-body">No Forms yet</div>
+            </div>
+        </div>
+        {% endif %}
     </div>
+</div>
 </div>
 
 {% endblock %}
