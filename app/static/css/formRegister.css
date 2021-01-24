@@ -4,6 +4,10 @@
 .form-item{
     margin-bottom: 10pt;
 }
-.form-content{
-    text-align: center;
+.left-item, .right-item{
+    margin-left: 5%;
+    margin-right: 5%;
+    text-align: left;
+    float: left;
+    width: 40%;
 }

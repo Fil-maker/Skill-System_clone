@@ -25,6 +25,7 @@ class FormRegisterForm(FlaskForm):
     content = TextAreaField(label,
                             validators=[DataRequired()],
                             render_kw={
+                                "id": "content",
                                 "class": "form-content",
                                 "required": True,
                                 "placeholder": label
@@ -32,7 +33,7 @@ class FormRegisterForm(FlaskForm):
 
     label = "For"
     role = RadioField(label,
-                      choices=[(0, 'Experts'), (1, 'Competitors')],
+                      choices=[(1, 'Experts'), (0, 'Competitors')],
                       validators=[DataRequired()],
                       render_kw={
                           "required": True,

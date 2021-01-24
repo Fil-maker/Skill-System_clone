@@ -1,4 +1,5 @@
 import datetime
+import markdown
 from jinja2 import Markup
 
 
@@ -33,3 +34,6 @@ class text(object):
 
     def short(self, length=10):
         return ' '.join(self.string.split()[:length]) + ' ...'
+
+    def markdown(self):
+        return markdown.markdown(self.string)

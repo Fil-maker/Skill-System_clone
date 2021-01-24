@@ -19,7 +19,7 @@
 
     <p style="text-align: center">{{ form_data['title'] }}</p>
     <div class="modal-body">
-        <textarea class="text-content" disabled>{{ form_data['content'] }}</textarea>
+        <pre class="text-content" disabled>{{ form_data['content'] }}</pre>
     </div>
 
     {% if momentjs(doc['date']).is_able_to_sign() and current_user['id'] in doc['must_sign'] %}
@@ -43,4 +43,13 @@
     </form>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+        var converter = new showdown.Converter();
+        text = '{{ form_data['content'] }}';
+        html = converter.makeHtml(text);
+        $('.text-content').html(html);
+</script>
 {% endblock %}
