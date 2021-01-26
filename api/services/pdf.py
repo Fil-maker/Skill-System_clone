@@ -92,7 +92,7 @@ class FormPDF(FPDF, FixedHTMLMixin):
         for k, v in (
                 ("Day:", f"{self.day} ({self.date})"),
                 ("Event:", self.event_title),
-                ("Skill", "Skill Name"),
+                ("Skill", os.environ.get("SKILL_NAME", "-")),
                 ("Chief Expert:", self.chief_expert_first_name + " " + self.chief_expert_last_name)
         ):
             self.set_x(25)

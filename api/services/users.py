@@ -86,6 +86,8 @@ def update_user(user_id, country=None, region=None, first_name=None, last_name=N
         if photo:
             set_profile_photo(user_id, photo)
         if about:
+            if len(about) > 400:
+                raise ValueError("The \"About\" field cannot be longer than 400 characters")
             user.about = about
         return user.to_dict()
 
