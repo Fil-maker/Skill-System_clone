@@ -2,42 +2,13 @@
 
 ## How to run
 * Clone this [repository](https://github.com/sssemion/skill-management-system)
+
 * Create virtual environment with python 3.7.x and not any other
+
 * Install requirements with `pip install -r requirements.txt`
-* Create `api_runner.py` in root directory with that code
-```
-import os
-import api
-
-
-def run():
-    api.app.run(host=os.environ.get("API_HOST"),
-                port=os.environ.get("API_PORT"),
-                debug=int(os.environ.get("API_DEBUG")))
-
-
-if __name__ == '__main__':
-    run()
-``` 
-
-* Create `runner.py` in root directory with that code
-```
-import os
-import app
-
-
-def run():
-    app.app.run(host=os.environ.get("APP_HOST"),
-                port=os.environ.get("APP_PORT"),
-                debug=int(os.environ.get("APP_DEBUG")))
-
-
-if __name__ == '__main__':
-    run()
-``` 
 
 * Create `.env` file in root directory with that code
-```
+```dotenv
 API_PORT="5000"
 API_HOST="127.0.0.1"
 API_DEBUG=0
@@ -71,18 +42,66 @@ API_SECRET="SECRET"
 APP_SECRET="SECRET"
 ```
 
-* Create file `config` in `C:\Users\<username>\.aws` with that text inside
-```
-[default]
-region = YOUR_AWS_REGION
-``` 
+### Configuring access to AWS S3 Bucket
+1. Make your S3 Bucket public to read. To do that:
+    + Turn off blocking of public access
+    + Set the following bucket policy, replacing `<YOUR_S3_BUCKET_NAME>` with the name of your bucket:
+    ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "AllowPublicRead",
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "*"
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>/*"
+            }
+        ]
+    }
+    ```
 
-* Create file `credentials` in the same directory with that text inside
-```
-[default]
-aws_access_key_id = YOUR_AWS_ACCESS_KEY
-aws_secret_access_key = YOUR_AWS_SECRET_KEY
-```
+1. Create new IAM User [here](https://console.aws.amazon.com/iam/home#/users$new?step=details):
+    + Set user name and access type - Programmatic access
+    + Choose "Attach existing policies directly", click "Create policy":
+        - Switch to "JSON"
+        - Paste the following, replacing `<YOUR_S3_BUCKET_NAME>` with the name of your bucket:
+        ```json
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:PutObject",
+                        "s3:DeleteObject"
+                    ],
+                    "Resource": "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>/*"
+                }
+            ]
+        }
+        ```
+        - Click "Review policy", set policy name and confirm creation
+        - On the previous page select the policy you have just created
+    + Add tags (optional)
+    + Review and confirm creating
+    + Save `Access key ID` and `Secret access key` or download `.csv`
+
+2. Create file `~/.aws/config` with the following text
+    ```
+    [default]
+    region = YOUR_AWS_REGION
+    ``` 
+
+3. Create file `~/.aws/credentials` replacing `ACCESS_KEY_ID` and `SECRET_ACCESS_KEY` with keys you saved on step 1
+    ```
+    [default]
+    aws_access_key_id = ACCESS_KEY_ID
+    aws_secret_access_key = SECRET_ACCESS_KEY
+    ```
+   > WARNING! Do not use keys with root access to the cloud!
 
 * Run `api_runner.py`
 
