@@ -131,3 +131,5 @@ dmypy.json
 .idea/
 /runner.py
 /user-images/
+
+/api/static/fonts/**/*.pkl
