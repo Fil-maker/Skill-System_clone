@@ -35,7 +35,19 @@
                         <p class="photo-filename">File is not selected</p>
                     </div>
                     <button type="button" class="btn btn-primary col" id="croppie-toggler" data-toggle="modal"
-                            data-target="#croppie-modal" disabled>Create thumbnail</button>
+                            data-target="#croppie-modal" disabled>Create thumbnail
+                    </button>
+                </div>
+                <div class="row">
+                    {% if message %}
+                    <p class="alert alert-danger" role="alert">
+                        {{message}}
+                    </p>
+                    {% endif %}
+                    <div class="form-item confirm-item col" id="submit">
+                        {{ form.submit() }}
+                        <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
+                    </div>
                 </div>
                 <div class="invalid-feedback">
                     {% for error in form.photo.errors %}
@@ -45,7 +57,7 @@
             </div>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm info-part">
             <div class="info">
                 <div class="form-item">
                     {{ form.first_name.label }}
@@ -87,25 +99,20 @@
                     </div>
                 </div>
 
+
                 <div class="form-item">
                     {{ form.about.label }}
                     {{ form.about() }}
-                    <div class="invalid-feedback">
-                        {% for error in form.about.errors %}
-                        <p>{{ error }}</p>
-                        {% endfor %}
+                </div>
+
+                <div class="form-item">
+                    <label>Content preview</label>
+                    <div id="preview">{% if form.about.data %}
+                        {{ text(form.about.data).markdown() }}
+                        {% else %} Nothing there! {% endif %}
                     </div>
                 </div>
 
-                {% if message %}
-                <p class="alert alert-danger" role="alert">
-                    {{message}}
-                </p>
-                {% endif %}
-                <div class="form-item confirm-item" id="submit">
-                    {{ form.submit() }}
-                    <input type="button" onclick="history.back();" class="button btn btn-primary" value="Cancel"/>
-                </div>
             </div>
         </div>
     </div>
@@ -137,4 +144,5 @@
 {% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 <script src="{{ url_for('static', filename='js/thumbnail.js') }}"></script>
+<script src="{{ url_for('static', filename='js/content.js') }}"></script>
 {% endblock %}

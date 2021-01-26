@@ -2,7 +2,11 @@ $(function(){
     $('#content').on('input', function(){
         var converter = new showdown.Converter();
         text = this.value;
-        html = converter.makeHtml(text);
-        $('#preview').html(html);
+        if (text != ''){
+            html = converter.makeHtml(text);
+            $('#preview').html(html);
+        } else{
+            $('#preview').html('<p style="color: gray;">Nothing there!</p>');
+        }
     })
 })

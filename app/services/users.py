@@ -169,13 +169,14 @@ def register_user(email, first_name, last_name, country, region, password, photo
 
 
 def edit_profile_from_form(form: FlaskForm) -> bool:
+    update_user(g.current_user["id"],
+                form.first_name.data, form.last_name.data, form.country.data,
+                form.region.data, form.photo_base64.data, form.about.data)
     if form.validate_on_submit():
-        print(1)
         data = update_user(g.current_user["id"],
-                           form.first_name.data, form.last_name.data, form.country.data,
-                           form.region.data, form.photo_base64.data, form.about.data)
+                form.first_name.data, form.last_name.data, form.country.data,
+                form.region.data, form.photo_base64.data, form.about.data)
         return data["success"]
-    print(2)
     return False
 
 

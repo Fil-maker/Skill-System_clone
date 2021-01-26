@@ -8,14 +8,14 @@ class momentjs(object):
         self.timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
 
     def render(self, format):
-        return Markup(f"<script>\ndocument.write(moment(\"%s\").%s);\n</script>" % (
+        return Markup(f"<script>document.write(moment(\"%s\").%s);</script>" % (
             self.timestamp.strftime("%Y-%m-%d"), format))
 
     def format(self, fmt):
         return self.render("format(\"%s\")" % fmt)
 
     def locale(self, fmt):
-        return Markup(f"<script>\nmoment.locale('{fmt}');\n</script>")
+        return Markup(f"<script>moment.locale('{fmt}');</script>")
 
     def calendar(self):
         return self.render("calendar()")
@@ -36,4 +36,5 @@ class text(object):
         return ' '.join(self.string.split()[:length]) + ' ...'
 
     def markdown(self):
-        return markdown.markdown(self.string)
+        md = markdown.markdown(self.string).replace('\n', '<div></div>')
+        return Markup(f"""<script>document.write('{md}');</script>""")
