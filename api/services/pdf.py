@@ -1,8 +1,11 @@
 import datetime
 import os
+from html import unescape
 from io import BytesIO
 
-from fpdf import FPDF
+import markdown
+from fpdf import FPDF, HTMLMixin
+from fpdf.html import HTML2FPDF
 
 from api.data.db_session import create_session
 from api.data.models import FormToEventAssociation
@@ -38,7 +41,15 @@ def render_pdf(event_id, form_id) -> BytesIO:
         return file
 
 
-class FormPDF(FPDF):
+class FixedHTMLMixin(HTMLMixin):
+    def write_html(self, h, text, *args, **kwargs):
+        h2p = HTML2FPDF(self, *args, **kwargs)
+        h2p.h = h
+        text = unescape(text)
+        h2p.feed(text)
+
+
+class FormPDF(FPDF, FixedHTMLMixin):
     def __init__(self, form_title, day, date, event_title, chief_expert_first_name,
                  chief_expert_last_name, content, signatory, image_url=None):
         super(FormPDF, self).__init__(unit="pt")
@@ -55,8 +66,8 @@ class FormPDF(FPDF):
         self.image_url = image_url
 
         self.add_font("MarckScript", fname="api/static/fonts/MarckScript/MarckScript-Regular.ttf", uni=True)
-        self.add_font("Akrobat", "", fname="api/static/fonts/Akrobat/Akrobat-Regular.ttf", uni=True)
-        self.add_font("Akrobat", "B", fname="api/static/fonts/Akrobat/Akrobat-Bold.ttf", uni=True)
+        self.add_font("akrobat", "", fname="api/static/fonts/Akrobat/Akrobat-Regular.ttf", uni=True)
+        self.add_font("akrobat", "B", fname="api/static/fonts/Akrobat/Akrobat-Bold.ttf", uni=True)
 
         self.set_auto_page_break(1, 25)
         self.fill_document()
@@ -73,11 +84,11 @@ class FormPDF(FPDF):
             self.set_y(125)
 
     def add_main_body(self):
-        self.set_font("Akrobat", "B", 18)
+        self.set_font("akrobat", "B", 18)
         self.cell(0, 20, self.form_title, 0, 1, "C")
 
         self.set_y(self.get_y() + 5)
-        self.set_font("Akrobat", "", 12)
+        self.set_font("akrobat", "", 12)
         for k, v in (
                 ("Day:", f"{self.day} ({self.date})"),
                 ("Event:", self.event_title),
@@ -88,15 +99,17 @@ class FormPDF(FPDF):
             self.cell(150, 15, k, 0, 0)
             self.cell(0, 15, v, 0, 1)
 
-        self.set_xy(25, self.get_y() + 20)
-        self.multi_cell(0, 15, self.content)
+        self.set_xy(self.l_margin, self.get_y() + 20)
+        html = "<font color='#000000' size='12' face='akrobat'" + markdown.markdown(self.content) + "</font>"
+        html = html.replace("<strong>", "<b>").replace("</strong>", "</b>")
+        self.write_html(15, html)
 
     def add_signatory_table(self):
         self.set_y(self.get_y() + 25)
 
         self.add_heading_for_signatory_table(len(self.signatory) <= 1)
         if not self.signatory:
-            self.set_font("Akrobat", "", 12)
+            self.set_font("akrobat", "", 12)
             self.set_text_color(128, 128, 128)
             self.set_x(50)
             self.cell(222.64, 20, "No signatures yet", 1, 1, "C")
@@ -119,7 +132,7 @@ class FormPDF(FPDF):
             self.cell(222.64, 10, user["last_name"], "LTR", 1, "R")
 
             self.set_x(x)
-            self.set_font("Akrobat", "", 8)
+            self.set_font("akrobat", "", 8)
             self.set_text_color(0, 0, 0)
             self.cell(222.64, 10, f"{role} {user['first_name']} {user['last_name']}", "LBR", 1, "L")
 
@@ -128,7 +141,7 @@ class FormPDF(FPDF):
 
     def add_heading_for_signatory_table(self, only_left=False):
         self.set_x(50)
-        self.set_font("Akrobat", "B", 12)
+        self.set_font("akrobat", "B", 12)
         self.set_text_color(0, 0, 0)
         self.cell(222.64, 20, "Sign", 1, int(only_left), "C")
 
@@ -139,7 +152,7 @@ class FormPDF(FPDF):
     def footer(self):
         self.rect(15, 15, 565.28, 811.89)
 
-        self.set_font("Akrobat", size=8)
+        self.set_font("akrobat", size=8)
         self.set_text_color(128, 128, 128)
         self.set_xy(15, -15)
         self.cell(282.64, 15, f"Page {self.page_no()}", align="L")
