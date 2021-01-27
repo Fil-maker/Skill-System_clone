@@ -250,7 +250,7 @@ def event_form(event_id, form_id):
 def download_event_form_(event_id, form_id):
     file = download_event_form(event_id, form_id)
     if file is not None:
-        return send_file(file, as_attachment=True, attachment_filename="form.docx")
+        return send_file(file, as_attachment=True, attachment_filename="form.pdf")
     abort(400)
 
 

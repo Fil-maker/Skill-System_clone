@@ -1,5 +1,8 @@
 import datetime
+import os
+
 import markdown
+
 from jinja2 import Markup
 
 
@@ -49,3 +52,7 @@ class text(object):
                 mdout = markdown.markdown(self.string[:130] + '...')
         mdout = mdout.replace('#', '')
         return Markup(f"""<script>document.write('{mdout}');</script>""")
+
+      
+def get_env(key, default):
+    return os.environ.get(key, default)

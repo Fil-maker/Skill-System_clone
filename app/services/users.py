@@ -134,7 +134,7 @@ def register_from_form(form: FlaskForm) -> bool:
             form.password_again.render_kw["class"] = "form-control is-invalid"
             form.password_again.errors.append("Passwords don't match")
             return False
-        if not is_password_secure(form.password.data):
+        if int(os.environ.get("CHECK_PASSWORD_STRENGTH", 1)) and not is_password_secure(form.password.data):
             form.password.render_kw["class"] = "form-control is-invalid"
             form.password.errors.append("Insecure password")
             return False
@@ -242,7 +242,7 @@ def change_password_from_form(form: FlaskForm):
             form.password_again.render_kw["class"] = "form-control is-invalid"
             form.password_again.errors.append("Passwords don't match")
             return False
-        if not is_password_secure(form.new_password.data):
+        if int(os.environ.get("CHECK_PASSWORD_STRENGTH", 1)) and not is_password_secure(form.new_password.data):
             form.new_password.render_kw["class"] = "form-control is-invalid"
             form.new_password.errors.append("Insecure password")
             return False

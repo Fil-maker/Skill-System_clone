@@ -92,9 +92,11 @@
                 <div class="form-item">
                     {{ form.password.label }}
                     {{ form.password() }}
-                    <p id="passwordHelpBlock" class="form-text text-muted">
-                        Password must be!
-                    </p>
+                    {% if ("CHECK_PASSWORD_STRENGTH" | get_env(default=1)) | int %}
+                        <p id="passwordHelpBlock" class="form-text text-muted">
+                            Password must be 8 or more characters long and include at least one number and one capital letter.
+                        </p>
+                    {% endif %}
                     <div class="invalid-feedback">
                         {% for error in form.password.errors %}
                         <p>{{ error }}</p>
