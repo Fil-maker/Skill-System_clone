@@ -8,7 +8,7 @@ from api.services.events import abort_if_event_not_found, only_for_admin_and_chi
 from api.services.forms import abort_if_form_not_found, delete_form, get_form, update_form, \
     create_form, get_form_signatory, sign_form, abort_if_event_form_not_found, get_event_form
 from api.services.users import only_for_admin
-from api.services.word import render_form_template
+from api.services.pdf import render_pdf
 
 
 class FormsResource(Resource):
@@ -101,5 +101,5 @@ class FormDocumentResource(Resource):
     @token_auth.login_required
     @only_for_admin_and_chief_expert
     def get(self, event_id, form_id):
-        file = render_form_template(event_id, form_id)
-        return send_file(file, as_attachment=True, attachment_filename="form.docx")
+        file = render_pdf(event_id, form_id)
+        return send_file(file, as_attachment=True, attachment_filename="form.pdf")

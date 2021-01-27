@@ -59,6 +59,8 @@ def get_event(event_id=None):
 def delete_event(event_id):
     with create_session() as session:
         event = session.query(Event).get(event_id)
+        for form in event.forms:
+            form.hidden = True
         delete_photo("events", event.photo_url)
         event.hidden = True
 

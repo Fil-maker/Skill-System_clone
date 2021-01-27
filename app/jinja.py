@@ -1,4 +1,6 @@
 import datetime
+import os
+
 from jinja2 import Markup
 
 
@@ -33,3 +35,7 @@ class text(object):
 
     def short(self, length=10):
         return ' '.join(self.string.split()[:length]) + ' ...'
+
+
+def get_env(key, default):
+    return os.environ.get(key, default)

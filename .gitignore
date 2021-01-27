@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 .idea/
-/runner.py
 /user-images/
+
+/api/static/fonts/**/*.pkl
