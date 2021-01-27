@@ -39,10 +39,11 @@ class text(object):
         return ' '.join(self.string.split()[:length]) + ' ...'
 
     def markdown(self, strings=None):
-        md = markdown.markdown(self.string.replace('#', '##########'))
+        mdo = markdown.markdown(self.string)
         if strings is None:
-            mdout = md.replace('\n', '<div></div>')
+            mdout = mdo.replace('\n', '<div></div>')
         else:
+            md = markdown.markdown(self.string.replace('#', '##########'))
             mdShort = md.split('\n')[:strings]
             mdout = ''.join(mdShort)
             if mdShort != md.split('\n'):
@@ -50,7 +51,7 @@ class text(object):
                     ' '.join(self.string.split('\n')[:strings - 1], (self.string.split('\n')[strings - 1] + '...')))
             elif len(self.string) > 130:
                 mdout = markdown.markdown(self.string[:130] + '...')
-        mdout = mdout.replace('#', '')
+            mdout = mdout.replace('#', '')
         return Markup(f"""<script>document.write('{mdout}');</script>""")
 
       
