@@ -1,3 +1,19 @@
 #region-div{
     display: none;
 }
+#preview{
+    padding-top: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    min-height: 20px;
+    border: solid 2px #ced4da;
+    border-radius: .25rem;
+    background-color: #6c757d33;
+    overflow-wrap: break-word;
+}
+@media(max-width:270px) {
+    .info-part{
+        max-width: 60%;
+    }
+}

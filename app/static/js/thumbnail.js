@@ -8,7 +8,6 @@ function readURL(input) {
             $(".photo-filename").text($("#photoField").val().split('\\').pop().split('/').pop());
             $("#photoField").val("");
             $("#croppie-toggler").attr("disabled", false);
-            console.log(0);
         }
 
         reader.readAsDataURL(input.files[0]);

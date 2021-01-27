@@ -20,7 +20,7 @@ from app.services.events import create_event_from_form, edit_event_information_f
 from app.services.users import confirm_token, register_from_form, redirect_if_authorized, \
     login_from_form, logout, redirect_if_unauthorized, change_password_from_form, get_myself, \
     set_pin_from_form, edit_profile_from_form, reset_pin, only_for_admin, get_user, only_for_admin_and_chief_expert, \
-    get_events, get_forms, get_events_to_assign
+    get_events, get_forms, get_events_to_assign, redirect_if_authorized_or_not_admin
 
 
 @app.before_request
@@ -48,11 +48,11 @@ def meet_page():
 
 
 @app.route("/register", methods=["GET", "POST"])
-@redirect_if_authorized
+@redirect_if_authorized_or_not_admin
 def register():
     form = RegisterForm()
     if register_from_form(form):
-        return redirect("/profile")
+        return redirect("/")
     return render_template("profileRegister.html", form=form)
 
 

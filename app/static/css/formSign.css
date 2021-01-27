@@ -28,3 +28,7 @@
 #submit{
     text-align: center;
 }
+.text-content{
+    width: -webkit-fill-available;
+    text-align: left;
+}

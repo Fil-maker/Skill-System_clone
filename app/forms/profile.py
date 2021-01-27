@@ -50,9 +50,11 @@ class EditProfileForm(FlaskForm):
     label = "About"
     about = TextAreaField(label,
                           render_kw={
+                              "id": "content",
                               "class": "input-str form-control",
                               "type": "text",
-                              "placeholder": label
+                              "placeholder": label,
+                              "maxlength": 400
                           })
 
     photo = FileField("Attach an image", render_kw={

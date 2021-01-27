@@ -32,18 +32,31 @@
         </p>
     </div>
     <h6 style="text-align: center;">{{ title }} | Content</h6>
-    <div class="modal-body">{{ form['content'] }}</div>
+    <div class="modal-body">
+        <pre class="text-content" disabled>{{ form['content'] }}</pre>
+    </div>
     <div class="btn-panel">
-        <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
         <div class="edit-panel">
+            <p style="margin-bottom: 0;">
             {% if momentjs(eventForm['date']).is_able_to_sign() and current_user['id'] in eventForm['must_sign'] %}
-            <p style="margin-bottom: 0;">{{ eventForm['signed'] }}/{{ eventForm['must_sign'] | length }} Signed
+                {{ eventForm['signed'] }}/{{ eventForm['must_sign'] | length }} Signed
                 <a class="btn btn-success" href="/event/{{ eventForm['event_id'] }}/form/{{ form['id'] }}/sign">Sign</a>
-            </p>
             {% endif %}
+                <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
+            </p>
         </div>
 
     </div>
 
 </div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+        var converter = new showdown.Converter();
+        text = '{{ form['content'] }}';
+        html = converter.makeHtml(text);
+        $('.text-content').html(html);
+</script>
 {% endblock %}

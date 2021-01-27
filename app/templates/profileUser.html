@@ -35,7 +35,7 @@
     </div>
 
 
-    <div class="col-sm">
+    <div class="col-sm info-part">
 
         {% if current_user['role'] %}
         <div class="card">
@@ -61,7 +61,7 @@
                 <p>Region: {{ user['region']['name'] }}</p>
                 {% endif %}
                 {% if user.get('about',False) %}
-                <p>About: {{ user['about'] }}</p>
+                <p>About: {{ text( user['about']).markdown() }}</p>
                 {% endif %}
             </div>
         </div>

@@ -29,16 +29,27 @@
         </p>
     </div>
     <h6 style="text-align: center;">{{ title }} | Content</h6>
-    <div class="modal-body">{{ form['content'] }}</div>
+    <div class="modal-body">
+        <pre class="text-content"></pre>
+    </div>
     <div class="btn-panel">
-        <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
         <div class="edit-panel">
             {% if current_user['role'] %}
             <a href="/form/{{ form['id'] }}/edit" class="btn btn-primary">Edit</a>
             {% endif %}
+            <input type="button" onclick="history.back();" class="btn btn-primary" value="Cancel"/>
         </div>
 
     </div>
 
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+        var converter = new showdown.Converter();
+        text = '{{ form['content'] }}';
+        html = converter.makeHtml(text);
+        $('.text-content').html(html);
+</script>
 {% endblock %}

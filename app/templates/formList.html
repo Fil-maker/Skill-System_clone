@@ -68,7 +68,7 @@
                 <tr class="table-light">
                     <th scope="row"><a class="name" href="/form/{{ form['id'] }}">{{ form['title'] }}</a></th>
                     <td>{{ form['day'] }}</td>
-                    <td>{{ text(form['content']).short(15) }}</td>
+                    <td>{{ text(form['content']).markdown(3) }}</td>
                     <td>{% if form['role'] == 0 %}
                         Competitor
                         {% elif form['role'] == 1 %}

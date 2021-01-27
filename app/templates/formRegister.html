@@ -3,7 +3,8 @@
 {% else %}
 {% set title = 'Create new Form' %}
 {% endif %}
-{% set style_file = url_for("static", filename="css/formRegister.css")%}
+{% set style_file = url_for("static", filename="css/formRegister.css") %}
+{% set script_file = url_for("static", filename="js/content.js") %}
 
 {% extends 'base.html' %}
 
@@ -33,15 +34,23 @@
         </div>
     </div>
 
-    <div class="form-item">
-        {{ form.content.label }}
-        {{ form.content() }}
-        <div class="invalid-feedback">
-            {% for error in form.content.errors %}
-            <p>{{ error }}</p>
-            {% endfor %}
+    <div class="row">
+        <div class="col-sm">
+            {{ form.content.label }}
+            {{ form.content() }}
+        </div>
+        <div class="col-sm">
+            <label>Content preview</label>
+            <div style="background-color: white" id="preview">Nothing here</div>
         </div>
     </div>
+
+    <div class="invalid-feedback">
+        {% for error in form.content.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+
 
     <div class="input-group form-item" style="margin-bottom: 0;">
         {{ form.role.label }}

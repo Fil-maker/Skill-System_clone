@@ -18,9 +18,11 @@
     </div>
 
     <p style="text-align: center">{{ form_data['title'] }}</p>
-    <div class="modal-body">{{ form_data['content'] }}</div>
+    <div class="modal-body">
+        <pre class="text-content" disabled>{{ form_data['content'] }}</pre>
+    </div>
 
-    {% if momentjs(doc['date']).is_able_to_sign() and current_user['id'] in object['form']['must_sign'] %}
+    {% if momentjs(doc['date']).is_able_to_sign() and current_user['id'] in doc['must_sign'] %}
     <form class="form" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
@@ -41,4 +43,13 @@
     </form>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+        var converter = new showdown.Converter();
+        text = '{{ form_data['content'] }}';
+        html = converter.makeHtml(text);
+        $('.text-content').html(html);
+</script>
 {% endblock %}

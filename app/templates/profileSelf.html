@@ -32,7 +32,7 @@
     </div>
 
 
-    <div class="col-sm">
+    <div class="col-sm info-part">
 
         <div class="card">
             <a class="edit-button" href="/profile/password">
@@ -58,7 +58,7 @@
                 <p>Region: {{ current_user['region']['name'] }}</p>
                 {% endif %}
                 {% if current_user.get('about',False) %}
-                <p>About: {{ current_user['about'] }}</p>
+                <p>About: {{ text(current_user['about']).markdown() }}</p>
                 {% endif %}
             </div>
         </div>

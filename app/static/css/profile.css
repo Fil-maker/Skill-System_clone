@@ -26,3 +26,8 @@
     padding-top: 0.5rem;
     padding-bottom: 0.5rem
 }
+@media(max-width:270px) {
+    .info-part{
+        max-width: 60%;
+    }
+}
