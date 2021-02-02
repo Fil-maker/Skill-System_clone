@@ -55,17 +55,6 @@ def redirect_if_unauthorized(func):
     return new_func
 
 
-def redirect_if_authorized_or_not_admin(func):
-    def new_func(*args, **kwargs):
-        token = session.get("token", None)
-        if token and Roles(g.current_user["role"]) == Roles.ADMIN:
-            return func(*args, **kwargs)
-        return redirect("/")
-
-    new_func.__name__ = func.__name__
-    return new_func
-
-
 def only_for_admin(func):
     def new_func(*args, **kwargs):
         if Roles(g.current_user["role"]) != Roles.ADMIN:
