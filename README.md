@@ -42,6 +42,21 @@ API_SECRET="SECRET"
 APP_SECRET="SECRET"
 ```
 
+### Configuring the database
+1. Set the project path as the `PYTHONPATH` environment variable. Example:
+   ```
+    Windows:
+   set PYTHONPATH=C:\Users\<username>\PycharmProjects\skill-management-system
+   
+   # Linux:
+   export PYTHONPATH=~/skill-management-system
+   ```
+   
+2. Initialize the database with this command:
+    ```commandline
+    python3 api/data/manage.py initialize_db
+    ```
+
 ### Configuring access to AWS S3 Bucket
 1. Make your S3 Bucket public to read. To do that:
     + Turn off blocking of public access

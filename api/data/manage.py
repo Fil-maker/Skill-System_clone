@@ -1,11 +1,13 @@
+import json
+
 import requests
 from bs4 import BeautifulSoup
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 
 from api import app
-from api.data.models.country import Country
 from api.data.db_session import create_session
+from api.data.models.country import Country
 from api.data.models.region import Region
 
 manager = Manager(app)
@@ -13,12 +15,12 @@ manager.add_command("db", MigrateCommand)
 
 
 @manager.command
-def fill_countries_and_regions():
+def initialize_db():
+    """Fills the database with initial data (list of countries and regions of Russia)"""
     fill_countries()
     fill_regions()
 
 
-@manager.command
 def fill_countries():
     countries = get_countries()
     with create_session() as session:
@@ -29,7 +31,6 @@ def fill_countries():
     print(f"Successfully added {len(countries)} countries")
 
 
-@manager.command
 def fill_regions():
     regions = get_regions()
     with create_session() as session:
@@ -42,6 +43,18 @@ def fill_regions():
 
 
 def get_countries():
+    with open("api/data/initialization.json") as file:
+        data = json.load(file)
+        return data["countries"]
+
+
+def get_regions():
+    with open("api/data/initialization.json") as file:
+        data = json.load(file)
+        return data["regions"]
+
+
+def parse_wiki_country_list():
     try:
         url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
         page = requests.get(url)
@@ -51,6 +64,7 @@ def get_countries():
     soup = BeautifulSoup(page.text, "lxml")
     data = []
     tbody = soup.select_one("#mw-content-text > div.mw-parser-output > table > tbody")
+    # If the page has been changed, the selector may not work. Check it with browser developer tools
     for tr in tbody.select("tr"):
         td = tr.select("td")
         if len(td) < 6:
@@ -66,16 +80,17 @@ def get_countries():
     return data
 
 
-def get_regions():
+def parse_wiki_region_list():
     try:
-        url = "https://en.wikipedia.org/wiki/Federal_subjects_of_Russia#List"
+        url = "https://en.wikipedia.org/wiki/Federal_subjects_of_Russia"
         page = requests.get(url)
     except ConnectionError:
         print("Network error")
         return exit(0)
     soup = BeautifulSoup(page.text, "lxml")
     data = []
-    tbody = soup.select_one("#mw-content-text > div.mw-parser-output > table:nth-child(21) > tbody")
+    tbody = soup.select("table.wikitable.sortable > tbody")[2]
+    # If the page has been changed, the selector may not work. Check it with browser developer tools
     for tr in tbody.select("tr"):
         td = tr.select("td")
         if len(td) < 2:

@@ -48,6 +48,7 @@ def meet_page():
 
 
 @app.route("/register", methods=["GET", "POST"])
+@redirect_if_authorized
 def register():
     form = RegisterForm()
     if register_from_form(form):
